@@ -3,6 +3,7 @@ package com.squoshi.irons_spells_js.spell;
 import com.squoshi.irons_spells_js.IronsSpellsJSPlugin;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
@@ -79,19 +80,25 @@ public class CustomSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         if (onCast != null) {
-            onCast.apply(level, spellLevel, entity, castSource, playerMagicData);
-        } else {
-            super.onCast(level, spellLevel, entity, castSource, playerMagicData);
+            try {
+                onCast.apply(level, spellLevel, entity, castSource, playerMagicData);
+            } catch (Exception e){
+                ConsoleJS.STARTUP.error(e);
+            }
         }
+        super.onCast(level, spellLevel, entity, castSource, playerMagicData);
     }
 
     @Override
     public void onClientCast(Level level, int spellLevel, LivingEntity entity, ICastData castData) {
         if (onClientCast != null) {
-            onClientCast.apply(level, spellLevel, entity, castData);
-        } else {
-            super.onClientCast(level, spellLevel, entity, castData);
+            try {
+                onClientCast.apply(level, spellLevel, entity, castData);
+            } catch (Exception e){
+                ConsoleJS.STARTUP.error(e);
+            }
         }
+        super.onClientCast(level, spellLevel, entity, castData);
     }
 
     public static class Builder extends BuilderBase<CustomSpell> {
