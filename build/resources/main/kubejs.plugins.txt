@@ -1,1 +1,0 @@
-com.squoshi.irons_spells_js.IronsSpellsJSPlugin
