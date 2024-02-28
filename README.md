@@ -5,5 +5,5 @@ A KubeJS addon that allows for creating custom spells, and soon will give access
     - Made the mixins and getting `DefaultConfig` working on spells
 - **squoshi**
     - Idea and base code
-- **Iron**
+- **Iron** [**iron431** on GitHub]
     - Made Iron's Spells and Spellbooks
