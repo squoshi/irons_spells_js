@@ -11,7 +11,6 @@ import io.redspace.ironsspellbooks.api.spells.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
@@ -76,11 +75,8 @@ public class CustomSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         if (onCast != null) {
-            try {
-                onCast.accept(new CastContext(level, spellLevel, entity, castSource, playerMagicData));
-            } catch (Exception e){
-                ConsoleJS.STARTUP.error(e);
-            }
+            var context = new CastContext(level, spellLevel, entity, castSource, playerMagicData);
+            safeCallback(onCast, context,"Error while calling onCast");
         }
         super.onCast(level, spellLevel, entity, castSource, playerMagicData);
     }
@@ -88,13 +84,20 @@ public class CustomSpell extends AbstractSpell {
     @Override
     public void onClientCast(Level level, int spellLevel, LivingEntity entity, ICastData castData) {
         if (onClientCast != null) {
-            try {
-                onClientCast.accept(new CastClientContext(level, spellLevel, entity, castData));
-            } catch (Exception e) {
-                ConsoleJS.STARTUP.error(e);
-            }
+            var context = new CastClientContext(level, spellLevel, entity, castData);
+            safeCallback(onClientCast, context, "Error while calling onClientCast");
         }
         super.onClientCast(level, spellLevel, entity, castData);
+    }
+
+    private <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
+        try {
+            consumer.accept(value);
+        } catch (Throwable e) {
+            ConsoleJS.STARTUP.error(errorMessage, e);
+            return false;
+        }
+        return true;
     }
 
     public static class Builder extends BuilderBase<CustomSpell> {
