@@ -13,7 +13,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
 
     @Override
     public void init() {
-        SPELL_REGISTRY.addType("default", CustomSpell.Builder.class, CustomSpell.Builder::new, true);
+        SPELL_REGISTRY.addType("basic", CustomSpell.Builder.class, CustomSpell.Builder::new);
     }
 
     @Override

@@ -33,14 +33,14 @@ public class CustomSpell extends AbstractSpell {
     private final CastCallback onCast;
     private final CastClientCallback onClientCast;
 
-    private CustomSpell(ResourceLocation spellResource, DefaultConfig defaultConfig, CastType castType,SoundEvent startSound, SoundEvent finishSound, CastCallback onCast, CastClientCallback onClientCast) {
-        this.spellResource = spellResource;
-        this.defaultConfig = defaultConfig;
-        this.castType = castType;
-        this.startSound = startSound;
-        this.finishSound = finishSound;
-        this.onCast = onCast;
-        this.onClientCast = onClientCast;
+    public CustomSpell(Builder b) {
+        this.spellResource = b.spellResource;
+        this.defaultConfig = new DefaultConfig().setMinRarity(b.minRarity).setSchoolResource(b.school).setMaxLevel(b.maxLevel).setCooldownSeconds(b.cooldownSeconds).build();
+        this.castType = b.castType;
+        this.startSound = b.startSound;
+        this.finishSound = b.finishSound;
+        this.onCast = b.onCast;
+        this.onClientCast = b.onClientCast;
     }
 
     @Override
@@ -154,8 +154,7 @@ public class CustomSpell extends AbstractSpell {
 
         @Override
         public CustomSpell createObject() {
-            final DefaultConfig config = new DefaultConfig().setMinRarity(minRarity).setSchoolResource(school).setMaxLevel(maxLevel).setCooldownSeconds(cooldownSeconds).build();
-            return new CustomSpell(spellResource, config, castType, startSound, finishSound, onCast, onClientCast);
+            return new CustomSpell(this);
         }
     }
 }
