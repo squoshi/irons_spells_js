@@ -1,0 +1,15 @@
+Java Launcher: C:\Program Files\Java\jdk-17.0.4\bin\java.exe
+Arguments: '--task, SRG_TO_MCP, --input, C:\Users\squis\.gradle\caches\modules-2\files-2.1\dev.architectury\architectury-forge\6.5.82\1db75e38907cd0b720bc3e64a9de72e6f1f2a66d\architectury-forge-6.5.82.jar, --output, C:\Users\squis\.gradle\caches\forge_gradle\deobf_dependencies\dev\architectury\architectury-forge\6.5.82_mapped_parchment_2022.11.27-1.19.2\architectury-forge-6.5.82_mapped_parchment_2022.11.27-1.19.2.jar, --mcp, C:\Users\squis\.gradle\caches\parchmentgradle\org\parchmentmc\data\parchment-1.19.2\2022.11.27\parchment-1.19.2-2022.11.27.zip, --strip-signatures'
+Classpath:
+ - C:\Users\squis\.gradle\caches\forge_gradle\maven_downloader\net\minecraftforge\installertools\1.3.2\installertools-1.3.2-fatjar.jar
+Working directory: C:\Users\squis\Documents\mcmods\irons_spells_js\build\_RenameSrg2Mcp_-1764231397
+Main class: net.minecraftforge.installertools.ConsoleTool
+====================================
+Task: SRG_TO_MCP
+Input:  C:\Users\squis\.gradle\caches\modules-2\files-2.1\dev.architectury\architectury-forge\6.5.82\1db75e38907cd0b720bc3e64a9de72e6f1f2a66d\architectury-forge-6.5.82.jar
+Output: C:\Users\squis\.gradle\caches\forge_gradle\deobf_dependencies\dev\architectury\architectury-forge\6.5.82_mapped_parchment_2022.11.27-1.19.2\architectury-forge-6.5.82_mapped_parchment_2022.11.27-1.19.2.jar
+MCP:    C:\Users\squis\.gradle\caches\parchmentgradle\org\parchmentmc\data\parchment-1.19.2\2022.11.27\parchment-1.19.2-2022.11.27.zip
+Loading MCP Data
+Processing ZIP file
+Stripped Manifest of sha digests
+Process complete

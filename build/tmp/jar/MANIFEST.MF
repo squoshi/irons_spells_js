@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Specification-Title: irons_spells_js
+Specification-Vendor: squoshi
+Specification-Version: 1
+Implementation-Title: Iron's Spellbooks KubeJS
+Implementation-Version: 1.0.0
+Implementation-Vendor: squoshi
+Implementation-Timestamp: 2024-02-27T00:51:04-0600
+MixinConfigs: irons_spells_js.mixins.json
+

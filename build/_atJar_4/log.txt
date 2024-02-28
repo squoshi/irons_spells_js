@@ -1,0 +1,7 @@
+Java Launcher: C:\Program Files\Java\jdk-17.0.4\bin\java.exe
+Arguments: '--inJar, C:\Users\squis\.gradle\caches\forge_gradle\minecraft_user_repo\net\minecraftforge\forge\1.19.2-43.2.14\forge-1.19.2-43.2.14-injected.jar, --outJar, C:\Users\squis\.gradle\caches\forge_gradle\minecraft_user_repo\net\minecraftforge\forge\1.19.2-43.2.14_mapped_parchment_2022.11.27-1.19.2\forge-1.19.2-43.2.14_mapped_parchment_2022.11.27-1.19.2.jar, --logFile, accesstransform.log, --atFile, C:\Users\squis\Documents\mcmods\irons_spells_js\build\_atJar_4\parent_at.cfg'
+Classpath:
+ - C:\Users\squis\.gradle\caches\forge_gradle\maven_downloader\net\minecraftforge\accesstransformers\8.0.7\accesstransformers-8.0.7-fatjar.jar
+Working directory: C:\Users\squis\Documents\mcmods\irons_spells_js\build\_atJar_4
+Main class: net.minecraftforge.accesstransformer.TransformerProcessor
+====================================

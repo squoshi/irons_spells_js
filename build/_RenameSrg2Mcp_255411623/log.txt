@@ -1,0 +1,15 @@
+Java Launcher: C:\Program Files\Java\jdk-17.0.4\bin\java.exe
+Arguments: '--task, SRG_TO_MCP, --input, C:\Users\squis\.gradle\caches\modules-2\files-2.1\io.redspace.ironsspellbooks\irons_spellbooks\1.19.2-2.2.2\2a33891e3e996575e576993f2cfe0ebd249a1543\irons_spellbooks-1.19.2-2.2.2.jar, --output, C:\Users\squis\.gradle\caches\forge_gradle\deobf_dependencies\io\redspace\ironsspellbooks\irons_spellbooks\1.19.2-2.2.2_mapped_parchment_2022.11.27-1.19.2\irons_spellbooks-1.19.2-2.2.2_mapped_parchment_2022.11.27-1.19.2.jar, --mcp, C:\Users\squis\.gradle\caches\parchmentgradle\org\parchmentmc\data\parchment-1.19.2\2022.11.27\parchment-1.19.2-2022.11.27.zip, --strip-signatures'
+Classpath:
+ - C:\Users\squis\.gradle\caches\forge_gradle\maven_downloader\net\minecraftforge\installertools\1.3.2\installertools-1.3.2-fatjar.jar
+Working directory: C:\Users\squis\Documents\mcmods\irons_spells_js\build\_RenameSrg2Mcp_255411623
+Main class: net.minecraftforge.installertools.ConsoleTool
+====================================
+Task: SRG_TO_MCP
+Input:  C:\Users\squis\.gradle\caches\modules-2\files-2.1\io.redspace.ironsspellbooks\irons_spellbooks\1.19.2-2.2.2\2a33891e3e996575e576993f2cfe0ebd249a1543\irons_spellbooks-1.19.2-2.2.2.jar
+Output: C:\Users\squis\.gradle\caches\forge_gradle\deobf_dependencies\io\redspace\ironsspellbooks\irons_spellbooks\1.19.2-2.2.2_mapped_parchment_2022.11.27-1.19.2\irons_spellbooks-1.19.2-2.2.2_mapped_parchment_2022.11.27-1.19.2.jar
+MCP:    C:\Users\squis\.gradle\caches\parchmentgradle\org\parchmentmc\data\parchment-1.19.2\2022.11.27\parchment-1.19.2-2022.11.27.zip
+Loading MCP Data
+Processing ZIP file
+Stripped Manifest of sha digests
+Process complete
