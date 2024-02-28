@@ -42,7 +42,6 @@ public class CustomSpell extends AbstractSpell {
         this.onCast = b.onCast;
         this.onClientCast = b.onClientCast;
 
-        // add more to the builder for those params
         this.manaCostPerLevel = 20; // b.manaCostPerLevel
         this.baseSpellPower = 0; // b.baseSpellPower
         this.spellPowerPerLevel = 1; // b.spellPowerPerLevel
@@ -74,6 +73,7 @@ public class CustomSpell extends AbstractSpell {
     public Optional<SoundEvent> getCastFinishSound() {
         return finishSound != null ? Optional.of(finishSound) : super.getCastFinishSound();
     }
+
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         if (onCast != null) {
@@ -103,21 +103,29 @@ public class CustomSpell extends AbstractSpell {
         private final ResourceLocation spellResource;
         private CastCallback onCast = null;
         private CastClientCallback onClientCast = null;
+        private int manaCostPerLevel = 1;
+        private int baseSpellPower = 0;
+        private int spellPowerPerLevel = 1;
+        private int castTime = 0;
+        private int baseManaCost = 40;
 
         public Builder(ResourceLocation i) {
             super(i);
             this.spellResource = i;
         }
+
         @SuppressWarnings("unused")
         public Builder setCastType(CastType type) {
             this.castType = type;
             return this;
         }
+
         @SuppressWarnings("unused")
         public Builder setStartSound(SoundEvent soundEvent) {
             this.startSound = soundEvent;
             return this;
         }
+
         @SuppressWarnings("unused")
         public Builder setFinishSound(SoundEvent soundEvent) {
             this.finishSound = soundEvent;
@@ -145,6 +153,36 @@ public class CustomSpell extends AbstractSpell {
         @SuppressWarnings("unused")
         public Builder setCooldownSeconds(int seconds) {
             this.cooldownSeconds = seconds;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder setManaCostPerLevel(int cost) {
+            this.manaCostPerLevel = cost;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder setBaseSpellPower(int power) {
+            this.baseSpellPower = power;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder setSpellPowerPerLevel(int power) {
+            this.spellPowerPerLevel = power;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder setCastTime(int time) {
+            this.castTime = time;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public Builder setBaseManaCost(int cost) {
+            this.baseManaCost = cost;
             return this;
         }
 
