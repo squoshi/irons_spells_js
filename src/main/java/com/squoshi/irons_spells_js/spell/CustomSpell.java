@@ -1,9 +1,11 @@
 package com.squoshi.irons_spells_js.spell;
 
 import com.squoshi.irons_spells_js.IronsSpellsJSPlugin;
+import com.squoshi.irons_spells_js.mixin.ServerConfigsAccessor;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
@@ -12,6 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -213,7 +217,12 @@ public class CustomSpell extends AbstractSpell {
 
         @Override
         public CustomSpell createObject() {
-            return new CustomSpell(this);
+            var spell = new CustomSpell(this);
+            ServerConfigsAccessor.getBuilder().push("Spells");
+            ServerConfigsAccessor.invoke$createSpellConfig(spell);
+            ServerConfigsAccessor.getBuilder().pop();
+            ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfigsAccessor.getBuilder().build(), String.format("%s-server.toml", IronsSpellbooks.MODID));
+            return spell;
         }
     }
 }
