@@ -1,9 +1,11 @@
 package com.squoshi.irons_spells_js.spell;
 
 import com.squoshi.irons_spells_js.IronsSpellsJSPlugin;
+import com.squoshi.irons_spells_js.mixin.ServerConfigsAccessor;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
@@ -12,25 +14,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class CustomSpell extends AbstractSpell {
-    @FunctionalInterface
-    public interface CastCallback {
-        void apply(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData);
-    }
-    @FunctionalInterface
-    public interface CastClientCallback {
-        void apply(Level world, int spellLevel, LivingEntity entity, ICastData castData);
-    }
+    record CastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, CastSource getCastSource, MagicData getPlayerMagicData){}
+    record CastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, ICastData getCastData){}
 
     private final ResourceLocation spellResource;
     private final DefaultConfig defaultConfig;
     private final CastType castType;
     private final SoundEvent startSound, finishSound;
-    private final CastCallback onCast;
-    private final CastClientCallback onClientCast;
+    private final Consumer<CastContext> onCast;
+    private final Consumer<CastClientContext> onClientCast;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
@@ -80,11 +79,8 @@ public class CustomSpell extends AbstractSpell {
     @Override
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         if (onCast != null) {
-            try {
-                onCast.apply(level, spellLevel, entity, castSource, playerMagicData);
-            } catch (Exception e){
-                ConsoleJS.STARTUP.error(e);
-            }
+            var context = new CastContext(level, spellLevel, entity, castSource, playerMagicData);
+            safeCallback(onCast, context,"Error while calling onCast");
         }
         super.onCast(level, spellLevel, entity, castSource, playerMagicData);
     }
@@ -92,13 +88,20 @@ public class CustomSpell extends AbstractSpell {
     @Override
     public void onClientCast(Level level, int spellLevel, LivingEntity entity, ICastData castData) {
         if (onClientCast != null) {
-            try {
-                onClientCast.apply(level, spellLevel, entity, castData);
-            } catch (Exception e){
-                ConsoleJS.STARTUP.error(e);
-            }
+            var context = new CastClientContext(level, spellLevel, entity, castData);
+            safeCallback(onClientCast, context, "Error while calling onClientCast");
         }
         super.onClientCast(level, spellLevel, entity, castData);
+    }
+
+    private <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
+        try {
+            consumer.accept(value);
+        } catch (Throwable e) {
+            ConsoleJS.STARTUP.error(errorMessage, e);
+            return false;
+        }
+        return true;
     }
 
     public static class Builder extends BuilderBase<CustomSpell> {
@@ -110,8 +113,8 @@ public class CustomSpell extends AbstractSpell {
         private SoundEvent startSound = null;
         private SoundEvent finishSound = null;
         private final ResourceLocation spellResource;
-        private CastCallback onCast = null;
-        private CastClientCallback onClientCast = null;
+        private Consumer<CastContext> onCast = null;
+        private Consumer<CastClientContext> onClientCast = null;
         private int manaCostPerLevel = 20;
         private int baseSpellPower = 0;
         private int spellPowerPerLevel = 1;
@@ -196,13 +199,13 @@ public class CustomSpell extends AbstractSpell {
         }
 
         @SuppressWarnings("unused")
-        public Builder onCast(CastCallback consumer) {
+        public Builder onCast(Consumer<CastContext> consumer) {
             this.onCast = consumer;
             return this;
         }
 
         @SuppressWarnings("unused")
-        public Builder onClientCast(CastClientCallback consumer) {
+        public Builder onClientCast(Consumer<CastClientContext> consumer) {
             this.onClientCast = consumer;
             return this;
         }
@@ -214,7 +217,12 @@ public class CustomSpell extends AbstractSpell {
 
         @Override
         public CustomSpell createObject() {
-            return new CustomSpell(this);
+            var spell = new CustomSpell(this);
+            ServerConfigsAccessor.getBuilder().push("Spells");
+            ServerConfigsAccessor.invoke$createSpellConfig(spell);
+            ServerConfigsAccessor.getBuilder().pop();
+            ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfigsAccessor.getBuilder().build(), String.format("%s-server.toml", IronsSpellbooks.MODID));
+            return spell;
         }
     }
 }

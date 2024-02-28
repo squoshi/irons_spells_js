@@ -3,7 +3,10 @@
   "package": "com.squoshi.irons_spells_js.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "${mod_id}.refmap.json",
-  "mixins": [],
+  "mixins": [
+    "IronsSpellbooksMixin",
+    "ServerConfigsAccessor"
+  ],
   "client": [],
   "minVersion": "0.8.5"
 }
