@@ -41,6 +41,13 @@ public class CustomSpell extends AbstractSpell {
         this.finishSound = b.finishSound;
         this.onCast = b.onCast;
         this.onClientCast = b.onClientCast;
+
+        // add more to the builder for those params
+        this.manaCostPerLevel = 20; // b.manaCostPerLevel
+        this.baseSpellPower = 0; // b.baseSpellPower
+        this.spellPowerPerLevel = 1; // b.spellPowerPerLevel
+        this.castTime = 0; // b.castTime
+        this.baseManaCost = 40; // b.baseManaCost
     }
 
     @Override
@@ -117,30 +124,36 @@ public class CustomSpell extends AbstractSpell {
             return this;
         }
 
+        @SuppressWarnings("unused")
         public Builder setMinRarity(SpellRarity rarity) {
             this.minRarity = rarity;
             return this;
         }
 
+        @SuppressWarnings("unused")
         public Builder setSchool(ResourceLocation schoolResource) {
             this.school = schoolResource;
             return this;
         }
 
+        @SuppressWarnings("unused")
         public Builder setMaxLevel(int level) {
             this.maxLevel = level;
             return this;
         }
 
+        @SuppressWarnings("unused")
         public Builder setCooldownSeconds(int seconds) {
             this.cooldownSeconds = seconds;
             return this;
         }
 
+        @SuppressWarnings("unused")
         public Builder onCast(CastCallback consumer) {
             this.onCast = consumer;
             return this;
         }
+
         @SuppressWarnings("unused")
         public Builder onClientCast(CastClientCallback consumer) {
             this.onClientCast = consumer;
