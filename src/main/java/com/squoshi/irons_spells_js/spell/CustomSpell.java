@@ -27,26 +27,28 @@ public class CustomSpell extends AbstractSpell {
     private final ResourceLocation spellResource;
     private final DefaultConfig defaultConfig;
     private final CastType castType;
-
     private final SoundEvent startSound, finishSound;
-
     private final CastCallback onCast;
     private final CastClientCallback onClientCast;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
-        this.defaultConfig = new DefaultConfig().setMinRarity(b.minRarity).setSchoolResource(b.school).setMaxLevel(b.maxLevel).setCooldownSeconds(b.cooldownSeconds).build();
+        this.defaultConfig = new DefaultConfig()
+                .setMinRarity(b.minRarity)
+                .setSchoolResource(b.school)
+                .setMaxLevel(b.maxLevel)
+                .setCooldownSeconds(b.cooldownSeconds)
+                .build();
         this.castType = b.castType;
         this.startSound = b.startSound;
         this.finishSound = b.finishSound;
         this.onCast = b.onCast;
         this.onClientCast = b.onClientCast;
-
-        this.manaCostPerLevel = 20; // b.manaCostPerLevel
-        this.baseSpellPower = 0; // b.baseSpellPower
-        this.spellPowerPerLevel = 1; // b.spellPowerPerLevel
-        this.castTime = 0; // b.castTime
-        this.baseManaCost = 40; // b.baseManaCost
+        this.manaCostPerLevel = b.manaCostPerLevel;
+        this.baseSpellPower = b.baseSpellPower;
+        this.spellPowerPerLevel = b.spellPowerPerLevel;
+        this.castTime = b.castTime;
+        this.baseManaCost = b.baseManaCost;
     }
 
     @Override
@@ -103,7 +105,7 @@ public class CustomSpell extends AbstractSpell {
         private final ResourceLocation spellResource;
         private CastCallback onCast = null;
         private CastClientCallback onClientCast = null;
-        private int manaCostPerLevel = 1;
+        private int manaCostPerLevel = 20;
         private int baseSpellPower = 0;
         private int spellPowerPerLevel = 1;
         private int castTime = 0;
