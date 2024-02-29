@@ -3,6 +3,7 @@ package com.squoshi.irons_spells_js.spell;
 import com.squoshi.irons_spells_js.IronsSpellsJSPlugin;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -122,84 +123,129 @@ public class CustomSpell extends AbstractSpell {
             this.spellResource = i;
         }
 
+        @Info(value = """
+            Sets the cast type. Can be `CONTINUOUS`, `INSTANT`, `LONG`, or `NONE`.
+        """)
         @SuppressWarnings("unused")
         public Builder setCastType(CastType type) {
             this.castType = type;
             return this;
         }
 
+        @Info(value = """
+            Sets the sound that the spell will play when it starts casting.
+        """)
         @SuppressWarnings("unused")
         public Builder setStartSound(SoundEvent soundEvent) {
             this.startSound = soundEvent;
             return this;
         }
 
+        @Info(value = """
+            Sets the sound that the spell will play after it is done casting.
+        """)
         @SuppressWarnings("unused")
         public Builder setFinishSound(SoundEvent soundEvent) {
             this.finishSound = soundEvent;
             return this;
         }
 
+        @Info(value = """
+            Sets the rarity of the spell. Can be `COMMON`, `UNCOMMON`, `RARE`, `EPIC`, or `LEGENDARY`.
+        """)
         @SuppressWarnings("unused")
         public Builder setMinRarity(SpellRarity rarity) {
             this.minRarity = rarity;
             return this;
         }
 
+        @Info(value = """
+            Sets the school of the spell. The different schools each are a resource location.
+            
+            Example: `.setSchool(SchoolRegistry.BLOOD_RESOURCE`
+            Another example: `setSchool('irons_spellbooks:blood')`
+        """)
         @SuppressWarnings("unused")
         public Builder setSchool(ResourceLocation schoolResource) {
             this.school = schoolResource;
             return this;
         }
 
+        @Info(value = """
+            Sets the max level of the spell. Goes up to `10` from `1`.
+        """)
         @SuppressWarnings("unused")
         public Builder setMaxLevel(int level) {
             this.maxLevel = level;
             return this;
         }
 
+        @Info(value = """
+            Sets the cooldown of the spell in seconds. Cannot be a decimal value for some reason.
+        """)
         @SuppressWarnings("unused")
         public Builder setCooldownSeconds(int seconds) {
             this.cooldownSeconds = seconds;
             return this;
         }
 
+        @Info(value = """
+            Sets the mana cost per the spell's level. For example, you could input `10` into this method, and each level of the spell will multiply that value by the level.
+        """)
         @SuppressWarnings("unused")
         public Builder setManaCostPerLevel(int cost) {
             this.manaCostPerLevel = cost;
             return this;
         }
 
+        @Info(value = """
+            Sets the base spell power. Can be from `1` to `10`. The spell power per level adds on to this.
+        """)
         @SuppressWarnings("unused")
         public Builder setBaseSpellPower(int power) {
             this.baseSpellPower = power;
             return this;
         }
 
+        @Info(value = """
+            Sets the spell power per level.
+        """)
         @SuppressWarnings("unused")
         public Builder setSpellPowerPerLevel(int power) {
             this.spellPowerPerLevel = power;
             return this;
         }
 
+        @Info(value = """
+            Sets the cast time. This is used for `LONG` or `CONTINUOUS` spell types.
+        """)
         @SuppressWarnings("unused")
         public Builder setCastTime(int time) {
             this.castTime = time;
             return this;
         }
 
+        @Info(value = """
+            Sets the base mana cost. The mana cost per level adds on to this.
+        """)
         @SuppressWarnings("unused")
         public Builder setBaseManaCost(int cost) {
             this.baseManaCost = cost;
             return this;
         }
 
+        @Info(value = """
+            Sets the callback for when the spell is cast. This is what the spell does when it is casted.
+        """)
         @SuppressWarnings("unused")
         public Builder onCast(Consumer<CastContext> consumer) {
             this.onCast = consumer;
             return this;
         }
 
+        @Info(value = """
+            Sets the callback for when the spell is cast on the client side. This is what the spell does when it is casted.
+        """)
         @SuppressWarnings("unused")
         public Builder onClientCast(Consumer<CastClientContext> consumer) {
             this.onClientCast = consumer;
