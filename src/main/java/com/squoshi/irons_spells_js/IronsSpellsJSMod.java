@@ -1,5 +1,6 @@
 package com.squoshi.irons_spells_js;
 
+import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.mixin.ServerConfigsAccessor;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -21,6 +22,8 @@ public class IronsSpellsJSMod {
     public IronsSpellsJSMod() {
         final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::runIronSpellsConfig);
+
+        IronsSpellsJSEvents.init();
     }
 
     private void runIronSpellsConfig(InterModEnqueueEvent event){
