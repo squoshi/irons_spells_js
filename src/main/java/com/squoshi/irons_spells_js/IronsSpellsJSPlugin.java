@@ -2,7 +2,6 @@ package com.squoshi.irons_spells_js;
 
 import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
-import com.squoshi.irons_spells_js.util.IronsSpellsJSUtils;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
@@ -25,7 +24,6 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("SpellRarity", SpellRarity.class);
         event.add("SchoolRegistry", SchoolRegistry.class);
         event.add("CastType", CastType.class);
-        event.add("MagicData", IronsSpellsJSUtils.MagicDataJS.class);
         event.add("IronsSpellsParticleHelper", ParticleHelper.class);
     }
 

@@ -4,6 +4,7 @@ import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.mixin.ServerConfigsAccessor;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -23,7 +24,7 @@ public class IronsSpellsJSMod {
         final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::runIronSpellsConfig);
 
-        IronsSpellsJSEvents.init();
+        MinecraftForge.EVENT_BUS.addListener(IronsSpellsJSEvents::changeMana);
     }
 
     private void runIronSpellsConfig(InterModEnqueueEvent event){
