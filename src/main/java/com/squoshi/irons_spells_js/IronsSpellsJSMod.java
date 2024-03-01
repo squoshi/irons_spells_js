@@ -25,6 +25,7 @@ public class IronsSpellsJSMod {
         bus.addListener(this::runIronSpellsConfig);
 
         MinecraftForge.EVENT_BUS.addListener(IronsSpellsJSEvents::changeMana);
+        MinecraftForge.EVENT_BUS.addListener(IronsSpellsJSEvents::spellCast);
     }
 
     private void runIronSpellsConfig(InterModEnqueueEvent event){
