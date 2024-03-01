@@ -36,6 +36,5 @@ public class IronsSpellsJSMod {
         });
         ServerConfigsAccessor.getBuilder().pop();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfigsAccessor.getBuilder().build(), String.format("%s-server.toml", IronsSpellbooks.MODID));
-
     }
 }
