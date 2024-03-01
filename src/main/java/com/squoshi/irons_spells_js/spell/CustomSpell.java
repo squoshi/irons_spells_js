@@ -11,6 +11,7 @@ import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.spells.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -21,12 +22,19 @@ public class CustomSpell extends AbstractSpell {
     record CastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, CastSource getCastSource, MagicData getPlayerMagicData){}
     record CastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, ICastData getCastData){}
 
+    record PreCastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData){}
+    record PreCastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, InteractionHand getHand, MagicData getPlayerMagicData){}
+
     private final ResourceLocation spellResource;
     private final DefaultConfig defaultConfig;
     private final CastType castType;
     private final SoundEvent startSound, finishSound;
     private final Consumer<CastContext> onCast;
     private final Consumer<CastClientContext> onClientCast;
+    private final Consumer<PreCastContext> onPreCast;
+    private final Consumer<PreCastClientContext> onPreClientCast;
+    private final boolean allowLooting;
+    private final boolean needsLearning;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
@@ -41,11 +49,15 @@ public class CustomSpell extends AbstractSpell {
         this.finishSound = b.finishSound;
         this.onCast = b.onCast;
         this.onClientCast = b.onClientCast;
+        this.onPreCast = b.onPreCast;
+        this.onPreClientCast = b.onPreClientCast;
         this.manaCostPerLevel = b.manaCostPerLevel;
         this.baseSpellPower = b.baseSpellPower;
         this.spellPowerPerLevel = b.spellPowerPerLevel;
         this.castTime = b.castTime;
         this.baseManaCost = b.baseManaCost;
+        this.allowLooting = b.allowLooting;
+        this.needsLearning = b.needsLearning;
     }
 
     @Override
@@ -91,6 +103,34 @@ public class CustomSpell extends AbstractSpell {
         super.onClientCast(level, spellLevel, entity, castData);
     }
 
+    @Override
+    public void onServerPreCast(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {
+        if (onPreCast != null) {
+            var context = new PreCastContext(level, spellLevel, entity, playerMagicData);
+            safeCallback(onPreCast, context, "Error while calling onPreCast");
+        }
+        super.onServerPreCast(level, spellLevel, entity, playerMagicData);
+    }
+
+    @Override
+    public void onClientPreCast(Level level, int spellLevel, LivingEntity entity, InteractionHand hand, MagicData playerMagicData) {
+        if (onPreClientCast != null) {
+            var context = new PreCastClientContext(level, spellLevel, entity, hand, playerMagicData);
+            safeCallback(onPreClientCast, context, "Error while calling onPreClientCast");
+        }
+        super.onClientPreCast(level, spellLevel, entity, hand, playerMagicData);
+    }
+
+    @Override
+    public boolean allowLooting() {
+        return allowLooting;
+    }
+
+    @Override
+    public boolean needsLearning() {
+        return needsLearning;
+    }
+
     private <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
         try {
             consumer.accept(value);
@@ -112,11 +152,15 @@ public class CustomSpell extends AbstractSpell {
         private final ResourceLocation spellResource;
         private Consumer<CastContext> onCast = null;
         private Consumer<CastClientContext> onClientCast = null;
+        private Consumer<PreCastContext> onPreCast = null;
+        private Consumer<PreCastClientContext> onPreClientCast = null;
         private int manaCostPerLevel = 20;
         private int baseSpellPower = 0;
         private int spellPowerPerLevel = 1;
         private int castTime = 0;
         private int baseManaCost = 40;
+        private boolean allowLooting = false;
+        private boolean needsLearning = false;
 
         public Builder(ResourceLocation i) {
             super(i);
@@ -249,6 +293,42 @@ public class CustomSpell extends AbstractSpell {
         @SuppressWarnings("unused")
         public Builder onClientCast(Consumer<CastClientContext> consumer) {
             this.onClientCast = consumer;
+            return this;
+        }
+
+        @Info(value = """
+            Sets the callback for when the spell is about to be cast. This is what the spell does before it is casted.
+        """)
+        @SuppressWarnings("unused")
+        public Builder onPreCast(Consumer<PreCastContext> consumer) {
+            this.onPreCast = consumer;
+            return this;
+        }
+
+        @Info(value = """
+            Sets the callback for when the spell is about to be cast on the client side. This is what the spell does before it is casted.
+        """)
+        @SuppressWarnings("unused")
+        public Builder onPreClientCast(Consumer<PreCastClientContext> consumer) {
+            this.onPreClientCast = consumer;
+            return this;
+        }
+
+        @Info(value = """
+            Sets whether or not the spell can be looted from a loot table.
+        """)
+        @SuppressWarnings("unused")
+        public Builder setAllowLooting(boolean allow) {
+            this.allowLooting = allow;
+            return this;
+        }
+
+        @Info(value = """
+            Sets whether or not the spell needs to be learned before it can be casted.
+        """)
+        @SuppressWarnings("unused")
+        public Builder needsLearning(boolean needs) {
+            this.needsLearning = needs;
             return this;
         }
 
