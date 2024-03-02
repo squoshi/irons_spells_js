@@ -20,7 +20,7 @@ public class SpellCastEventJS extends PlayerEventJS {
     """)
     @SuppressWarnings("unused")
     public Player getEntity() {
-        return null;
+        return event.getEntity();
     }
 
     @Info(value = """
