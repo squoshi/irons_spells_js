@@ -7,7 +7,7 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-version = "${minecraft_version}-${mod_version}-alpha"
+version = "${minecraft_version}-${mod_version}-release"
 group = mod_group_id
 
 base {
