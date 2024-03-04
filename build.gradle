@@ -33,6 +33,8 @@ minecraft {
 
             property 'forge.enabledGameTestNamespaces', mod_id
 
+            property 'production', "true" // please Lat FIX
+
             if (project.hasProperty('mc_uuid')) {
                 args '--uuid', project.getProperty('mc_uuid')
             }
@@ -58,6 +60,8 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             property 'forge.enabledGameTestNamespaces', mod_id
+
+            property 'production', "true" // please Lat FIX
 
             mods {
                 "${mod_id}" {
