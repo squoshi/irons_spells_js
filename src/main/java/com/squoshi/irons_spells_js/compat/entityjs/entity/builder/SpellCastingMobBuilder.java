@@ -2,7 +2,6 @@ package com.squoshi.irons_spells_js.compat.entityjs.entity.builder;
 
 import dev.latvian.mods.kubejs.typings.Info;
 import io.redspace.ironsspellbooks.entity.mobs.abstract_spell_casting_mob.AbstractSpellCastingMob;
-import net.liopyu.entityjs.builders.BaseLivingEntityBuilder;
 import net.liopyu.entityjs.builders.MobBuilder;
 import net.liopyu.entityjs.entities.IAnimatableJS;
 import net.minecraft.resources.ResourceLocation;
