@@ -26,6 +26,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("SchoolRegistry", SchoolRegistry.class);
         event.add("CastType", CastType.class);
         event.add("IronsSpellsParticleHelper", ParticleHelper.class);
+        event.add("SpellRegistry", SpellRegistry.class);
     }
 
     @Override
