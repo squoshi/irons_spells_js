@@ -1,5 +1,6 @@
 package com.squoshi.irons_spells_js;
 
+import com.squoshi.irons_spells_js.compat.entityjs.entity.builder.SpellCastingMobJSBuilder;
 import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
@@ -17,7 +18,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
     @Override
     public void init() {
         SPELL_REGISTRY.addType("basic", CustomSpell.Builder.class, CustomSpell.Builder::new);
-//        RegistryInfo.ENTITY_TYPE.addType(IronsSpellsJSMod.MODID + ":spellcasting", SpellCastingMobJSBuilder.class, SpellCastingMobJSBuilder::new);
+        RegistryInfo.ENTITY_TYPE.addType(IronsSpellsJSMod.MODID + ":spellcasting", SpellCastingMobJSBuilder.class, SpellCastingMobJSBuilder::new);
     }
 
     @Override
