@@ -13,7 +13,6 @@ import java.util.function.Function;
 
 public abstract class SpellCastingMobBuilder<T extends AbstractSpellCastingMob & IAnimatableJS> extends MobBuilder<T> {
     public transient Consumer<LivingEntity> onCancelledCast;
-    public transient Consumer<LivingEntity> onLivingJump;
     public transient Function<LivingEntity, Object> isCasting;
     public transient boolean setCanBeLeashed;
     public SpellCastingMobBuilder(ResourceLocation i) {
@@ -28,22 +27,18 @@ public abstract class SpellCastingMobBuilder<T extends AbstractSpellCastingMob &
         this.isCasting = isCasting;
         return this;
     }
-    public SpellCastingMobBuilder<T> onCancelledCast(Consumer<LivingEntity> onCancelledCast){
-        this.onCancelledCast = onCancelledCast;
-        return this;
-    }
     @Info(value = """
-            Sets a callback function to be executed when the entity jumps.
+            Sets a callback function to be executed when the entity stops casting a spell.
                         
             Example usage:
             ```javascript
-            entityBuilder.onLivingJump(entity => {
-                // Custom logic to handle the entity's jump action
+            spellEntityBuilder.onCancelledCast(entity => {
+                // Custom logic to handle the entity cancelling their spell casts
             });
             ```
             """)
-    public BaseLivingEntityBuilder<T> onLivingJump(Consumer<LivingEntity> onJump) {
-        this.onLivingJump = onJump;
+    public SpellCastingMobBuilder<T> onCancelledCast(Consumer<LivingEntity> onCancelledCast){
+        this.onCancelledCast = onCancelledCast;
         return this;
     }
 }
