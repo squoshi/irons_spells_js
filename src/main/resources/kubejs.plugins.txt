@@ -1,1 +1,2 @@
 com.squoshi.irons_spells_js.IronsSpellsJSPlugin
+com.squoshi.irons_spells_js.compat.entityjs.EntityJSPlugin entityjs
