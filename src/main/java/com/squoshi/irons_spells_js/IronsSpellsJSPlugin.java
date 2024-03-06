@@ -17,6 +17,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
     @Override
     public void init() {
         SPELL_REGISTRY.addType("basic", CustomSpell.Builder.class, CustomSpell.Builder::new);
+//        RegistryInfo.ENTITY_TYPE.addType(IronsSpellsJSMod.MODID + ":spellcasting", SpellCastingMobJSBuilder.class, SpellCastingMobJSBuilder::new);
     }
 
     @Override
