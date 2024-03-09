@@ -53,16 +53,6 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
         this.builder = builder;
         this.animationFactory = GeckoLibUtil.createInstanceCache(this);
     }
-
-    @Override
-    public BaseLivingEntityBuilder<?> getBuilder() {
-        return builder;
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return animationFactory;
-    }
     // SpellJS Overrides
     @Override
     public void cancelCast() {
@@ -80,6 +70,17 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
             EntityJSHelperClass.logErrorMessageOnce("[KubeJS Irons Spells]: Invalid return value for isCasting from entity: " + entityName() + ". Value: " + obj + ". Must be a boolean. Defaulting to " + super.isCasting());
         }
         return super.isCasting();
+    }
+
+    //Builder/AnimatableInstanceCache Implementation
+    @Override
+    public BaseLivingEntityBuilder<?> getBuilder() {
+        return builder;
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return animationFactory;
     }
 
     //Everything below here are Base EntityJS Overrides, These are needed to let entityjs override the default implementations.
@@ -212,18 +213,7 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
     }
 
 
-    @Override
-    public boolean canCutCorner(BlockPathTypes pathType) {
-        if (builder.canCutCorner != null) {
-            final ContextUtils.EntityBlockPathTypeContext context = new ContextUtils.EntityBlockPathTypeContext(pathType, this);
-            Object value = builder.canCutCorner.apply(context);
-            if (value instanceof Boolean b) {
-                return b;
-            }
-            EntityJSHelperClass.logErrorMessageOnce("[EntityJS]: Invalid return value for canCutCorner from entity: " + entityName() + ". Value: " + value + ". Must be a boolean. Defaulting to " + super.canCutCorner(pathType));
-        }
-        return super.canCutCorner(pathType);
-    }
+
 
     @Override
     public void setTarget(@Nullable LivingEntity target) {
@@ -711,10 +701,6 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
     }
 
 
-    @Override
-    public boolean rideableUnderWater() {
-        return Objects.requireNonNullElseGet(builder.rideableUnderWater, super::rideableUnderWater);
-    }
 
 
     @Override
