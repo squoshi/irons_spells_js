@@ -31,7 +31,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -45,14 +44,17 @@ import java.util.Objects;
 public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnimatableJS {
     private final SpellCastingMobJSBuilder builder;
     private final AnimatableInstanceCache animationFactory;
+
     public String entityName() {
         return this.getType().toString();
     }
+
     public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.builder = builder;
         this.animationFactory = GeckoLibUtil.createInstanceCache(this);
     }
+
     // SpellJS Overrides
     @Override
     public void cancelCast() {
