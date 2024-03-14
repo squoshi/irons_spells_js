@@ -139,7 +139,7 @@ public class CustomSpell extends AbstractSpell {
     public boolean canBeCraftedBy(Player player) {
         if (canBeCrafted != null)
             return canBeCrafted.test(player);
-        return super.canBeCraftedBy(player);
+        return true;
     }
 
     private <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
