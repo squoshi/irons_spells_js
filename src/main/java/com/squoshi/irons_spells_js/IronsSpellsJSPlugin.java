@@ -17,10 +17,7 @@ import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.damagesource.DamageEffects;
-import net.minecraft.world.damagesource.DamageScaling;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DeathMessageType;
+import net.minecraft.world.damagesource.*;
 import net.minecraft.world.entity.player.Player;
 
 public class IronsSpellsJSPlugin extends KubeJSPlugin {
@@ -43,6 +40,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("SpellRegistry", SpellRegistry.class);
         event.add("ItemTags", ItemTags.class);
         event.add("DamageType", DamageType.class);
+        event.add("DamageTypes", DamageTypes.class);
         event.add("DamageScaling", DamageScaling.class);
         event.add("DamageEffects", DamageEffects.class);
         event.add("DeathMessageType", DeathMessageType.class);
