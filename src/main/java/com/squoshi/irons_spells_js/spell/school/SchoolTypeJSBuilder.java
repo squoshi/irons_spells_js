@@ -29,31 +29,37 @@ public class SchoolTypeJSBuilder extends BuilderBase<SchoolType> {
         this.schoolResource = i;
     }
 
+    @SuppressWarnings("unused")
     public SchoolTypeJSBuilder setFocus(ResourceLocation focus) {
         this.focus = TagKey.create(Registries.ITEM, focus);
         return this;
     }
 
+    @SuppressWarnings("unused")
     public SchoolTypeJSBuilder setName(Component name) {
         this.name = name;
         return this;
     }
 
+    @SuppressWarnings("unused")
     public SchoolTypeJSBuilder setPowerAttribute(Attribute powerAttribute) {
         this.powerAttribute = LazyOptional.of(() -> powerAttribute);
         return this;
     }
 
+    @SuppressWarnings("unused")
     public SchoolTypeJSBuilder setResistanceAttribute(Attribute resistanceAttribute) {
         this.resistanceAttribute = LazyOptional.of(() -> resistanceAttribute);
         return this;
     }
 
+    @SuppressWarnings("unused")
     public SchoolTypeJSBuilder setDefaultCastSound(SoundEvent defaultCastSound) {
         this.defaultCastSound = LazyOptional.of(() -> defaultCastSound);
         return this;
     }
 
+    @SuppressWarnings("unused")
     public SchoolTypeJSBuilder setDamageType(ResourceLocation damageType) {
         this.damageType = ResourceKey.create(Registries.DAMAGE_TYPE, damageType);
         return this;
