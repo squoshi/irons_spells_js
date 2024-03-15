@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.util.LazyOptional;
@@ -55,9 +54,8 @@ public class SchoolTypeJSBuilder extends BuilderBase<SchoolType> {
         return this;
     }
 
-    public SchoolTypeJSBuilder setDamageType(DamageType damageType) {
-        //Temporary, pls fix
-        this.damageType = DamageTypes.FELL_OUT_OF_WORLD;
+    public SchoolTypeJSBuilder setDamageType(ResourceLocation damageType) {
+        this.damageType = ResourceKey.create(Registries.DAMAGE_TYPE, damageType);
         return this;
     }
 
