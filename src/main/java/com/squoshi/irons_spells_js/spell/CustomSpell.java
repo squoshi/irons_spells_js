@@ -13,10 +13,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class CustomSpell extends AbstractSpell {
     record CastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, CastSource getCastSource, MagicData getPlayerMagicData){}
@@ -35,6 +37,7 @@ public class CustomSpell extends AbstractSpell {
     private final Consumer<PreCastClientContext> onPreClientCast;
     private final boolean allowLooting;
     private final boolean needsLearning;
+    private final Predicate<Player> canBeCrafted;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
@@ -58,6 +61,7 @@ public class CustomSpell extends AbstractSpell {
         this.baseManaCost = b.baseManaCost;
         this.allowLooting = b.allowLooting;
         this.needsLearning = b.needsLearning;
+        this.canBeCrafted = b.canBeCrafted;
     }
 
     @Override
@@ -131,6 +135,13 @@ public class CustomSpell extends AbstractSpell {
         return needsLearning;
     }
 
+    @Override
+    public boolean canBeCraftedBy(Player player) {
+        if (canBeCrafted != null)
+            return canBeCrafted.test(player);
+        return true;
+    }
+
     private <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
         try {
             consumer.accept(value);
@@ -161,6 +172,7 @@ public class CustomSpell extends AbstractSpell {
         private int baseManaCost = 40;
         private boolean allowLooting = false;
         private boolean needsLearning = false;
+        private Predicate<Player> canBeCrafted = null;
 
         public Builder(ResourceLocation i) {
             super(i);
@@ -329,6 +341,15 @@ public class CustomSpell extends AbstractSpell {
         @SuppressWarnings("unused")
         public Builder needsLearning(boolean needs) {
             this.needsLearning = needs;
+            return this;
+        }
+
+        @Info(value = """
+            Sets the predicate for whether or not the spell can be crafted by a player.
+        """)
+        @SuppressWarnings("unused")
+        public Builder canBeCraftedBy(Predicate<Player> predicate) {
+            this.canBeCrafted = predicate;
             return this;
         }
 
