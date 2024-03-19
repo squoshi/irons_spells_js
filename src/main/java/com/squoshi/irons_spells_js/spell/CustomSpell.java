@@ -9,6 +9,7 @@ import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.spells.*;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -38,6 +40,7 @@ public class CustomSpell extends AbstractSpell {
     private final boolean allowLooting;
     private final boolean needsLearning;
     private final Predicate<Player> canBeCrafted;
+    private final List<MutableComponent> uniqueInfo;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
@@ -62,6 +65,7 @@ public class CustomSpell extends AbstractSpell {
         this.allowLooting = b.allowLooting;
         this.needsLearning = b.needsLearning;
         this.canBeCrafted = b.canBeCrafted;
+        this.uniqueInfo = b.uniqueInfo;
     }
 
     @Override
@@ -142,6 +146,14 @@ public class CustomSpell extends AbstractSpell {
         return true;
     }
 
+    @Override
+    public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
+        if (this.uniqueInfo != null) {
+            return this.uniqueInfo;
+        }
+        return super.getUniqueInfo(spellLevel, caster);
+    }
+
     private <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
         try {
             consumer.accept(value);
@@ -173,6 +185,7 @@ public class CustomSpell extends AbstractSpell {
         private boolean allowLooting = false;
         private boolean needsLearning = false;
         private Predicate<Player> canBeCrafted = null;
+        private List<MutableComponent> uniqueInfo = List.of();
 
         public Builder(ResourceLocation i) {
             super(i);
@@ -350,6 +363,15 @@ public class CustomSpell extends AbstractSpell {
         @SuppressWarnings("unused")
         public Builder canBeCraftedBy(Predicate<Player> predicate) {
             this.canBeCrafted = predicate;
+            return this;
+        }
+
+        @Info(value = """
+            Sets the unique info for the spell. It is what is displayed on the spell in-game, e.g how some spells have damage values listed.
+        """)
+        @SuppressWarnings("unused")
+        public Builder setUniqueInfo(List<MutableComponent> info) {
+            this.uniqueInfo = info;
             return this;
         }
 
