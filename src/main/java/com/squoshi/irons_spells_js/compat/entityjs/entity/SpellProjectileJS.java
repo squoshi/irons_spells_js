@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.nbt.CompoundTag;
 
 public class SpellProjectileJS extends ThrowableItemProjectile implements IProjectileEntityJS, AntiMagicSusceptible {
-    public static record OnAntiMagicContext(MagicData magicData){}
+    public static record OnAntiMagicContext(MagicData magicData, Entity entity){}
 
     public SpellProjectileJSBuilder builder;
 
@@ -47,7 +47,7 @@ public class SpellProjectileJS extends ThrowableItemProjectile implements IProje
     @Override
     public void onAntiMagic(MagicData playerMagicData) {
         if (builder.onAntiMagic != null) {
-            builder.onAntiMagic.accept(new OnAntiMagicContext(playerMagicData));
+            builder.onAntiMagic.accept(new OnAntiMagicContext(playerMagicData, this));
         }
     }
 

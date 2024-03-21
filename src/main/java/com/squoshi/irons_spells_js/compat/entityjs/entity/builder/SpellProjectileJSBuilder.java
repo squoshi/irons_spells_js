@@ -14,6 +14,11 @@ public class SpellProjectileJSBuilder extends ProjectileEntityBuilder<SpellProje
         super(i);
     }
 
+    public SpellProjectileJSBuilder onAntiMagic(Consumer<SpellProjectileJS.OnAntiMagicContext> onAntiMagic) {
+        this.onAntiMagic = onAntiMagic;
+        return this;
+    }
+
     @Override
     public EntityType.EntityFactory<SpellProjectileJS> factory() {
         return (type, level) -> new SpellProjectileJS(this, type, level);
