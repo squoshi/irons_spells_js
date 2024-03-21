@@ -1,6 +1,7 @@
 package com.squoshi.irons_spells_js.compat.entityjs.entity;
 
 import com.squoshi.irons_spells_js.compat.entityjs.entity.builder.SpellProjectileJSBuilder;
+import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.entity.mobs.AntiMagicSusceptible;
 import net.liopyu.entityjs.builders.ProjectileEntityBuilder;
@@ -12,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.nbt.CompoundTag;
 
 public class SpellProjectileJS extends ThrowableItemProjectile implements IProjectileEntityJS, AntiMagicSusceptible {
-    public static record OnAntiMagicContext(MagicData magicData, Entity entity){}
+    public static record OnAntiMagicContext(MagicData getMagicData, Entity getEntity){}
 
     public SpellProjectileJSBuilder builder;
 
@@ -47,7 +48,7 @@ public class SpellProjectileJS extends ThrowableItemProjectile implements IProje
     @Override
     public void onAntiMagic(MagicData playerMagicData) {
         if (builder.onAntiMagic != null) {
-            builder.onAntiMagic.accept(new OnAntiMagicContext(playerMagicData, this));
+            ISSKJSUtils.safeCallback(builder.onAntiMagic, new OnAntiMagicContext(playerMagicData, this), "Error while calling onAntiMagic");
         }
     }
 

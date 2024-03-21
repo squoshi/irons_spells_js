@@ -1,10 +1,10 @@
 package com.squoshi.irons_spells_js.spell;
 
 import com.squoshi.irons_spells_js.IronsSpellsJSPlugin;
+import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
@@ -97,7 +97,7 @@ public class CustomSpell extends AbstractSpell {
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         if (onCast != null) {
             var context = new CastContext(level, spellLevel, entity, castSource, playerMagicData);
-            safeCallback(onCast, context,"Error while calling onCast");
+            ISSKJSUtils.safeCallback(onCast, context,"Error while calling onCast");
         }
         super.onCast(level, spellLevel, entity, castSource, playerMagicData);
     }
@@ -106,7 +106,7 @@ public class CustomSpell extends AbstractSpell {
     public void onClientCast(Level level, int spellLevel, LivingEntity entity, ICastData castData) {
         if (onClientCast != null) {
             var context = new CastClientContext(level, spellLevel, entity, castData);
-            safeCallback(onClientCast, context, "Error while calling onClientCast");
+            ISSKJSUtils.safeCallback(onClientCast, context, "Error while calling onClientCast");
         }
         super.onClientCast(level, spellLevel, entity, castData);
     }
@@ -115,7 +115,7 @@ public class CustomSpell extends AbstractSpell {
     public void onServerPreCast(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {
         if (onPreCast != null) {
             var context = new PreCastContext(level, spellLevel, entity, playerMagicData);
-            safeCallback(onPreCast, context, "Error while calling onPreCast");
+            ISSKJSUtils.safeCallback(onPreCast, context, "Error while calling onPreCast");
         }
         super.onServerPreCast(level, spellLevel, entity, playerMagicData);
     }
@@ -124,7 +124,7 @@ public class CustomSpell extends AbstractSpell {
     public void onClientPreCast(Level level, int spellLevel, LivingEntity entity, InteractionHand hand, MagicData playerMagicData) {
         if (onPreClientCast != null) {
             var context = new PreCastClientContext(level, spellLevel, entity, hand, playerMagicData);
-            safeCallback(onPreClientCast, context, "Error while calling onPreClientCast");
+            ISSKJSUtils.safeCallback(onPreClientCast, context, "Error while calling onPreClientCast");
         }
         super.onClientPreCast(level, spellLevel, entity, hand, playerMagicData);
     }
@@ -152,16 +152,6 @@ public class CustomSpell extends AbstractSpell {
             return this.uniqueInfo;
         }
         return super.getUniqueInfo(spellLevel, caster);
-    }
-
-    private <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
-        try {
-            consumer.accept(value);
-        } catch (Throwable e) {
-            ConsoleJS.STARTUP.error(errorMessage, e);
-            return false;
-        }
-        return true;
     }
 
     public static class Builder extends BuilderBase<CustomSpell> {
