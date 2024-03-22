@@ -169,7 +169,9 @@ dependencies {
 
     // Qol
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_mc_version}-forge:${jei_version}")
-    runtimeOnly fg.deobf("curse.maven:probejs-585406:5002340")
+    compileOnly fg.deobf("curse.maven:probejs-585406:5002340")
+    // uncomment to add to runtime
+    // runtimeOnly fg.deobf("curse.maven:probejs-585406:5002340")
 
 //    implementation files("libs/irons_spellbooks-1.19.2-3.0-SNAPSHOT.jar")
 }
