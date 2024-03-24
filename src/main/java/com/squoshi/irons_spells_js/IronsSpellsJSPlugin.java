@@ -2,6 +2,7 @@ package com.squoshi.irons_spells_js;
 
 import com.squoshi.irons_spells_js.entity.attribute.SpellAttributeBuilderJS;
 import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
+import com.squoshi.irons_spells_js.item.SpellBookBuilderJS;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
@@ -26,7 +27,8 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
     public void init() {
         SPELL_REGISTRY.addType("basic", CustomSpell.Builder.class, CustomSpell.Builder::new);
         SCHOOL_REGISTRY.addType("basic", SchoolTypeJSBuilder.class, SchoolTypeJSBuilder::new);
-        RegistryInfo.ATTRIBUTE.addType("spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
+        RegistryInfo.ATTRIBUTE.addType("irons_spells_js:spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
+        RegistryInfo.ITEM.addType("irons_spells_js:spellbook", SpellBookBuilderJS.class, SpellBookBuilderJS::new);
     }
 
     @Override
