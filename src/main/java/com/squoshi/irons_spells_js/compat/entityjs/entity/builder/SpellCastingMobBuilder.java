@@ -2,15 +2,15 @@ package com.squoshi.irons_spells_js.compat.entityjs.entity.builder;
 
 import dev.latvian.mods.kubejs.typings.Info;
 import io.redspace.ironsspellbooks.entity.mobs.abstract_spell_casting_mob.AbstractSpellCastingMob;
-import net.liopyu.entityjs.builders.MobBuilder;
-import net.liopyu.entityjs.entities.IAnimatableJS;
+import net.liopyu.entityjs.builders.living.entityjs.PathfinderMobBuilder;
+import net.liopyu.entityjs.entities.living.entityjs.IAnimatableJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class SpellCastingMobBuilder<T extends AbstractSpellCastingMob & IAnimatableJS> extends MobBuilder<T> {
+public abstract class SpellCastingMobBuilder<T extends AbstractSpellCastingMob & IAnimatableJS> extends PathfinderMobBuilder<T> {
     public transient Consumer<LivingEntity> onCancelledCast;
     public transient Function<LivingEntity, Object> isCasting;
     public transient boolean setCanBeLeashed;

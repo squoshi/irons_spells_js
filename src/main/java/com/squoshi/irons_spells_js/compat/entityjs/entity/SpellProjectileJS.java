@@ -4,28 +4,32 @@ import com.squoshi.irons_spells_js.compat.entityjs.entity.builder.SpellProjectil
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.entity.mobs.AntiMagicSusceptible;
-import net.liopyu.entityjs.builders.ProjectileEntityBuilder;
-import net.liopyu.entityjs.entities.IProjectileEntityJS;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
+import io.redspace.ironsspellbooks.entity.spells.AbstractMagicProjectile;
+import net.liopyu.entityjs.builders.nonliving.entityjs.ProjectileEntityBuilder;
+import net.liopyu.entityjs.entities.nonliving.entityjs.IProjectileEntityJS;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
-public class SpellProjectileJS extends ThrowableItemProjectile implements IProjectileEntityJS, AntiMagicSusceptible {
+import java.util.Optional;
+
+public class SpellProjectileJS extends AbstractMagicProjectile implements IProjectileEntityJS, AntiMagicSusceptible {
     public static record OnAntiMagicContext(MagicData getMagicData, Entity getEntity){}
 
     public SpellProjectileJSBuilder builder;
 
     private float damage;
 
-    public SpellProjectileJS(SpellProjectileJSBuilder builder, EntityType<? extends ThrowableItemProjectile> pEntityType, Level pLevel) {
+    public SpellProjectileJS(SpellProjectileJSBuilder builder, EntityType<? extends AbstractMagicProjectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.builder = builder;
     }
 
     @SuppressWarnings("unused")
-    public SpellProjectileJS(EntityType<? extends ThrowableItemProjectile> entityType, Level levelIn, LivingEntity shooter) {
+    public SpellProjectileJS(EntityType<? extends AbstractMagicProjectile> entityType, Level levelIn, LivingEntity shooter) {
         super(entityType,levelIn);
         setOwner(shooter);
     }
@@ -35,9 +39,26 @@ public class SpellProjectileJS extends ThrowableItemProjectile implements IProje
         return builder;
     }
 
+
+    // New Overrides from AbstractMagicProjectile since the new ProjectileEntityBuilder allows for extending Projectile instead of only THrowableItemProjectile
     @Override
-    protected Item getDefaultItem() {
-        return null;
+    public void trailParticles() {
+
+    }
+
+    @Override
+    public void impactParticles(double v, double v1, double v2) {
+
+    }
+
+    @Override
+    public float getSpeed() {
+        return 0;
+    }
+
+    @Override
+    public Optional<SoundEvent> getImpactSound() {
+        return Optional.empty();
     }
 
     @Override

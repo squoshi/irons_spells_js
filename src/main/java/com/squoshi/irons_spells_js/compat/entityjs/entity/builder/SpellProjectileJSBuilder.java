@@ -1,7 +1,7 @@
 package com.squoshi.irons_spells_js.compat.entityjs.entity.builder;
 
 import com.squoshi.irons_spells_js.compat.entityjs.entity.SpellProjectileJS;
-import net.liopyu.entityjs.builders.ProjectileEntityBuilder;
+import net.liopyu.entityjs.builders.nonliving.entityjs.ProjectileEntityBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 
