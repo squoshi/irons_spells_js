@@ -19,6 +19,7 @@ import net.liopyu.entityjs.util.ModKeybinds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -45,6 +46,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +77,47 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
         partEntities = tempPartEntities.toArray(new PartEntityJS<?>[0]);
         this.navigation = this.createNavigation(pLevel);
     }
+    // Part Entity Logical Overrides --------------------------------
+    @Override
+    public void setId(int entityId) {
+        super.setId(entityId);
+        for (int i = 0; i < partEntities.length; i++) {
+            PartEntityJS<?> partEntity = partEntities[i];
+            if (partEntity != null) {
+                partEntity.setId(entityId + i + 1);
+            }
+        }
+    }
 
+    public void tickPart(String partName, double offsetX, double offsetY, double offsetZ) {
+        var x = this.getX();
+        var y = this.getY();
+        var z = this.getZ();
+        for (PartEntityJS<?> partEntity : partEntities) {
+            if (partEntity.name.equals(partName)) {
+                partEntity.movePart(x + offsetX, y + offsetY, z + offsetZ, partEntity.getYRot(), partEntity.getXRot());
+                return;
+            }
+        }
+        EntityJSHelperClass.logWarningMessageOnce("Part with name " + partName + " not found for entity: " + entityName());
+    }
+
+
+    @Override
+    public boolean isMultipartEntity() {
+        return partEntities != null;
+    }
+
+    @Override
+    public void recreateFromPacket(ClientboundAddEntityPacket pPacket) {
+        super.recreateFromPacket(pPacket);
+    }
+
+    @Override
+    public PartEntity<?>[] getParts() {
+        return Objects.requireNonNullElseGet(partEntities, () -> new PartEntity<?>[0]);
+    }
+    // Builder overrrides
     @Override
     public BaseLivingEntityBuilder<?> getBuilder() {
         return builder;
