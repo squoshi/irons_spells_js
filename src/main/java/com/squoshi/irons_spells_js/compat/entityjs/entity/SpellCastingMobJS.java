@@ -62,7 +62,7 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
     public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<? extends AbstractSpellCastingMob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.builder = builder;
-        this.animationFactory = GeckoLibUtil.createInstanceCache(this);
+        this.animationFactory = net.liopyu.liolib.util.GeckoLibUtil.createInstanceCache(this);
         List<PartEntityJS<?>> tempPartEntities = new ArrayList<>();
         for (ContextUtils.PartEntityParams<SpellCastingMobJS> params : builder.partEntityParamsList) {
             PartEntityJS<?> partEntity = new PartEntityJS<>(this, params.name, params.width, params.height, params.builder);
