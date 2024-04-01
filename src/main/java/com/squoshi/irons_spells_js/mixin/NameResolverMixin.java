@@ -14,7 +14,7 @@ import java.util.List;
 @Mixin(value = NameResolver.class, remap = false)
 public class NameResolverMixin {
     @Inject(method = "init", at = @At(value = "TAIL"))
-    private static void kjs_ironspells$injectTypes(CallbackInfo ci){
+    private static void kjs_irons_spells$injectTypes(CallbackInfo ci){
         NameResolver.putSpecialAssignments(ISSKJSUtils.AttributeHolder.class, () -> List.of("Special.Attribute"));
         NameResolver.putSpecialAssignments(ISSKJSUtils.SoundEventHolder.class, () -> List.of("Special.SoundEvent"));
     }
