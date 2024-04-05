@@ -25,6 +25,7 @@ public class SchoolTypeJSBuilder extends BuilderBase<SchoolType> {
     public transient LazyOptional<Attribute> powerAttribute;
     public transient LazyOptional<Attribute> resistanceAttribute;
     public transient LazyOptional<SoundEvent> defaultCastSound;
+
     public SchoolTypeJSBuilder(ResourceLocation i) {
         super(i);
         this.schoolResource = i;

@@ -2,9 +2,7 @@ package com.squoshi.irons_spells_js;
 
 import com.squoshi.irons_spells_js.entity.attribute.SpellAttributeBuilderJS;
 import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
-import com.squoshi.irons_spells_js.item.SimpleAttributeSpellBookBuilderJS;
-import com.squoshi.irons_spells_js.item.SpellBookBuilderJS;
-import com.squoshi.irons_spells_js.item.UniqueSpellBookBuilderJS;
+import com.squoshi.irons_spells_js.item.*;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
@@ -34,6 +32,8 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         RegistryInfo.ITEM.addType("irons_spells_js:spellbook", SpellBookBuilderJS.class, SpellBookBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:attribute_spellbook", SimpleAttributeSpellBookBuilderJS.class, SimpleAttributeSpellBookBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:unique_spellbook", UniqueSpellBookBuilderJS.class, UniqueSpellBookBuilderJS::new);
+        RegistryInfo.ITEM.addType("irons_spells_js:staff", StaffItemBuilderJS.class, StaffItemBuilderJS::new);
+        RegistryInfo.ITEM.addType("irons_spells_js:magic_sword", MagicSwordItemBuilderJS.class, MagicSwordItemBuilderJS::new);
     }
 
     @Override
