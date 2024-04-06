@@ -12,6 +12,7 @@ public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
 
     public SpellBookBuilderJS(ResourceLocation i) {
         super(i);
+        tag(new ResourceLocation("curios:spellbook"));
     }
 
     @Override
