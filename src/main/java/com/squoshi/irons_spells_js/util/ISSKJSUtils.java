@@ -55,14 +55,7 @@ public class ISSKJSUtils {
                 return constructor.apply(rl);
             }
             if (o instanceof RegistryObject reg) {
-                try {
-                    var fieldName = reg.getClass().getDeclaredField("name");
-                    fieldName.setAccessible(true);
-                    var rl = fieldName.get(reg);
-                    return constructor.apply((ResourceLocation) rl);
-                } catch (Exception ignored){
-                    // impossible
-                }
+                return constructor.apply(reg.getId());
             }
             if (o instanceof BuilderBase builder){
                 return constructor.apply(builder.id);
