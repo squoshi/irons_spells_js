@@ -2,6 +2,7 @@ package com.squoshi.irons_spells_js.item;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
@@ -24,6 +25,7 @@ public class SimpleAttributeSpellBookBuilderJS extends BuilderBase<SimpleAttribu
 
     public SimpleAttributeSpellBookBuilderJS(ResourceLocation i) {
         super(i);
+        tag(new ResourceLocation("curios:spellbook"));
     }
 
     @Override
@@ -32,8 +34,8 @@ public class SimpleAttributeSpellBookBuilderJS extends BuilderBase<SimpleAttribu
     }
 
     @SuppressWarnings("unused")
-    public SimpleAttributeSpellBookBuilderJS addDefaultAttribute(ResourceLocation attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
-        defaultModifiers.add(new AttributeHolder(attribute, new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
+    public SimpleAttributeSpellBookBuilderJS addDefaultAttribute(ISSKJSUtils.AttributeHolder attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
+        defaultModifiers.add(new AttributeHolder(attribute.getLocation(), new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
         return this;
     }
 

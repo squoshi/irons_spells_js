@@ -52,6 +52,8 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
     public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
         typeWrappers.registerSimple(ISSKJSUtils.AttributeHolder.class, ISSKJSUtils.AttributeHolder::of);
         typeWrappers.registerSimple(ISSKJSUtils.SoundEventHolder.class, ISSKJSUtils.SoundEventHolder::of);
+        typeWrappers.registerSimple(ISSKJSUtils.SpellHolder.class, ISSKJSUtils.SpellHolder::of);
+        typeWrappers.registerSimple(ISSKJSUtils.SchoolHolder.class, ISSKJSUtils.SchoolHolder::of);
     }
 
     @Override
