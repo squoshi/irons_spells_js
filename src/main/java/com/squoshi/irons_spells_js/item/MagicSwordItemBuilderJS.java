@@ -13,10 +13,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class MagicSwordItemBuilderJS extends HandheldItemBuilder {
-    public record AttributeHolder(ResourceLocation attribute, AttributeModifier modifier) {}
-    public record SpellHolder(ResourceLocation spell, int spellLevel) {}
-
     public transient List<AttributeHolder> additionalAttributes = new ArrayList<>();
     public transient List<SpellHolder> spellHolders = new ArrayList<>();
 
@@ -24,13 +22,11 @@ public class MagicSwordItemBuilderJS extends HandheldItemBuilder {
         super(i, 3f, -2.4f);
     }
 
-    @SuppressWarnings("unused")
     public MagicSwordItemBuilderJS addDefaultSpell(ISSKJSUtils.SpellHolder spell, int spellLevel) {
         this.spellHolders.add(new SpellHolder(spell.getLocation(), spellLevel));
         return this;
     }
 
-    @SuppressWarnings("unused")
     public MagicSwordItemBuilderJS addAdditionalAttribute(ISSKJSUtils.AttributeHolder attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
         additionalAttributes.add(new AttributeHolder(attribute.getLocation(), new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
         return this;
@@ -50,5 +46,11 @@ public class MagicSwordItemBuilderJS extends HandheldItemBuilder {
             spellDataHolders[i] = new SpellDataRegistryHolder(RegistryObject.create(spells.spell, SpellRegistry.REGISTRY.get()), spells.spellLevel);
         }
         return new MagicSwordItem(this.toolTier, this.attackDamageBaseline, this.speedBaseline, spellDataHolders, map, this.createItemProperties());
+    }
+
+    public record AttributeHolder(ResourceLocation attribute, AttributeModifier modifier) {
+    }
+
+    public record SpellHolder(ResourceLocation spell, int spellLevel) {
     }
 }

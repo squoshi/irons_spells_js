@@ -8,8 +8,6 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.squoshi.irons_spells_js.IronsSpellsJSMod.LOGGER;
-
 public class ISSKJSUtils {
     public static <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
         try {
