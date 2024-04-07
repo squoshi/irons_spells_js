@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public abstract class SpellCastingMobBuilder<T extends AbstractSpellCastingMob & IAnimatableJS> extends PathfinderMobBuilder<T> {
     public transient Consumer<LivingEntity> onCancelledCast;
     public transient Function<LivingEntity, Object> isCasting;
