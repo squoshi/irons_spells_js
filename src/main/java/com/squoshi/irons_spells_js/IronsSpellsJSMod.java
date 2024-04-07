@@ -26,6 +26,8 @@ public class IronsSpellsJSMod {
 
         MinecraftForge.EVENT_BUS.addListener(IronsSpellsJSEvents::changeMana);
         MinecraftForge.EVENT_BUS.addListener(IronsSpellsJSEvents::spellCast);
+        MinecraftForge.EVENT_BUS.addListener(IronsSpellsJSEvents::spellPreCast);
+        MinecraftForge.EVENT_BUS.addListener(IronsSpellsJSEvents::spellSelectionManager);
     }
 
     private void runIronSpellsConfig(InterModEnqueueEvent event){
