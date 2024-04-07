@@ -1,5 +1,6 @@
 package com.squoshi.irons_spells_js.item;
 
+import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.item.custom.HandheldItemBuilder;
 import io.redspace.ironsspellbooks.item.weapons.StaffItem;
 import net.minecraft.resources.ResourceLocation;
@@ -19,8 +20,8 @@ public class StaffItemBuilderJS extends HandheldItemBuilder {
     }
 
     @SuppressWarnings("unused")
-    public StaffItemBuilderJS addAdditionalAttribute(ResourceLocation attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
-        additionalAttributes.add(new AttributeHolder(attribute, new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
+    public StaffItemBuilderJS addAdditionalAttribute(ISSKJSUtils.AttributeHolder attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
+        additionalAttributes.add(new AttributeHolder(attribute.getLocation(), new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
         return this;
     }
 

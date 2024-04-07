@@ -225,8 +225,8 @@ public class CustomSpell extends AbstractSpell {
             Another example: `setSchool('irons_spellbooks:blood')`
         """)
         @SuppressWarnings("unused")
-        public Builder setSchool(ResourceLocation schoolResource) {
-            this.school = schoolResource;
+        public Builder setSchool(ISSKJSUtils.SchoolHolder schoolHolder) {
+            this.school = schoolHolder.getLocation();
             return this;
         }
 

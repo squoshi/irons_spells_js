@@ -12,7 +12,6 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
-import io.redspace.ironsspellbooks.api.registry.SpellDataRegistryHolder;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
@@ -30,8 +29,6 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         SCHOOL_REGISTRY.addType("basic", SchoolTypeJSBuilder.class, SchoolTypeJSBuilder::new);
         RegistryInfo.ATTRIBUTE.addType("irons_spells_js:spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:spellbook", SpellBookBuilderJS.class, SpellBookBuilderJS::new);
-        RegistryInfo.ITEM.addType("irons_spells_js:attribute_spellbook", SimpleAttributeSpellBookBuilderJS.class, SimpleAttributeSpellBookBuilderJS::new);
-        RegistryInfo.ITEM.addType("irons_spells_js:unique_spellbook", UniqueSpellBookBuilderJS.class, UniqueSpellBookBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:staff", StaffItemBuilderJS.class, StaffItemBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:magic_sword", MagicSwordItemBuilderJS.class, MagicSwordItemBuilderJS::new);
     }
@@ -45,13 +42,14 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("SpellRegistry", SpellRegistry.class);
         event.add("ItemTags", ItemTags.class);
         event.add("Player", Player.class);
-        event.add("SpellDataRegistryHolder", SpellDataRegistryHolder.class);
     }
 
     @Override
     public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
         typeWrappers.registerSimple(ISSKJSUtils.AttributeHolder.class, ISSKJSUtils.AttributeHolder::of);
         typeWrappers.registerSimple(ISSKJSUtils.SoundEventHolder.class, ISSKJSUtils.SoundEventHolder::of);
+        typeWrappers.registerSimple(ISSKJSUtils.SpellHolder.class, ISSKJSUtils.SpellHolder::of);
+        typeWrappers.registerSimple(ISSKJSUtils.SchoolHolder.class, ISSKJSUtils.SchoolHolder::of);
     }
 
     @Override
