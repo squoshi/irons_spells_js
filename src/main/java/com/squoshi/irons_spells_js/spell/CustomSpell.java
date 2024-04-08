@@ -1,14 +1,15 @@
 package com.squoshi.irons_spells_js.spell;
 
 import com.squoshi.irons_spells_js.IronsSpellsJSPlugin;
+import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.spells.*;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -38,6 +40,7 @@ public class CustomSpell extends AbstractSpell {
     private final boolean allowLooting;
     private final boolean needsLearning;
     private final Predicate<Player> canBeCrafted;
+    private final List<MutableComponent> uniqueInfo;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
@@ -62,6 +65,7 @@ public class CustomSpell extends AbstractSpell {
         this.allowLooting = b.allowLooting;
         this.needsLearning = b.needsLearning;
         this.canBeCrafted = b.canBeCrafted;
+        this.uniqueInfo = b.uniqueInfo;
     }
 
     @Override
@@ -93,7 +97,7 @@ public class CustomSpell extends AbstractSpell {
     public void onCast(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {
         if (onCast != null) {
             var context = new CastContext(level, spellLevel, entity, castSource, playerMagicData);
-            safeCallback(onCast, context,"Error while calling onCast");
+            ISSKJSUtils.safeCallback(onCast, context,"Error while calling onCast");
         }
         super.onCast(level, spellLevel, entity, castSource, playerMagicData);
     }
@@ -102,7 +106,7 @@ public class CustomSpell extends AbstractSpell {
     public void onClientCast(Level level, int spellLevel, LivingEntity entity, ICastData castData) {
         if (onClientCast != null) {
             var context = new CastClientContext(level, spellLevel, entity, castData);
-            safeCallback(onClientCast, context, "Error while calling onClientCast");
+            ISSKJSUtils.safeCallback(onClientCast, context, "Error while calling onClientCast");
         }
         super.onClientCast(level, spellLevel, entity, castData);
     }
@@ -111,7 +115,7 @@ public class CustomSpell extends AbstractSpell {
     public void onServerPreCast(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {
         if (onPreCast != null) {
             var context = new PreCastContext(level, spellLevel, entity, playerMagicData);
-            safeCallback(onPreCast, context, "Error while calling onPreCast");
+            ISSKJSUtils.safeCallback(onPreCast, context, "Error while calling onPreCast");
         }
         super.onServerPreCast(level, spellLevel, entity, playerMagicData);
     }
@@ -120,7 +124,7 @@ public class CustomSpell extends AbstractSpell {
     public void onClientPreCast(Level level, int spellLevel, LivingEntity entity, InteractionHand hand, MagicData playerMagicData) {
         if (onPreClientCast != null) {
             var context = new PreCastClientContext(level, spellLevel, entity, hand, playerMagicData);
-            safeCallback(onPreClientCast, context, "Error while calling onPreClientCast");
+            ISSKJSUtils.safeCallback(onPreClientCast, context, "Error while calling onPreClientCast");
         }
         super.onClientPreCast(level, spellLevel, entity, hand, playerMagicData);
     }
@@ -142,14 +146,12 @@ public class CustomSpell extends AbstractSpell {
         return true;
     }
 
-    private <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
-        try {
-            consumer.accept(value);
-        } catch (Throwable e) {
-            ConsoleJS.STARTUP.error(errorMessage, e);
-            return false;
+    @Override
+    public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
+        if (this.uniqueInfo != null) {
+            return this.uniqueInfo;
         }
-        return true;
+        return super.getUniqueInfo(spellLevel, caster);
     }
 
     public static class Builder extends BuilderBase<CustomSpell> {
@@ -173,6 +175,7 @@ public class CustomSpell extends AbstractSpell {
         private boolean allowLooting = false;
         private boolean needsLearning = false;
         private Predicate<Player> canBeCrafted = null;
+        private List<MutableComponent> uniqueInfo = List.of();
 
         public Builder(ResourceLocation i) {
             super(i);
@@ -222,8 +225,8 @@ public class CustomSpell extends AbstractSpell {
             Another example: `setSchool('irons_spellbooks:blood')`
         """)
         @SuppressWarnings("unused")
-        public Builder setSchool(ResourceLocation schoolResource) {
-            this.school = schoolResource;
+        public Builder setSchool(ISSKJSUtils.SchoolHolder schoolHolder) {
+            this.school = schoolHolder.getLocation();
             return this;
         }
 
@@ -353,8 +356,17 @@ public class CustomSpell extends AbstractSpell {
             return this;
         }
 
+        @Info(value = """
+            Sets the unique info for the spell. It is what is displayed on the spell in-game, e.g how some spells have damage values listed.
+        """)
+        @SuppressWarnings("unused")
+        public Builder setUniqueInfo(List<MutableComponent> info) {
+            this.uniqueInfo = info;
+            return this;
+        }
+
         @Override
-        public RegistryInfo getRegistryType() {
+        public RegistryInfo<AbstractSpell> getRegistryType() {
             return IronsSpellsJSPlugin.SPELL_REGISTRY;
         }
 

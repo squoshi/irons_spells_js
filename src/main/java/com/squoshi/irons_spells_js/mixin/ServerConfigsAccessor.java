@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(ServerConfigs.class)
+@Mixin(value = ServerConfigs.class, remap = false)
 public interface ServerConfigsAccessor {
 
     @Invoker("createSpellConfig")

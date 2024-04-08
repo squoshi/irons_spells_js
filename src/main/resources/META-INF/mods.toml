@@ -19,3 +19,9 @@ description='''${mod_description}'''
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="entityjs"
+    mandatory=false
+    versionRange="${entityjs_version_range}"
+    ordering="NONE"
+    side="BOTH"
