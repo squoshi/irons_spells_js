@@ -10,18 +10,15 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public abstract class SpellCastingMobBuilder<T extends AbstractSpellCastingMob & IAnimatableJS> extends PathfinderMobBuilder<T> {
     public transient Consumer<LivingEntity> onCancelledCast;
     public transient Function<LivingEntity, Object> isCasting;
-    public transient boolean setCanBeLeashed;
+
     public SpellCastingMobBuilder(ResourceLocation i) {
         super(i);
-        setCanBeLeashed = false;
     }
-    public SpellCastingMobBuilder<T> setCanBeLeashed(boolean setCanBeLeashed){
-        this.setCanBeLeashed = setCanBeLeashed;
-        return this;
-    }
+
     public SpellCastingMobBuilder<T> isCasting(Function<LivingEntity, Object> isCasting){
         this.isCasting = isCasting;
         return this;
