@@ -3,7 +3,6 @@ package com.squoshi.irons_spells_js.compat.entityjs.entity;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
 import com.squoshi.irons_spells_js.compat.entityjs.entity.builder.SpellCastingMobJSBuilder;
-import com.squoshi.irons_spells_js.compat.entityjs.entity.builder.SpellProjectileJSBuilder;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import io.redspace.ironsspellbooks.api.entity.IMagicEntity;
@@ -16,13 +15,10 @@ import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.SyncedSpellData;
-import io.redspace.ironsspellbooks.entity.mobs.abstract_spell_casting_mob.AbstractSpellCastingMob;
 import io.redspace.ironsspellbooks.spells.ender.TeleportSpell;
 import io.redspace.ironsspellbooks.spells.fire.BurningDashSpell;
 import net.liopyu.entityjs.builders.living.BaseLivingEntityBuilder;
-import net.liopyu.entityjs.builders.living.entityjs.MobEntityJSBuilder;
 import net.liopyu.entityjs.entities.living.entityjs.IAnimatableJS;
-import net.liopyu.entityjs.entities.living.entityjs.MobEntityJS;
 import net.liopyu.entityjs.entities.nonliving.entityjs.PartEntityJS;
 import net.liopyu.entityjs.events.AddGoalSelectorsEventJS;
 import net.liopyu.entityjs.events.AddGoalTargetsEventJS;
@@ -77,13 +73,7 @@ import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -130,7 +120,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             Iterator var5 = builder.partEntityParamsList.iterator();
 
             while(var5.hasNext()) {
-                ContextUtils.PartEntityParams<MobEntityJS> params = (ContextUtils.PartEntityParams)var5.next();
+                ContextUtils.PartEntityParams<SpellCastingMobJS> params = (ContextUtils.PartEntityParams)var5.next();
                 PartEntityJS<?> partEntity = new PartEntityJS(this, params.name, params.width, params.height, params.builder);
                 tempPartEntities.add(partEntity);
             }
