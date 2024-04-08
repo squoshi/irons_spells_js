@@ -215,6 +215,9 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
 
         public void cancelCast() {
+            if (builder.onCancelledCast != null) {
+                builder.onCancelledCast.accept(this);
+            }
             if (this.isCasting()) {
                 if (this.level().isClientSide) {
                 } else {
@@ -335,6 +338,11 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
 
         public boolean isCasting() {
+            if (builder.isCasting != null){
+                Object obj = builder.isCasting.apply(this);
+                if (obj instanceof Boolean b) return b;
+                EntityJSHelperClass.logErrorMessageOnce("[KubeJS Irons Spells]: Invalid return value for isCasting from entity: " + entityName() + ". Value: " + obj + ". Must be a boolean. Defaulting to " + this.playerMagicData.isCasting());
+            }
             return this.playerMagicData.isCasting();
         }
 
@@ -492,6 +500,8 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
 
     }
+
+
 
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         if (this.builder.onInteract != null) {
