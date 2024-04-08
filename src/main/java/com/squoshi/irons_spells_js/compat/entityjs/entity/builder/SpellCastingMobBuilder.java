@@ -14,15 +14,11 @@ import java.util.function.Function;
 public abstract class SpellCastingMobBuilder<T extends PathfinderMob & IAnimatableJS> extends PathfinderMobBuilder<T> {
     public transient Consumer<LivingEntity> onCancelledCast;
     public transient Function<LivingEntity, Object> isCasting;
-    public transient boolean setCanBeLeashed;
+
     public SpellCastingMobBuilder(ResourceLocation i) {
         super(i);
-        setCanBeLeashed = false;
     }
-    public SpellCastingMobBuilder<T> setCanBeLeashed(boolean setCanBeLeashed){
-        this.setCanBeLeashed = setCanBeLeashed;
-        return this;
-    }
+
     public SpellCastingMobBuilder<T> isCasting(Function<LivingEntity, Object> isCasting){
         this.isCasting = isCasting;
         return this;
