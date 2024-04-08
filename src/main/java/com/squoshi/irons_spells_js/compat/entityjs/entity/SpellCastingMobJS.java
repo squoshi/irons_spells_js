@@ -116,16 +116,13 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             this.thisJumping = false;
             this.builder = builder;
             this.animationFactory = GeckoLibUtil.createInstanceCache(this);
-            List<PartEntityJS<?>> tempPartEntities = new ArrayList();
-            Iterator var5 = builder.partEntityParamsList.iterator();
-
-            while(var5.hasNext()) {
-                ContextUtils.PartEntityParams<SpellCastingMobJS> params = (ContextUtils.PartEntityParams)var5.next();
-                PartEntityJS<?> partEntity = new PartEntityJS(this, params.name, params.width, params.height, params.builder);
+            List<PartEntityJS<?>> tempPartEntities = new ArrayList<>();
+            for (ContextUtils.PartEntityParams<SpellCastingMobJS> params : builder.partEntityParamsList) {
+                PartEntityJS<?> partEntity = new PartEntityJS<>(this, params.name, params.width, params.height, params.builder);
                 tempPartEntities.add(partEntity);
             }
 
-            this.partEntities = (PartEntityJS[])tempPartEntities.toArray(new PartEntityJS[0]);
+            partEntities = tempPartEntities.toArray(new PartEntityJS<?>[0]);
             this.navigation = this.createNavigation(pLevel);
         }
 
