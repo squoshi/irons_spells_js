@@ -404,49 +404,45 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
      * EntityJS Builder Overrides Below
      */
 
-    //Multi Hitbox logic
+    // Part Entity Logical Overrides --------------------------------
+    @Override
     public void setId(int entityId) {
         super.setId(entityId);
-
-        for(int i = 0; i < this.partEntities.length; ++i) {
-            PartEntityJS<?> partEntity = this.partEntities[i];
+        for (int i = 0; i < partEntities.length; i++) {
+            PartEntityJS<?> partEntity = partEntities[i];
             if (partEntity != null) {
                 partEntity.setId(entityId + i + 1);
             }
         }
-
     }
 
     public void tickPart(String partName, double offsetX, double offsetY, double offsetZ) {
-        double x = this.getX();
-        double y = this.getY();
-        double z = this.getZ();
-        PartEntityJS[] var14 = this.partEntities;
-        int var15 = var14.length;
-
-        for(int var16 = 0; var16 < var15; ++var16) {
-            PartEntityJS<?> partEntity = var14[var16];
+        var x = this.getX();
+        var y = this.getY();
+        var z = this.getZ();
+        for (PartEntityJS<?> partEntity : partEntities) {
             if (partEntity.name.equals(partName)) {
                 partEntity.movePart(x + offsetX, y + offsetY, z + offsetZ, partEntity.getYRot(), partEntity.getXRot());
                 return;
             }
         }
-
-        EntityJSHelperClass.logWarningMessageOnce("Part with name " + partName + " not found for entity: " + this.entityName());
+        EntityJSHelperClass.logWarningMessageOnce("Part with name " + partName + " not found for entity: " + entityName());
     }
 
+
+    @Override
     public boolean isMultipartEntity() {
-        return this.partEntities != null;
+        return partEntities != null;
     }
 
+    @Override
     public void recreateFromPacket(ClientboundAddEntityPacket pPacket) {
         super.recreateFromPacket(pPacket);
     }
 
+    @Override
     public PartEntity<?>[] getParts() {
-        return (PartEntity[])Objects.requireNonNullElseGet(this.partEntities, () -> {
-            return new PartEntity[0];
-        });
+        return Objects.requireNonNullElseGet(partEntities, () -> new PartEntity<?>[0]);
     }
     //Builder/Animatable Logic
     public BaseLivingEntityBuilder<?> getBuilder() {
