@@ -472,7 +472,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     //Ai logic
     protected Brain.Provider<?> brainProvider() {
         if (EventHandlers.buildBrainProvider.hasListeners()) {
-            BuildBrainProviderEventJS<MobEntityJS> event = new BuildBrainProviderEventJS();
+            BuildBrainProviderEventJS<SpellCastingMobJS> event = new BuildBrainProviderEventJS();
             EventHandlers.buildBrainProvider.post(event, this.getTypeId());
             return event.provide();
         } else {
@@ -480,9 +480,9 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
     }
 
-    protected Brain<MobEntityJS> makeBrain(Dynamic<?> p_21069_) {
+    protected Brain<SpellCastingMobJS> makeBrain(Dynamic<?> p_21069_) {
         if (EventHandlers.buildBrain.hasListeners()) {
-            Brain<MobEntityJS> brain = (Brain)UtilsJS.cast(this.brainProvider().makeBrain(p_21069_));
+            Brain<SpellCastingMobJS> brain = (Brain)UtilsJS.cast(this.brainProvider().makeBrain(p_21069_));
             EventHandlers.buildBrain.post(new BuildBrainEventJS(brain), this.getTypeId());
             return brain;
         } else {
@@ -492,11 +492,11 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     protected void registerGoals() {
         if (EventHandlers.addGoalTargets.hasListeners()) {
-            EventHandlers.addGoalTargets.post(new AddGoalTargetsEventJS(this, this.targetSelector), this.getTypeId());
+            EventHandlers.addGoalTargets.post(new AddGoalTargetsEventJS<>(this, this.targetSelector), this.getTypeId());
         }
 
         if (EventHandlers.addGoalSelectors.hasListeners()) {
-            EventHandlers.addGoalSelectors.post(new AddGoalSelectorsEventJS(this, this.goalSelector), this.getTypeId());
+            EventHandlers.addGoalSelectors.post(new AddGoalSelectorsEventJS<>(this, this.goalSelector), this.getTypeId());
         }
 
     }
