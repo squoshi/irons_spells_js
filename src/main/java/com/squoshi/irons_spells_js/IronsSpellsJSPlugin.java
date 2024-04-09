@@ -15,10 +15,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
-import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
-import io.redspace.ironsspellbooks.api.spells.CastType;
-import io.redspace.ironsspellbooks.api.spells.SchoolType;
-import io.redspace.ironsspellbooks.api.spells.SpellRarity;
+import io.redspace.ironsspellbooks.api.spells.*;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Player;
@@ -47,6 +44,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("SpellRegistry", SpellRegistry.class);
         event.add("ItemTags", ItemTags.class);
         event.add("Player", Player.class);
+        event.add("SpellData", SpellData.class);
     }
 
     @Override
@@ -56,6 +54,10 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         typeWrappers.registerSimple(ISSKJSUtils.SpellHolder.class, ISSKJSUtils.SpellHolder::of);
         typeWrappers.registerSimple(ISSKJSUtils.SchoolHolder.class, ISSKJSUtils.SchoolHolder::of);
         typeWrappers.registerSimple(ISSKJSUtils.DamageTypeHolder.class, ISSKJSUtils.DamageTypeHolder::of);
+        typeWrappers.registerSimple(AbstractSpell.class, o -> {
+            if (o instanceof AbstractSpell spell) return spell;
+            return SpellRegistry.getSpell(ISSKJSUtils.SpellHolder.of(o).getLocation());
+        });
     }
 
     @Override
