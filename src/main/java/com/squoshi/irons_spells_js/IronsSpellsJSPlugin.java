@@ -6,6 +6,7 @@ import com.squoshi.irons_spells_js.item.MagicSwordItemBuilderJS;
 import com.squoshi.irons_spells_js.item.SpellBookBuilderJS;
 import com.squoshi.irons_spells_js.item.StaffItemBuilderJS;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
+import com.squoshi.irons_spells_js.spell.AbstractSpellWrapper;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
@@ -45,6 +46,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("ItemTags", ItemTags.class);
         event.add("Player", Player.class);
         event.add("SpellData", SpellData.class);
+        event.add("Spell", AbstractSpellWrapper.class);
     }
 
     @Override
