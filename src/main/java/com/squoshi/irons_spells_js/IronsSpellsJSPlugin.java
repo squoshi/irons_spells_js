@@ -17,6 +17,8 @@ import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.*;
+import io.redspace.ironsspellbooks.api.util.AnimationHolder;
+import io.redspace.ironsspellbooks.api.util.UpdateClient;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Player;
@@ -47,6 +49,8 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("Player", Player.class);
         event.add("SpellData", SpellData.class);
         event.add("Spell", AbstractSpellWrapper.class);
+        event.add("ISSAnimationHolder", AnimationHolder.class);
+        event.add("ISSUpdateClient", UpdateClient.class);
     }
 
     @Override

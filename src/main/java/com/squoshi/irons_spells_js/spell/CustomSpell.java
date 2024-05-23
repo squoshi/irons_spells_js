@@ -9,6 +9,7 @@ import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.spells.*;
+import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -19,8 +20,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class CustomSpell extends AbstractSpell {
     record CastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, CastSource getCastSource, MagicData getPlayerMagicData){}
@@ -40,7 +40,9 @@ public class CustomSpell extends AbstractSpell {
     private final boolean allowLooting;
     private final boolean needsLearning;
     private final Predicate<Player> canBeCrafted;
-    private final List<MutableComponent> uniqueInfo;
+    private final BiFunction<Integer,LivingEntity,List<MutableComponent>> uniqueInfo;
+    private final AnimationHolder castStartAnimation;
+    private final AnimationHolder castFinishAnimation;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
@@ -66,6 +68,8 @@ public class CustomSpell extends AbstractSpell {
         this.needsLearning = b.needsLearning;
         this.canBeCrafted = b.canBeCrafted;
         this.uniqueInfo = b.uniqueInfo;
+        this.castStartAnimation = b.castStartAnimation;
+        this.castFinishAnimation = b.castFinishAnimation;
     }
 
     @Override
@@ -149,9 +153,25 @@ public class CustomSpell extends AbstractSpell {
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         if (this.uniqueInfo != null) {
-            return this.uniqueInfo;
+            return this.uniqueInfo.apply(spellLevel, caster);
         }
         return super.getUniqueInfo(spellLevel, caster);
+    }
+
+    @Override
+    public AnimationHolder getCastStartAnimation() {
+        if (castStartAnimation != null) {
+            return castStartAnimation;
+        }
+        return super.getCastStartAnimation();
+    }
+
+    @Override
+    public AnimationHolder getCastFinishAnimation() {
+        if (castFinishAnimation != null) {
+            return castFinishAnimation;
+        }
+        return super.getCastFinishAnimation();
     }
 
     public static class Builder extends BuilderBase<CustomSpell> {
@@ -175,7 +195,9 @@ public class CustomSpell extends AbstractSpell {
         private boolean allowLooting = false;
         private boolean needsLearning = false;
         private Predicate<Player> canBeCrafted = null;
-        private List<MutableComponent> uniqueInfo = List.of();
+        private BiFunction<Integer,LivingEntity,List<MutableComponent>> uniqueInfo;
+        private AnimationHolder castStartAnimation = null;
+        private AnimationHolder castFinishAnimation = null;
 
         public Builder(ResourceLocation i) {
             super(i);
@@ -356,12 +378,39 @@ public class CustomSpell extends AbstractSpell {
             return this;
         }
 
+//        @Info(value = """
+//            Sets the unique info for the spell. It is what is displayed on the spell in-game, e.g how some spells have damage values listed.
+//        """)
+//        @SuppressWarnings("unused")
+//        public Builder setUniqueInfo(List<MutableComponent> info) {
+//            this.uniqueInfo = info;
+//            return this;
+//        }
+
         @Info(value = """
             Sets the unique info for the spell. It is what is displayed on the spell in-game, e.g how some spells have damage values listed.
         """)
         @SuppressWarnings("unused")
-        public Builder setUniqueInfo(List<MutableComponent> info) {
+        public Builder setUniqueInfo(BiFunction<Integer, LivingEntity, List<MutableComponent>> info) {
             this.uniqueInfo = info;
+            return this;
+        }
+
+        @Info(value = """
+            Sets the cast start animation for the spell.
+        """)
+        @SuppressWarnings("unused")
+        public Builder setCastStartAnimation(String path, boolean playOnce, boolean animatesLegs) {
+            this.castStartAnimation = new AnimationHolder(path, playOnce, animatesLegs);
+            return this;
+        }
+
+        @Info(value = """
+            Sets the cast finish animation for the spell.
+        """)
+        @SuppressWarnings("unused")
+        public Builder setCastFinishAnimation(String path, boolean playOnce, boolean animatesLegs) {
+            this.castFinishAnimation = new AnimationHolder(path, playOnce, animatesLegs);
             return this;
         }
 
