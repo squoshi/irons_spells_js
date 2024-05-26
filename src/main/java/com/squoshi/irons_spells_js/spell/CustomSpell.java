@@ -17,6 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class CustomSpell extends AbstractSpell {
     private final ResourceLocation spellResource;
     private final DefaultConfig defaultConfig;
     private final CastType castType;
-    private final SoundEvent startSound, finishSound;
+    private final ISSKJSUtils.SoundEventHolder startSound, finishSound;
     private final Consumer<CastContext> onCast;
     private final Consumer<CastClientContext> onClientCast;
     private final Consumer<PreCastContext> onPreCast;
@@ -89,12 +90,12 @@ public class CustomSpell extends AbstractSpell {
 
     @Override
     public Optional<SoundEvent> getCastStartSound() {
-        return startSound != null ? Optional.of(startSound) : super.getCastStartSound();
+        return startSound != null ? Optional.ofNullable(ForgeRegistries.SOUND_EVENTS.getValue(startSound.getLocation())) : super.getCastStartSound();
     }
 
     @Override
     public Optional<SoundEvent> getCastFinishSound() {
-        return finishSound != null ? Optional.of(finishSound) : super.getCastFinishSound();
+        return finishSound != null ? Optional.ofNullable(ForgeRegistries.SOUND_EVENTS.getValue(finishSound.getLocation())) : super.getCastFinishSound();
     }
 
     @Override
@@ -180,8 +181,8 @@ public class CustomSpell extends AbstractSpell {
         private int maxLevel = 10;
         private int cooldownSeconds = 20;
         private CastType castType = CastType.INSTANT;
-        private SoundEvent startSound = null;
-        private SoundEvent finishSound = null;
+        private ISSKJSUtils.SoundEventHolder startSound = null;
+        private ISSKJSUtils.SoundEventHolder finishSound = null;
         private final ResourceLocation spellResource;
         private Consumer<CastContext> onCast = null;
         private Consumer<CastClientContext> onClientCast = null;
@@ -217,7 +218,7 @@ public class CustomSpell extends AbstractSpell {
             Sets the sound that the spell will play when it starts casting.
         """)
         @SuppressWarnings("unused")
-        public Builder setStartSound(SoundEvent soundEvent) {
+        public Builder setStartSound(ISSKJSUtils.SoundEventHolder soundEvent) {
             this.startSound = soundEvent;
             return this;
         }
@@ -226,7 +227,7 @@ public class CustomSpell extends AbstractSpell {
             Sets the sound that the spell will play after it is done casting.
         """)
         @SuppressWarnings("unused")
-        public Builder setFinishSound(SoundEvent soundEvent) {
+        public Builder setFinishSound(ISSKJSUtils.SoundEventHolder soundEvent) {
             this.finishSound = soundEvent;
             return this;
         }
