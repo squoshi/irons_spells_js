@@ -3,8 +3,7 @@ package com.squoshi.irons_spells_js.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
-import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.item.ItemBuilder;
 import io.redspace.ironsspellbooks.api.registry.SpellDataRegistryHolder;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
@@ -14,7 +13,6 @@ import io.redspace.ironsspellbooks.item.spell_books.SimpleAttributeSpellBook;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -23,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
+public class SpellBookBuilderJS extends ItemBuilder {
     public transient SpellDataRegistryHolder[] spellDataRegistryHolder = SpellDataRegistryHolder.of();
     public transient List<SpellHolder> spellHolders = new ArrayList<>();
     public transient int maxSpellSlots = 1;
@@ -32,11 +30,6 @@ public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
     public SpellBookBuilderJS(ResourceLocation i) {
         super(i);
         tag(new ResourceLocation("curios:spellbook"));
-    }
-
-    @Override
-    public RegistryInfo<Item> getRegistryType() {
-        return RegistryInfo.ITEM;
     }
 
     public SpellBookBuilderJS addDefaultAttribute(ISSKJSUtils.AttributeHolder attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
