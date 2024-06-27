@@ -15,6 +15,7 @@ import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.SyncedSpellData;
+import io.redspace.ironsspellbooks.entity.mobs.abstract_spell_casting_mob.AbstractSpellCastingMob;
 import io.redspace.ironsspellbooks.spells.ender.TeleportSpell;
 import io.redspace.ironsspellbooks.spells.fire.BurningDashSpell;
 import net.liopyu.entityjs.builders.living.BaseLivingEntityBuilder;
@@ -81,20 +82,19 @@ import java.util.*;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @SuppressWarnings("unused")
-public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, IMagicEntity {
-        //Manual implimentation of AbstractSpellCastingMob
-         private static final EntityDataAccessor<Boolean> DATA_CANCEL_CAST;
-        private static final EntityDataAccessor<Boolean> DATA_DRINKING_POTION;
-        private final MagicData playerMagicData = new MagicData(true);
-        private static final AttributeModifier SPEED_MODIFIER_DRINKING;
-        @javax.annotation.Nullable
-        private SpellData castingSpell;
-        private final HashMap<String, AbstractSpell> spells = Maps.newHashMap();
-        private int drinkTime;
-        public boolean hasUsedSingleAttack;
-        private AbstractSpell lastCastSpellType = SpellRegistry.none();
-        private AbstractSpell instantCastSpellType = SpellRegistry.none();
-        // EntityJS implementations
+public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnimatableJS, IMagicEntity {
+    private static final EntityDataAccessor<Boolean> DATA_CANCEL_CAST;
+    private static final EntityDataAccessor<Boolean> DATA_DRINKING_POTION;
+    private final MagicData playerMagicData = new MagicData(true);
+    private static final AttributeModifier SPEED_MODIFIER_DRINKING;
+    @javax.annotation.Nullable
+    private SpellData castingSpell;
+    private final HashMap<String, AbstractSpell> spells = Maps.newHashMap();
+    private int drinkTime;
+    public boolean hasUsedSingleAttack;
+    private AbstractSpell lastCastSpellType = SpellRegistry.none();
+    private AbstractSpell instantCastSpellType = SpellRegistry.none();
+    // EntityJS implementations
     private final SpellCastingMobJSBuilder builder;
     private final AnimatableInstanceCache animationFactory;
     protected PathNavigation navigation;
@@ -106,7 +106,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public String entityName() {
         return this.getType().toString();
     }
-        public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
+        public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<? extends AbstractSpellCastingMob> pEntityType, Level pLevel) {
             super(pEntityType, pLevel);
             this.playerMagicData.setSyncedData(new SyncedSpellData(this));
             this.lookControl = this.createLookControl();
