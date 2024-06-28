@@ -8,6 +8,7 @@ import com.squoshi.irons_spells_js.item.StaffItemBuilderJS;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import com.squoshi.irons_spells_js.spell.AbstractSpellWrapper;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
+import com.squoshi.irons_spells_js.util.AlchemistCauldronKubeJSRecipes;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -21,9 +22,11 @@ import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import io.redspace.ironsspellbooks.api.util.UpdateClient;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.TargetEntityCastData;
+import io.redspace.ironsspellbooks.registries.PotionRegistry;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.alchemy.Potions;
 
 public class IronsSpellsJSPlugin extends KubeJSPlugin {
     public static final RegistryInfo<AbstractSpell> SPELL_REGISTRY = RegistryInfo.of(SpellRegistry.SPELL_REGISTRY_KEY, AbstractSpell.class);
@@ -55,6 +58,9 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("ISSUpdateClient", UpdateClient.class);
         event.add("ISSUtils", Utils.class);
         event.add("TargetEntityCastData", TargetEntityCastData.class);
+        event.add("Potions", Potions.class);
+        event.add("ISSPotionRegistry", PotionRegistry.class);
+        event.add("AlchemistCauldronRecipeBuilder", AlchemistCauldronKubeJSRecipes.AlchemistCauldronRecipeBuilder.class);
     }
 
     @Override
