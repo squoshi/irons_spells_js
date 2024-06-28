@@ -19,6 +19,8 @@ import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.*;
 import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import io.redspace.ironsspellbooks.api.util.UpdateClient;
+import io.redspace.ironsspellbooks.api.util.Utils;
+import io.redspace.ironsspellbooks.capabilities.magic.TargetEntityCastData;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Player;
@@ -51,6 +53,8 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("Spell", AbstractSpellWrapper.class);
         event.add("ISSAnimationHolder", AnimationHolder.class);
         event.add("ISSUpdateClient", UpdateClient.class);
+        event.add("ISSUtils", Utils.class);
+        event.add("TargetEntityCastData", TargetEntityCastData.class);
     }
 
     @Override
@@ -63,6 +67,10 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         typeWrappers.registerSimple(AbstractSpell.class, o -> {
             if (o instanceof AbstractSpell spell) return spell;
             return SpellRegistry.getSpell(ISSKJSUtils.SpellHolder.of(o).getLocation());
+        });
+        typeWrappers.registerSimple(SchoolType.class, o -> {
+            if (o instanceof SchoolType school) return school;
+            return SchoolRegistry.getSchool(ISSKJSUtils.SchoolHolder.of(o).getLocation());
         });
     }
 

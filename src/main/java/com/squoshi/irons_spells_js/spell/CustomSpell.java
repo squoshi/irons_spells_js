@@ -29,6 +29,7 @@ public class CustomSpell extends AbstractSpell {
 
     record PreCastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData){}
     record PreCastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, InteractionHand getHand, MagicData getPlayerMagicData){}
+    record PreCastTargetingContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData, AbstractSpell getSpell){}
 
     private final ResourceLocation spellResource;
     private final DefaultConfig defaultConfig;
@@ -44,6 +45,7 @@ public class CustomSpell extends AbstractSpell {
     private final BiFunction<Integer,LivingEntity,List<MutableComponent>> uniqueInfo;
     private final AnimationHolder castStartAnimation;
     private final AnimationHolder castFinishAnimation;
+    private final Predicate<PreCastTargetingContext> preCastConditions;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
@@ -71,6 +73,7 @@ public class CustomSpell extends AbstractSpell {
         this.uniqueInfo = b.uniqueInfo;
         this.castStartAnimation = b.castStartAnimation;
         this.castFinishAnimation = b.castFinishAnimation;
+        this.preCastConditions = b.preCastConditions;
     }
 
     @Override
@@ -175,6 +178,15 @@ public class CustomSpell extends AbstractSpell {
         return super.getCastFinishAnimation();
     }
 
+    @Override
+    public boolean checkPreCastConditions(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {
+        if (this.preCastConditions != null) {
+            return this.preCastConditions.test(new PreCastTargetingContext(level, spellLevel, entity, playerMagicData, this));
+        }
+        return super.checkPreCastConditions(level, spellLevel, entity, playerMagicData);
+    }
+
+    @SuppressWarnings("unused")
     public static class Builder extends BuilderBase<CustomSpell> {
         private SpellRarity minRarity = SpellRarity.COMMON;
         private ResourceLocation school = SchoolRegistry.BLOOD_RESOURCE;
@@ -199,6 +211,7 @@ public class CustomSpell extends AbstractSpell {
         private BiFunction<Integer,LivingEntity,List<MutableComponent>> uniqueInfo;
         private AnimationHolder castStartAnimation = null;
         private AnimationHolder castFinishAnimation = null;
+        private Predicate<PreCastTargetingContext> preCastConditions = null;
 
         public Builder(ResourceLocation i) {
             super(i);
@@ -208,7 +221,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the cast type. Can be `CONTINUOUS`, `INSTANT`, `LONG`, or `NONE`.
         """)
-        @SuppressWarnings("unused")
         public Builder setCastType(CastType type) {
             this.castType = type;
             return this;
@@ -217,7 +229,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the sound that the spell will play when it starts casting.
         """)
-        @SuppressWarnings("unused")
         public Builder setStartSound(ISSKJSUtils.SoundEventHolder soundEvent) {
             this.startSound = soundEvent;
             return this;
@@ -226,7 +237,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the sound that the spell will play after it is done casting.
         """)
-        @SuppressWarnings("unused")
         public Builder setFinishSound(ISSKJSUtils.SoundEventHolder soundEvent) {
             this.finishSound = soundEvent;
             return this;
@@ -235,7 +245,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the rarity of the spell. Can be `COMMON`, `UNCOMMON`, `RARE`, `EPIC`, or `LEGENDARY`.
         """)
-        @SuppressWarnings("unused")
         public Builder setMinRarity(SpellRarity rarity) {
             this.minRarity = rarity;
             return this;
@@ -247,7 +256,6 @@ public class CustomSpell extends AbstractSpell {
             Example: `.setSchool(SchoolRegistry.BLOOD_RESOURCE`
             Another example: `setSchool('irons_spellbooks:blood')`
         """)
-        @SuppressWarnings("unused")
         public Builder setSchool(ISSKJSUtils.SchoolHolder schoolHolder) {
             this.school = schoolHolder.getLocation();
             return this;
@@ -256,7 +264,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the max level of the spell. Goes up to `10` from `1`.
         """)
-        @SuppressWarnings("unused")
         public Builder setMaxLevel(int level) {
             this.maxLevel = level;
             return this;
@@ -265,7 +272,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the cooldown of the spell in seconds. Cannot be a decimal value for some reason.
         """)
-        @SuppressWarnings("unused")
         public Builder setCooldownSeconds(int seconds) {
             this.cooldownSeconds = seconds;
             return this;
@@ -274,7 +280,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the mana cost per the spell's level. For example, you could input `10` into this method, and each level of the spell will multiply that value by the level.
         """)
-        @SuppressWarnings("unused")
         public Builder setManaCostPerLevel(int cost) {
             this.manaCostPerLevel = cost;
             return this;
@@ -283,7 +288,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the base spell power. Can be from `1` to `10`. The spell power per level adds on to this.
         """)
-        @SuppressWarnings("unused")
         public Builder setBaseSpellPower(int power) {
             this.baseSpellPower = power;
             return this;
@@ -292,7 +296,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the spell power per level.
         """)
-        @SuppressWarnings("unused")
         public Builder setSpellPowerPerLevel(int power) {
             this.spellPowerPerLevel = power;
             return this;
@@ -301,7 +304,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the cast time. This is used for `LONG` or `CONTINUOUS` spell types.
         """)
-        @SuppressWarnings("unused")
         public Builder setCastTime(int time) {
             this.castTime = time;
             return this;
@@ -310,7 +312,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the base mana cost. The mana cost per level adds on to this.
         """)
-        @SuppressWarnings("unused")
         public Builder setBaseManaCost(int cost) {
             this.baseManaCost = cost;
             return this;
@@ -319,7 +320,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the callback for when the spell is cast. This is what the spell does when it is casted.
         """)
-        @SuppressWarnings("unused")
         public Builder onCast(Consumer<CastContext> consumer) {
             this.onCast = consumer;
             return this;
@@ -328,7 +328,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the callback for when the spell is cast on the client side. This is what the spell does when it is casted.
         """)
-        @SuppressWarnings("unused")
         public Builder onClientCast(Consumer<CastClientContext> consumer) {
             this.onClientCast = consumer;
             return this;
@@ -337,7 +336,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the callback for when the spell is about to be cast. This is what the spell does before it is casted.
         """)
-        @SuppressWarnings("unused")
         public Builder onPreCast(Consumer<PreCastContext> consumer) {
             this.onPreCast = consumer;
             return this;
@@ -346,7 +344,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the callback for when the spell is about to be cast on the client side. This is what the spell does before it is casted.
         """)
-        @SuppressWarnings("unused")
         public Builder onPreClientCast(Consumer<PreCastClientContext> consumer) {
             this.onPreClientCast = consumer;
             return this;
@@ -355,7 +352,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets whether or not the spell can be looted from a loot table.
         """)
-        @SuppressWarnings("unused")
         public Builder setAllowLooting(boolean allow) {
             this.allowLooting = allow;
             return this;
@@ -364,7 +360,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets whether or not the spell needs to be learned before it can be casted.
         """)
-        @SuppressWarnings("unused")
         public Builder needsLearning(boolean needs) {
             this.needsLearning = needs;
             return this;
@@ -373,25 +368,14 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the predicate for whether or not the spell can be crafted by a player.
         """)
-        @SuppressWarnings("unused")
         public Builder canBeCraftedBy(Predicate<Player> predicate) {
             this.canBeCrafted = predicate;
             return this;
         }
 
-//        @Info(value = """
-//            Sets the unique info for the spell. It is what is displayed on the spell in-game, e.g how some spells have damage values listed.
-//        """)
-//        @SuppressWarnings("unused")
-//        public Builder setUniqueInfo(List<MutableComponent> info) {
-//            this.uniqueInfo = info;
-//            return this;
-//        }
-
         @Info(value = """
             Sets the unique info for the spell. It is what is displayed on the spell in-game, e.g how some spells have damage values listed.
         """)
-        @SuppressWarnings("unused")
         public Builder setUniqueInfo(BiFunction<Integer, LivingEntity, List<MutableComponent>> info) {
             this.uniqueInfo = info;
             return this;
@@ -400,7 +384,6 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the cast start animation for the spell.
         """)
-        @SuppressWarnings("unused")
         public Builder setCastStartAnimation(String path, boolean playOnce, boolean animatesLegs) {
             this.castStartAnimation = new AnimationHolder(path, playOnce, animatesLegs);
             return this;
@@ -409,9 +392,22 @@ public class CustomSpell extends AbstractSpell {
         @Info(value = """
             Sets the cast finish animation for the spell.
         """)
-        @SuppressWarnings("unused")
         public Builder setCastFinishAnimation(String path, boolean playOnce, boolean animatesLegs) {
             this.castFinishAnimation = new AnimationHolder(path, playOnce, animatesLegs);
+            return this;
+        }
+
+        @Info(value = """
+            Sets the pre-cast conditions for the spell. It is a Predicate, which means it requires a boolean return value. This can be used for targeting spells and for cancelling the spell before it is casted.
+            
+            Example: ```js
+            .checkPreCastConditions(ctx => {
+                return ISSUtils.preCastTargetHelper(ctx.level, ctx.entity, ctx.playerMagicData, ctx.spell, 48, 0.35)
+            })
+            ```
+        """)
+        public Builder checkPreCastConditions(Predicate<PreCastTargetingContext> predicate) {
+            this.preCastConditions = predicate;
             return this;
         }
 
