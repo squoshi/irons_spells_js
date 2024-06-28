@@ -169,6 +169,7 @@ dependencies {
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
     runtimeOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}")
     runtimeOnly fg.deobf("curse.maven:entityjs-967617:${entityjs_file_id}")
+    //runtimeOnly fg.deobf("curse.maven:probejs-585406:5227399")
 
     // Qol
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_mc_version}-forge:${jei_version}")

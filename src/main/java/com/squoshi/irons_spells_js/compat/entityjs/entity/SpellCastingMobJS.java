@@ -592,7 +592,11 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
 
 
     public MobType getMobType() {
-        return this.builder.mobType;
+        if (builder != null) {
+            return this.builder.mobType;
+        }
+        return super.getMobType();
+
     }
 
     public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
@@ -1738,11 +1742,10 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
     }
 
     public void onRemovedFromWorld() {
-        super.onRemovedFromWorld();
         if (this.builder.onRemovedFromWorld != null) {
             EntityJSHelperClass.consumerCallback(this.builder.onRemovedFromWorld, this, "[EntityJS]: Error in " + this.entityName() + "builder for field: onRemovedFromWorld.");
         }
-
+        super.onRemovedFromWorld();
     }
 
     public int getMaxFallDistance() {
