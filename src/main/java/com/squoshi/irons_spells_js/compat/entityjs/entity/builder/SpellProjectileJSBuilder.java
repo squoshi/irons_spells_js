@@ -2,16 +2,14 @@ package com.squoshi.irons_spells_js.compat.entityjs.entity.builder;
 
 import com.squoshi.irons_spells_js.compat.entityjs.entity.SpellProjectileJS;
 import dev.latvian.mods.kubejs.typings.Info;
-import net.liopyu.entityjs.builders.nonliving.BaseEntityBuilder;
 import net.liopyu.entityjs.builders.nonliving.entityjs.ProjectileEntityBuilder;
-import net.liopyu.entityjs.util.ContextUtils;
 import net.liopyu.entityjs.util.EntityJSHelperClass;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.Projectile;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("unused")
 public class SpellProjectileJSBuilder extends ProjectileEntityBuilder<SpellProjectileJS> {
     public transient Consumer<SpellProjectileJS.OnAntiMagicContext> onAntiMagic;
     public transient Consumer<SpellProjectileJS> trailParticles;
