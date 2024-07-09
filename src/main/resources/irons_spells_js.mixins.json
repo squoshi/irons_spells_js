@@ -7,6 +7,7 @@
     "FormatterRegistryMixin",
     "IronsSpellbooksMixin",
     "NameResolverMixin",
+    "PathfinderMobMixin",
     "ServerConfigsAccessor",
     "SnippetCompilerMixin"
   ],
