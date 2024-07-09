@@ -249,8 +249,8 @@ public class CustomSpellCastGoal extends Goal {
     }
 
     protected void doSpellAction() {
-        if (!((ISpellCastingMob) mob).irons_spells_js$hasUsedSingleAttack && singleUseSpell != SpellRegistry.none() && singleUseDelay <= 0) {
-            ((ISpellCastingMob) mob).irons_spells_js$hasUsedSingleAttack = true;
+        if (!((ISpellCastingMob) mob).irons_spells_js$getHasUsedSingleAttack() && singleUseSpell != SpellRegistry.none() && singleUseDelay <= 0) {
+            ((ISpellCastingMob) mob).irons_spells_js$setHasUsedSingleAttack(true);
             ((ISpellCastingMob) mob).irons_spells_js$initiateCastSpell(singleUseSpell, singleUseLevel);
             fleeCooldown = 7 + singleUseSpell.getCastTime(singleUseLevel);
         } else {

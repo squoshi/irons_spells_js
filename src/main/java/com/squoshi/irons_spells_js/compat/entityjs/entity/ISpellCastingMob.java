@@ -34,4 +34,6 @@ public interface ISpellCastingMob {
     void irons_spells_js$setBurningDashDirectionData();
     void irons_spells_js$forceLookAtTarget(LivingEntity target);
     void irons_spells_js$addClientSideParticles();
+    boolean irons_spells_js$getHasUsedSingleAttack();
+    void irons_spells_js$setHasUsedSingleAttack(boolean hasUsedSingleAttack);
 }

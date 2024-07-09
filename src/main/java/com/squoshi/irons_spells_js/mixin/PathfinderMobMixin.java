@@ -383,6 +383,16 @@ public class PathfinderMobMixin implements ISpellCastingMob {
         this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
     }
 
+    @Override
+    public boolean irons_spells_js$getHasUsedSingleAttack() {
+        return this.hasUsedSingleAttack;
+    }
+
+    @Override
+    public void irons_spells_js$setHasUsedSingleAttack(boolean hasUsedSingleAttack) {
+        this.hasUsedSingleAttack = hasUsedSingleAttack;
+    }
+
     static {
         DATA_CANCEL_CAST = SynchedEntityData.defineId(PathfinderMob.class, EntityDataSerializers.BOOLEAN);
         DATA_DRINKING_POTION = SynchedEntityData.defineId(PathfinderMob.class, EntityDataSerializers.BOOLEAN);
