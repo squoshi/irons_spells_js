@@ -59,90 +59,41 @@ public class PathfinderMobMixin {
     private int tickCount;
 
     @Shadow(aliases = "getAttribute")
-    public AttributeInstance getAttribute(net.minecraft.world.entity.ai.attributes.Attribute pAttribute) {
-        return null;
-    }
-
+    public AttributeInstance getAttribute(net.minecraft.world.entity.ai.attributes.Attribute pAttribute) { return null; }
     @Shadow(aliases = "level")
-    public Level level() {
-        return null;
-    }
-
+    public Level level() { return null; }
     @Shadow(aliases = "heal")
-    public void heal(float pHealAmount) {
-    }
-
+    public void heal(float pHealAmount) {}
     @Shadow(aliases = "isSilent")
-    public boolean isSilent() {
-        return true;
-    }
-
+    public boolean isSilent() { return true; }
     @Shadow(aliases = "getX")
-    public double getX() {
-        return 0;
-    }
-
+    public double getX() { return 0; }
     @Shadow(aliases = "getY")
-    public double getY() {
-        return 0;
-    }
-
+    public double getY() { return 0; }
     @Shadow(aliases = "getZ")
-    public double getZ() {
-        return 0;
-    }
-
+    public double getZ() { return 0; }
     @Shadow(aliases = "getMaxHealth")
-    public float getMaxHealth() {
-        return 0;
-    }
-
+    public float getMaxHealth() { return 0; }
     @Shadow(aliases = "getSoundSource")
-    public SoundSource getSoundSource() {
-        return null;
-    }
-
+    public SoundSource getSoundSource() { return null; }
     @Shadow(aliases = "getUUID")
-    public UUID getUUID() {
-        return null;
-    }
-
+    public UUID getUUID() { return null; }
     @Shadow(aliases = "getDeltaMovement")
-    public Vec3 getDeltaMovement() {
-        return null;
-    }
-
+    public Vec3 getDeltaMovement() { return null; }
     @Shadow(aliases = "setLivingEntityFlag")
-    public void setLivingEntityFlag(int pFlag, boolean pValue) {
-    }
-
+    public void setLivingEntityFlag(int pFlag, boolean pValue) {}
     @Shadow(aliases = "setYRot")
-    public void setYRot(float v) {
-    }
-
+    public void setYRot(float v) {}
     @Shadow(aliases = "getTarget")
-    public LivingEntity getTarget() {
-        return null;
-    }
-
+    public LivingEntity getTarget() { return null; }
     @Shadow(aliases = "getBoundingBox")
-    public AABB getBoundingBox() {
-        return null;
-    }
-
+    public AABB getBoundingBox() { return null; }
     @Shadow(aliases = "position")
-    public Vec3 position() {
-        return null;
-    }
-
+    public Vec3 position() { return null; }
     @Shadow(aliases = "getEyeY")
-    public double getEyeY() {
-        return 0;
-    }
-
+    public double getEyeY() { return 0; }
     @Shadow(aliases = "setXRot")
-    public void setXRot(double v) {
-    }
+    public void setXRot(double v) {}
 
     @Unique
     private static final EntityDataAccessor<Boolean> DATA_CANCEL_CAST;
