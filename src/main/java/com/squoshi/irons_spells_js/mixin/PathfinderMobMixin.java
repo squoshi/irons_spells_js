@@ -25,6 +25,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -47,54 +48,58 @@ import java.util.UUID;
 
 @Mixin(PathfinderMob.class)
 @SuppressWarnings("unused")
-public class PathfinderMobMixin implements ISpellCastingMob {
-    @Shadow(aliases = "entityData")
-    protected SynchedEntityData entityData;
-    @Shadow(aliases = "random")
-    private RandomSource random;
-    @Shadow(aliases = "autoSpinAttackTicks")
-    private int autoSpinAttackTicks;
-    @Shadow(aliases = "yBodyRot")
-    private float yBodyRot;
-    @Shadow(aliases = "tickCount")
-    private int tickCount;
+public class PathfinderMobMixin extends Mob implements ISpellCastingMob {
+//    @Shadow(aliases = "entityData")
+//    protected SynchedEntityData entityData;
+//    @Shadow(aliases = "random")
+//    private RandomSource random;
+//    @Shadow(aliases = "autoSpinAttackTicks")
+//    private int autoSpinAttackTicks;
+//    @Shadow(aliases = "yBodyRot")
+//    private float yBodyRot;
+//    @Shadow(aliases = "tickCount")
+//    private int tickCount;
 
-    @Shadow(aliases = "getAttribute")
-    public AttributeInstance getAttribute(net.minecraft.world.entity.ai.attributes.Attribute pAttribute) { return null; }
-    @Shadow(aliases = "level")
-    public Level level() { return null; }
-    @Shadow(aliases = "heal")
-    public void heal(float pHealAmount) {}
-    @Shadow(aliases = "isSilent")
-    public boolean isSilent() { return true; }
-    @Shadow(aliases = "getX")
-    public double getX() { return 0; }
-    @Shadow(aliases = "getY")
-    public double getY() { return 0; }
-    @Shadow(aliases = "getZ")
-    public double getZ() { return 0; }
-    @Shadow(aliases = "getMaxHealth")
-    public float getMaxHealth() { return 0; }
-    @Shadow(aliases = "getSoundSource")
-    public SoundSource getSoundSource() { return null; }
-    @Shadow(aliases = "getUUID")
-    public UUID getUUID() { return null; }
-    @Shadow(aliases = "getDeltaMovement")
-    public Vec3 getDeltaMovement() { return null; }
-    @Shadow(aliases = "setLivingEntityFlag")
-    public void setLivingEntityFlag(int pFlag, boolean pValue) {}
-    @Shadow(aliases = "setYRot")
-    public void setYRot(float v) {}
-    @Shadow(aliases = "getTarget")
-    public LivingEntity getTarget() { return null; }
-    @Shadow(aliases = "getBoundingBox")
-    public AABB getBoundingBox() { return null; }
-    @Shadow(aliases = "position")
-    public Vec3 position() { return null; }
-    @Shadow(aliases = "getEyeY")
-    public double getEyeY() { return 0; }
-    @Shadow(aliases = "setXRot")
-    public void setXRot(double v) {}
+    protected PathfinderMobMixin(EntityType<? extends Mob> pEntityType, Level pLevel) {
+        super(pEntityType, pLevel);
+    }
+
+//    @Shadow(aliases = "getAttribute")
+//    public AttributeInstance getAttribute(net.minecraft.world.entity.ai.attributes.Attribute pAttribute) { return null; }
+//    @Shadow(aliases = "level")
+//    public Level level() { return null; }
+//    @Shadow(aliases = "heal")
+//    public void heal(float pHealAmount) {}
+//    @Shadow(aliases = "isSilent")
+//    public boolean isSilent() { return true; }
+//    @Shadow(aliases = "getX")
+//    public double getX() { return 0; }
+//    @Shadow(aliases = "getY")
+//    public double getY() { return 0; }
+//    @Shadow(aliases = "getZ")
+//    public double getZ() { return 0; }
+//    @Shadow(aliases = "getMaxHealth")
+//    public float getMaxHealth() { return 0; }
+//    @Shadow(aliases = "getSoundSource")
+//    public SoundSource getSoundSource() { return null; }
+//    @Shadow(aliases = "getUUID")
+//    public UUID getUUID() { return null; }
+//    @Shadow(aliases = "getDeltaMovement")
+//    public Vec3 getDeltaMovement() { return null; }
+//    @Shadow(aliases = "setLivingEntityFlag")
+//    public void setLivingEntityFlag(int pFlag, boolean pValue) {}
+//    @Shadow(aliases = "setYRot")
+//    public void setYRot(float v) {}
+//    @Shadow(aliases = "getTarget")
+//    public LivingEntity getTarget() { return null; }
+//    @Shadow(aliases = "getBoundingBox")
+//    public AABB getBoundingBox() { return null; }
+//    @Shadow(aliases = "position")
+//    public Vec3 position() { return null; }
+//    @Shadow(aliases = "getEyeY")
+//    public double getEyeY() { return 0; }
+//    @Shadow(aliases = "setXRot")
+//    public void setXRot(double v) {}
 
     @Unique
     private static final EntityDataAccessor<Boolean> DATA_CANCEL_CAST;

@@ -1,5 +1,6 @@
 package com.squoshi.irons_spells_js;
 
+import com.squoshi.irons_spells_js.compat.entityjs.entity.goal.CustomSpellCastGoal;
 import com.squoshi.irons_spells_js.entity.attribute.SpellAttributeBuilderJS;
 import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.item.MagicSwordItemBuilderJS;
@@ -61,6 +62,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("Potions", Potions.class);
         event.add("ISSPotionRegistry", PotionRegistry.class);
         event.add("AlchemistCauldronRecipeBuilder", AlchemistCauldronKubeJSRecipes.AlchemistCauldronRecipeBuilder.class);
+        event.add("CustomSpellCastGoal", CustomSpellCastGoal.class);
     }
 
     @Override

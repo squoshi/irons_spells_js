@@ -19,6 +19,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class CustomSpellCastGoal extends Goal {
     protected final PathfinderMob mob;
     protected LivingEntity target;
