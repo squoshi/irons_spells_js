@@ -1,6 +1,7 @@
 package com.squoshi.irons_spells_js.mixin;
 
 import com.google.common.collect.Maps;
+import com.squoshi.irons_spells_js.compat.entityjs.entity.ISpellCastingMob;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.magic.SpellSelectionManager;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
@@ -46,7 +47,7 @@ import java.util.UUID;
 
 @Mixin(PathfinderMob.class)
 @SuppressWarnings("unused")
-public class PathfinderMobMixin {
+public class PathfinderMobMixin implements ISpellCastingMob {
     @Shadow(aliases = "entityData")
     protected SynchedEntityData entityData;
     @Shadow(aliases = "random")
@@ -116,6 +117,11 @@ public class PathfinderMobMixin {
     @Unique
     private final PathfinderMob self = (PathfinderMob) (Object) this;
 
+    @Override
+    public PathfinderMob irons_spells_js$self() {
+        return self;
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     public void init(EntityType<? extends PathfinderMob> entityType, Level level, CallbackInfo ci) {
         playerMagicData.setSyncedData(new SyncedSpellData(self));
@@ -123,25 +129,25 @@ public class PathfinderMobMixin {
         this.entityData.define(DATA_DRINKING_POTION, false);
     }
 
-    @Unique
-    public MagicData getMagicData() {
+    @Override
+    public MagicData irons_spells_js$getMagicData() {
         return playerMagicData;
     }
 
-    @Unique
-    public boolean isDrinkingPotion() {
+    @Override
+    public boolean irons_spells_js$isDrinkingPotion() {
         return (Boolean) this.entityData.get(DATA_DRINKING_POTION);
     }
 
-    @Unique
-    protected void setDrinkingPotion(boolean drinkingPotion) {
+    @Override
+    public void irons_spells_js$setDrinkingPotion(boolean drinkingPotion) {
         this.entityData.set(DATA_DRINKING_POTION, drinkingPotion);
     }
 
-    @Unique
-    public void startDrinkingPotion() {
+    @Override
+    public void irons_spells_js$startDrinkingPotion() {
         if (!this.level().isClientSide) {
-            this.setDrinkingPotion(true);
+            this.irons_spells_js$setDrinkingPotion(true);
             this.drinkTime = 35;
             AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
             attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING);
@@ -149,9 +155,9 @@ public class PathfinderMobMixin {
         }
     }
 
-    @Unique
-    public void finishDrinkingPotion() {
-        this.setDrinkingPotion(false);
+    @Override
+    public void irons_spells_js$finishDrinkingPotion() {
+        this.irons_spells_js$setDrinkingPotion(false);
         this.heal(Math.min(Math.max(10.0F, this.getMaxHealth() / 10.0F), this.getMaxHealth() / 4.0F));
         this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MODIFIER_DRINKING);
         if (this.isSilent()) {
@@ -159,47 +165,47 @@ public class PathfinderMobMixin {
         }
     }
 
-    @Unique
-    public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
+    @Override
+    public void irons_spells_js$onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
         if (this.level().isClientSide) {
             if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
-                this.cancelCast();
+                this.irons_spells_js$cancelCast();
             }
 
         }
     }
 
-    @Unique
-    public void addAdditionalSaveData(CompoundTag pCompound) {
+    @Override
+    public void irons_spells_js$addAdditionalSaveData(CompoundTag pCompound) {
         playerMagicData.getSyncedData().saveNBTData(pCompound);
         pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
     }
 
-    @Unique
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    @Override
+    public void irons_spells_js$readAdditionalSaveData(CompoundTag pCompound) {
         SyncedSpellData syncedSpellData = new SyncedSpellData(self);
         syncedSpellData.loadNBTData(pCompound);
         if (syncedSpellData.isCasting()) {
             AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
-            this.initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());
+            this.irons_spells_js$initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());
         }
 
         playerMagicData.setSyncedData(syncedSpellData);
         this.hasUsedSingleAttack = pCompound.getBoolean("usedSpecial");
     }
 
-    @Unique
-    public void cancelCast() {
-        if (this.isCasting()) {
+    @Override
+    public void irons_spells_js$cancelCast() {
+        if (this.irons_spells_js$isCasting()) {
             if (!this.level().isClientSide) {
                 this.entityData.set(DATA_CANCEL_CAST, !(Boolean)this.entityData.get(DATA_CANCEL_CAST));
             }
-            this.castComplete();
+            this.irons_spells_js$castComplete();
         }
     }
 
-    @Unique
-    private void castComplete() {
+    @Override
+    public void irons_spells_js$castComplete() {
         if (!this.level().isClientSide) {
             if (this.castingSpell != null) {
                 this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), self, playerMagicData, false);
@@ -210,8 +216,8 @@ public class PathfinderMobMixin {
         this.castingSpell = null;
     }
 
-    @Unique
-    public void startAutoSpinAttack(int pAttackTicks) {
+    @Override
+    public void irons_spells_js$startAutoSpinAttack(int pAttackTicks) {
         this.autoSpinAttackTicks = pAttackTicks;
         if (!this.level().isClientSide) {
             this.setLivingEntityFlag(4, true);
@@ -220,21 +226,21 @@ public class PathfinderMobMixin {
         this.setYRot((float)(Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 57.2957763671875));
     }
 
-    @Unique
-    public void setSyncedSpellData(SyncedSpellData syncedSpellData) {
+    @Override
+    public void irons_spells_js$setSyncedSpellData(SyncedSpellData syncedSpellData) {
         if (this.level().isClientSide) {
             boolean isCasting = playerMagicData.isCasting();
             playerMagicData.setSyncedData(syncedSpellData);
             this.castingSpell = playerMagicData.getCastingSpell();
             if (this.castingSpell != null) {
                 if (!playerMagicData.isCasting() && isCasting) {
-                    this.castComplete();
+                    this.irons_spells_js$castComplete();
                 } else if (playerMagicData.isCasting() && !isCasting) {
                     AbstractSpell spell = playerMagicData.getCastingSpell().getSpell();
-                    this.initiateCastSpell(spell, playerMagicData.getCastingSpellLevel());
+                    this.irons_spells_js$initiateCastSpell(spell, playerMagicData.getCastingSpellLevel());
                     if (this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
                         this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), self, InteractionHand.MAIN_HAND, playerMagicData);
-                        this.castComplete();
+                        this.irons_spells_js$castComplete();
                     }
                 }
 
@@ -242,11 +248,11 @@ public class PathfinderMobMixin {
         }
     }
 
-    @Unique
-    protected void customServerAiStep() {
-        if (this.isDrinkingPotion()) {
+    @Override
+    public void irons_spells_js$customServerAiStep() {
+        if (this.irons_spells_js$isDrinkingPotion()) {
             if (this.drinkTime-- <= 0) {
-                this.finishDrinkingPotion();
+                this.irons_spells_js$finishDrinkingPotion();
             } else if (this.drinkTime % 4 == 0 && this.isSilent()) {
                 this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
             }
@@ -258,13 +264,13 @@ public class PathfinderMobMixin {
                 this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), self, playerMagicData);
             }
 
-            this.forceLookAtTarget(this.getTarget());
+            this.irons_spells_js$forceLookAtTarget(this.getTarget());
             if (playerMagicData.getCastDurationRemaining() <= 0) {
                 if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
                     this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self, CastSource.MOB, playerMagicData);
                 }
 
-                this.castComplete();
+                this.irons_spells_js$castComplete();
             } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
                 this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self, CastSource.MOB, playerMagicData);
             }
@@ -272,15 +278,15 @@ public class PathfinderMobMixin {
         }
     }
 
-    @Unique
-    public void initiateCastSpell(AbstractSpell spell, int spellLevel) {
+    @Override
+    public void irons_spells_js$initiateCastSpell(AbstractSpell spell, int spellLevel) {
         if (spell == SpellRegistry.none()) {
             this.castingSpell = null;
         } else {
 
             this.castingSpell = new SpellData(spell, spellLevel);
             if (this.getTarget() != null) {
-                this.forceLookAtTarget(this.getTarget());
+                this.irons_spells_js$forceLookAtTarget(this.getTarget());
             }
 
             if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, self, playerMagicData)) {
@@ -288,12 +294,12 @@ public class PathfinderMobMixin {
             } else {
                 if (spell != SpellRegistry.TELEPORT_SPELL.get() && spell != SpellRegistry.FROST_STEP_SPELL.get()) {
                     if (spell == SpellRegistry.BLOOD_STEP_SPELL.get()) {
-                        this.setTeleportLocationBehindTarget(3);
+                        this.irons_spells_js$setTeleportLocationBehindTarget(3);
                     } else if (spell == SpellRegistry.BURNING_DASH_SPELL.get()) {
-                        this.setBurningDashDirectionData();
+                        this.irons_spells_js$setBurningDashDirectionData();
                     }
                 } else {
-                    this.setTeleportLocationBehindTarget(10);
+                    this.irons_spells_js$setTeleportLocationBehindTarget(10);
                 }
 
                 playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), self), CastSource.MOB, SpellSelectionManager.MAINHAND);
@@ -305,17 +311,17 @@ public class PathfinderMobMixin {
         }
     }
 
-    @Unique
-    public void notifyDangerousProjectile(Projectile projectile) {
+    @Override
+    public void irons_spells_js$notifyDangerousProjectile(Projectile projectile) {
     }
 
-    @Unique
-    public boolean isCasting() {
+    @Override
+    public boolean irons_spells_js$isCasting() {
         return playerMagicData.isCasting();
     }
 
-    @Unique
-    public boolean setTeleportLocationBehindTarget(int distance) {
+    @Override
+    public boolean irons_spells_js$setTeleportLocationBehindTarget(int distance) {
         LivingEntity target = this.getTarget();
         boolean valid = false;
         if (target != null) {
@@ -346,13 +352,13 @@ public class PathfinderMobMixin {
         return valid;
     }
 
-    @Unique
-    public void setBurningDashDirectionData() {
+    @Override
+    public void irons_spells_js$setBurningDashDirectionData() {
         playerMagicData.setAdditionalCastData(new BurningDashSpell.BurningDashDirectionOverrideCastData());
     }
 
-    @Unique
-    private void forceLookAtTarget(LivingEntity target) {
+    @Override
+    public void irons_spells_js$forceLookAtTarget(LivingEntity target) {
         if (target != null) {
             double d0 = target.getX() - this.getX();
             double d2 = target.getZ() - this.getZ();
@@ -365,8 +371,8 @@ public class PathfinderMobMixin {
         }
     }
 
-    @Unique
-    private void addClientSideParticles() {
+    @Override
+    public void irons_spells_js$addClientSideParticles() {
         double d0 = 0.4;
         double d1 = 0.3;
         double d2 = 0.35;
