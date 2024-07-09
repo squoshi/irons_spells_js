@@ -1,6 +1,5 @@
 package com.squoshi.irons_spells_js;
 
-import com.squoshi.irons_spells_js.compat.entityjs.entity.goal.CustomSpellCastGoal;
 import com.squoshi.irons_spells_js.entity.attribute.SpellAttributeBuilderJS;
 import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.item.MagicSwordItemBuilderJS;
@@ -23,6 +22,7 @@ import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import io.redspace.ironsspellbooks.api.util.UpdateClient;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.TargetEntityCastData;
+import io.redspace.ironsspellbooks.entity.mobs.goals.WizardAttackGoal;
 import io.redspace.ironsspellbooks.registries.PotionRegistry;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.tags.ItemTags;
@@ -62,7 +62,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("Potions", Potions.class);
         event.add("ISSPotionRegistry", PotionRegistry.class);
         event.add("AlchemistCauldronRecipeBuilder", AlchemistCauldronKubeJSRecipes.AlchemistCauldronRecipeBuilder.class);
-        event.add("CustomSpellCastGoal", CustomSpellCastGoal.class);
+        event.add("WizardAttackGoal", WizardAttackGoal.class);
     }
 
     @Override

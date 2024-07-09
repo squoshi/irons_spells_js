@@ -15,7 +15,6 @@ import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.SyncedSpellData;
-import io.redspace.ironsspellbooks.entity.mobs.abstract_spell_casting_mob.AbstractSpellCastingMob;
 import io.redspace.ironsspellbooks.spells.ender.TeleportSpell;
 import io.redspace.ironsspellbooks.spells.fire.BurningDashSpell;
 import net.liopyu.entityjs.builders.living.BaseLivingEntityBuilder;
@@ -82,7 +81,7 @@ import java.util.*;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @SuppressWarnings("unused")
-public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnimatableJS, IMagicEntity {
+public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, IMagicEntity {
     private static final EntityDataAccessor<Boolean> DATA_CANCEL_CAST;
     private static final EntityDataAccessor<Boolean> DATA_DRINKING_POTION;
     private final MagicData playerMagicData = new MagicData(true);
@@ -106,7 +105,7 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
     public String entityName() {
         return this.getType().toString();
     }
-        public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<? extends AbstractSpellCastingMob> pEntityType, Level pLevel) {
+        public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<SpellCastingMobJS> pEntityType, Level pLevel) {
             super(pEntityType, pLevel);
             this.playerMagicData.setSyncedData(new SyncedSpellData(this));
             this.lookControl = this.createLookControl();
@@ -148,11 +147,22 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
             return (Boolean)this.entityData.get(DATA_DRINKING_POTION);
         }
 
-        protected void setDrinkingPotion(boolean drinkingPotion) {
+    @Override
+    public boolean getHasUsedSingleAttack() {
+        return hasUsedSingleAttack;
+    }
+
+    @Override
+    public void setHasUsedSingleAttack(boolean bool) {
+        hasUsedSingleAttack = bool;
+    }
+
+    protected void setDrinkingPotion(boolean drinkingPotion) {
             this.entityData.set(DATA_DRINKING_POTION, drinkingPotion);
         }
-        public void startDrinkingPotion() {
-            if (!this.level().isClientSide) {
+
+    public void startDrinkingPotion() {
+        if (!this.level().isClientSide) {
                 this.setDrinkingPotion(true);
                 this.drinkTime = 35;
                 AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -160,245 +170,245 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
                 attributeinstance.addTransientModifier(SPEED_MODIFIER_DRINKING);
             }
 
+    }
+
+    private void finishDrinkingPotion() {
+        this.setDrinkingPotion(false);
+        this.heal(Math.min(Math.max(10.0F, this.getMaxHealth() / 10.0F), this.getMaxHealth() / 4.0F));
+        this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MODIFIER_DRINKING);
+        if (!this.isSilent()) {
+            this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
         }
 
-        private void finishDrinkingPotion() {
-            this.setDrinkingPotion(false);
-            this.heal(Math.min(Math.max(10.0F, this.getMaxHealth() / 10.0F), this.getMaxHealth() / 4.0F));
-            this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MODIFIER_DRINKING);
-            if (!this.isSilent()) {
-                this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+    }
+
+    public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
+        super.onSyncedDataUpdated(pKey);
+        if (this.level().isClientSide) {
+            if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
+                this.cancelCast();
             }
 
         }
+    }
 
-        public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
-            super.onSyncedDataUpdated(pKey);
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        this.playerMagicData.getSyncedData().saveNBTData(pCompound);
+        pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
+    }
+
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        SyncedSpellData syncedSpellData = new SyncedSpellData(this);
+        syncedSpellData.loadNBTData(pCompound);
+        if (syncedSpellData.isCasting()) {
+            AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
+            this.initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());
+        }
+
+        this.playerMagicData.setSyncedData(syncedSpellData);
+        this.hasUsedSingleAttack = pCompound.getBoolean("usedSpecial");
+    }
+
+    public void cancelCast() {
+        if (builder.onCancelledCast != null) {
+            builder.onCancelledCast.accept(this);
+        }
+        if (this.isCasting()) {
             if (this.level().isClientSide) {
-                if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
-                    this.cancelCast();
-                }
-
-            }
-        }
-
-        public void addAdditionalSaveData(CompoundTag pCompound) {
-            super.addAdditionalSaveData(pCompound);
-            this.playerMagicData.getSyncedData().saveNBTData(pCompound);
-            pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
-        }
-
-        public void readAdditionalSaveData(CompoundTag pCompound) {
-            super.readAdditionalSaveData(pCompound);
-            SyncedSpellData syncedSpellData = new SyncedSpellData(this);
-            syncedSpellData.loadNBTData(pCompound);
-            if (syncedSpellData.isCasting()) {
-                AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
-                this.initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());
-            }
-
-            this.playerMagicData.setSyncedData(syncedSpellData);
-            this.hasUsedSingleAttack = pCompound.getBoolean("usedSpecial");
-        }
-
-        public void cancelCast() {
-            if (builder.onCancelledCast != null) {
-                builder.onCancelledCast.accept(this);
-            }
-            if (this.isCasting()) {
-                if (this.level().isClientSide) {
-                } else {
-                    this.entityData.set(DATA_CANCEL_CAST, !(Boolean)this.entityData.get(DATA_CANCEL_CAST));
-                }
-
-                this.castComplete();
-            }
-
-        }
-
-        private void castComplete() {
-            if (!this.level().isClientSide) {
-                if (this.castingSpell != null) {
-                    this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData, false);
-                }
             } else {
-                this.playerMagicData.resetCastingState();
+                this.entityData.set(DATA_CANCEL_CAST, !(Boolean)this.entityData.get(DATA_CANCEL_CAST));
             }
 
-            this.castingSpell = null;
+            this.castComplete();
         }
 
-        public void startAutoSpinAttack(int pAttackTicks) {
-            this.autoSpinAttackTicks = pAttackTicks;
-            if (!this.level().isClientSide) {
-                this.setLivingEntityFlag(4, true);
-            }
+    }
 
-            this.setYRot((float)(Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 57.2957763671875));
-        }
-
-        public void setSyncedSpellData(SyncedSpellData syncedSpellData) {
-            if (this.level().isClientSide) {
-                boolean isCasting = this.playerMagicData.isCasting();
-                this.playerMagicData.setSyncedData(syncedSpellData);
-                this.castingSpell = this.playerMagicData.getCastingSpell();
-                if (this.castingSpell != null) {
-                    if (!this.playerMagicData.isCasting() && isCasting) {
-                        this.castComplete();
-                    } else if (this.playerMagicData.isCasting() && !isCasting) {
-                        AbstractSpell spell = this.playerMagicData.getCastingSpell().getSpell();
-                        this.initiateCastSpell(spell, this.playerMagicData.getCastingSpellLevel());
-                        if (this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                            this.instantCastSpellType = this.castingSpell.getSpell();
-                            this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), this, InteractionHand.MAIN_HAND, this.playerMagicData);
-                            this.castComplete();
-                        }
-                    }
-
-                }
-            }
-        }
-
-        protected void customServerAiStep() {
-            super.customServerAiStep();
-            if (this.isDrinkingPotion()) {
-                if (this.drinkTime-- <= 0) {
-                    this.finishDrinkingPotion();
-                } else if (this.drinkTime % 4 == 0 && !this.isSilent()) {
-                    this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
-                }
-            }
-
+    public void castComplete() {
+        if (!this.level().isClientSide) {
             if (this.castingSpell != null) {
-                this.playerMagicData.handleCastDuration();
-                if (this.playerMagicData.isCasting()) {
-                    this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData);
+                this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData, false);
+            }
+        } else {
+            this.playerMagicData.resetCastingState();
+        }
+
+        this.castingSpell = null;
+    }
+
+    public void startAutoSpinAttack(int pAttackTicks) {
+        this.autoSpinAttackTicks = pAttackTicks;
+        if (!this.level().isClientSide) {
+            this.setLivingEntityFlag(4, true);
+        }
+
+        this.setYRot((float)(Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 57.2957763671875));
+    }
+
+    public void setSyncedSpellData(SyncedSpellData syncedSpellData) {
+        if (this.level().isClientSide) {
+            boolean isCasting = this.playerMagicData.isCasting();
+            this.playerMagicData.setSyncedData(syncedSpellData);
+            this.castingSpell = this.playerMagicData.getCastingSpell();
+            if (this.castingSpell != null) {
+                if (!this.playerMagicData.isCasting() && isCasting) {
+                    this.castComplete();
+                } else if (this.playerMagicData.isCasting() && !isCasting) {
+                    AbstractSpell spell = this.playerMagicData.getCastingSpell().getSpell();
+                    this.initiateCastSpell(spell, this.playerMagicData.getCastingSpellLevel());
+                    if (this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
+                        this.instantCastSpellType = this.castingSpell.getSpell();
+                        this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), this, InteractionHand.MAIN_HAND, this.playerMagicData);
+                        this.castComplete();
+                    }
                 }
 
-                this.forceLookAtTarget(this.getTarget());
-                if (this.playerMagicData.getCastDurationRemaining() <= 0) {
-                    if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                        this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
-                    }
+            }
+        }
+    }
 
-                    this.castComplete();
-                } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (this.playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        if (this.isDrinkingPotion()) {
+            if (this.drinkTime-- <= 0) {
+                this.finishDrinkingPotion();
+            } else if (this.drinkTime % 4 == 0 && !this.isSilent()) {
+                this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
+            }
+        }
+
+        if (this.castingSpell != null) {
+            this.playerMagicData.handleCastDuration();
+            if (this.playerMagicData.isCasting()) {
+                this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData);
+            }
+
+            this.forceLookAtTarget(this.getTarget());
+            if (this.playerMagicData.getCastDurationRemaining() <= 0) {
+                if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
                     this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
                 }
 
+                this.castComplete();
+            } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (this.playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
+                this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
             }
-        }
 
-        public void initiateCastSpell(AbstractSpell spell, int spellLevel) {
-            if (spell == SpellRegistry.none()) {
+        }
+    }
+
+    public void initiateCastSpell(AbstractSpell spell, int spellLevel) {
+        if (spell == SpellRegistry.none()) {
+            this.castingSpell = null;
+        } else {
+
+            this.castingSpell = new SpellData(spell, spellLevel);
+            if (this.getTarget() != null) {
+                this.forceLookAtTarget(this.getTarget());
+            }
+
+            if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, this, this.playerMagicData)) {
                 this.castingSpell = null;
             } else {
-
-                this.castingSpell = new SpellData(spell, spellLevel);
-                if (this.getTarget() != null) {
-                    this.forceLookAtTarget(this.getTarget());
-                }
-
-                if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, this, this.playerMagicData)) {
-                    this.castingSpell = null;
+                if (spell != SpellRegistry.TELEPORT_SPELL.get() && spell != SpellRegistry.FROST_STEP_SPELL.get()) {
+                    if (spell == SpellRegistry.BLOOD_STEP_SPELL.get()) {
+                        this.setTeleportLocationBehindTarget(3);
+                    } else if (spell == SpellRegistry.BURNING_DASH_SPELL.get()) {
+                        this.setBurningDashDirectionData();
+                    }
                 } else {
-                    if (spell != SpellRegistry.TELEPORT_SPELL.get() && spell != SpellRegistry.FROST_STEP_SPELL.get()) {
-                        if (spell == SpellRegistry.BLOOD_STEP_SPELL.get()) {
-                            this.setTeleportLocationBehindTarget(3);
-                        } else if (spell == SpellRegistry.BURNING_DASH_SPELL.get()) {
-                            this.setBurningDashDirectionData();
-                        }
-                    } else {
-                        this.setTeleportLocationBehindTarget(10);
-                    }
-
-                    this.playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), this), CastSource.MOB, SpellSelectionManager.MAINHAND);
-                    if (!this.level().isClientSide) {
-                        this.castingSpell.getSpell().onServerPreCast(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData);
-                    }
-
+                    this.setTeleportLocationBehindTarget(10);
                 }
+
+                this.playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), this), CastSource.MOB, SpellSelectionManager.MAINHAND);
+                if (!this.level().isClientSide) {
+                    this.castingSpell.getSpell().onServerPreCast(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData);
+                }
+
             }
         }
+    }
 
-        public void notifyDangerousProjectile(Projectile projectile) {
+    public void notifyDangerousProjectile(Projectile projectile) {
+    }
+
+    public boolean isCasting() {
+        if (builder.isCasting != null){
+            Object obj = builder.isCasting.apply(this);
+            if (obj instanceof Boolean b) return b;
+            EntityJSHelperClass.logErrorMessageOnce("[KubeJS Irons Spells]: Invalid return value for isCasting from entity: " + entityName() + ". Value: " + obj + ". Must be a boolean. Defaulting to " + this.playerMagicData.isCasting());
         }
+        return this.playerMagicData.isCasting();
+    }
 
-        public boolean isCasting() {
-            if (builder.isCasting != null){
-                Object obj = builder.isCasting.apply(this);
-                if (obj instanceof Boolean b) return b;
-                EntityJSHelperClass.logErrorMessageOnce("[KubeJS Irons Spells]: Invalid return value for isCasting from entity: " + entityName() + ". Value: " + obj + ". Must be a boolean. Defaulting to " + this.playerMagicData.isCasting());
+    public boolean setTeleportLocationBehindTarget(int distance) {
+        LivingEntity target = this.getTarget();
+        boolean valid = false;
+        if (target != null) {
+            Vec3 rotation = target.getLookAngle().normalize().scale((double)(-distance));
+            Vec3 pos = target.position();
+            Vec3 teleportPos = rotation.add(pos);
+
+            for(int i = 0; i < 24; ++i) {
+                Vec3 randomness = Utils.getRandomVec3((double)(0.15F * (float)i)).multiply(1.0, 0.0, 1.0);
+                teleportPos = Utils.moveToRelativeGroundLevel(this.level(), target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
+                teleportPos = new Vec3(teleportPos.x, teleportPos.y + 0.10000000149011612, teleportPos.z);
+                AABB reposBB = this.getBoundingBox().move(teleportPos.subtract(this.position()));
+                if (!this.level().collidesWithSuffocatingBlock(this, reposBB.inflate(-0.05000000074505806))) {
+                    valid = true;
+                    break;
+                }
             }
-            return this.playerMagicData.isCasting();
-        }
 
-        public boolean setTeleportLocationBehindTarget(int distance) {
-            LivingEntity target = this.getTarget();
-            boolean valid = false;
-            if (target != null) {
-                Vec3 rotation = target.getLookAngle().normalize().scale((double)(-distance));
-                Vec3 pos = target.position();
-                Vec3 teleportPos = rotation.add(pos);
-
-                for(int i = 0; i < 24; ++i) {
-                    Vec3 randomness = Utils.getRandomVec3((double)(0.15F * (float)i)).multiply(1.0, 0.0, 1.0);
-                    teleportPos = Utils.moveToRelativeGroundLevel(this.level(), target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
-                    teleportPos = new Vec3(teleportPos.x, teleportPos.y + 0.10000000149011612, teleportPos.z);
-                    AABB reposBB = this.getBoundingBox().move(teleportPos.subtract(this.position()));
-                    if (!this.level().collidesWithSuffocatingBlock(this, reposBB.inflate(-0.05000000074505806))) {
-                        valid = true;
-                        break;
-                    }
-                }
-
-                if (valid) {
-                    this.playerMagicData.setAdditionalCastData(new TeleportSpell.TeleportData(teleportPos));
-                } else {
-                    this.playerMagicData.setAdditionalCastData(new TeleportSpell.TeleportData(this.position()));
-                }
+            if (valid) {
+                this.playerMagicData.setAdditionalCastData(new TeleportSpell.TeleportData(teleportPos));
             } else {
                 this.playerMagicData.setAdditionalCastData(new TeleportSpell.TeleportData(this.position()));
             }
-
-            return valid;
+        } else {
+            this.playerMagicData.setAdditionalCastData(new TeleportSpell.TeleportData(this.position()));
         }
 
-        public void setBurningDashDirectionData() {
-            this.playerMagicData.setAdditionalCastData(new BurningDashSpell.BurningDashDirectionOverrideCastData());
+        return valid;
+    }
+
+    public void setBurningDashDirectionData() {
+        this.playerMagicData.setAdditionalCastData(new BurningDashSpell.BurningDashDirectionOverrideCastData());
+    }
+
+    private void forceLookAtTarget(LivingEntity target) {
+        if (target != null) {
+            double d0 = target.getX() - this.getX();
+            double d2 = target.getZ() - this.getZ();
+            double d1 = target.getEyeY() - this.getEyeY();
+            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+            float f = (float)(Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F;
+            float f1 = (float)(-(Mth.atan2(d1, d3) * 57.2957763671875));
+            this.setXRot(f1 % 360.0F);
+            this.setYRot(f % 360.0F);
         }
 
-        private void forceLookAtTarget(LivingEntity target) {
-            if (target != null) {
-                double d0 = target.getX() - this.getX();
-                double d2 = target.getZ() - this.getZ();
-                double d1 = target.getEyeY() - this.getEyeY();
-                double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-                float f = (float)(Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F;
-                float f1 = (float)(-(Mth.atan2(d1, d3) * 57.2957763671875));
-                this.setXRot(f1 % 360.0F);
-                this.setYRot(f % 360.0F);
-            }
+    }
 
-        }
-
-        private void addClientSideParticles() {
-            double d0 = 0.4;
-            double d1 = 0.3;
-            double d2 = 0.35;
-            float f = this.yBodyRot * 0.017453292F + Mth.cos((float)this.tickCount * 0.6662F) * 0.25F;
-            float f1 = Mth.cos(f);
-            float f2 = Mth.sin(f);
-            this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6, this.getY() + 1.8, this.getZ() + (double)f2 * 0.6, d0, d1, d2);
-            this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
-        }
+    private void addClientSideParticles() {
+        double d0 = 0.4;
+        double d1 = 0.3;
+        double d2 = 0.35;
+        float f = this.yBodyRot * 0.017453292F + Mth.cos((float)this.tickCount * 0.6662F) * 0.25F;
+        float f1 = Mth.cos(f);
+        float f2 = Mth.sin(f);
+        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6, this.getY() + 1.8, this.getZ() + (double)f2 * 0.6, d0, d1, d2);
+        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
+    }
 
 
-        static {
-            DATA_CANCEL_CAST = SynchedEntityData.defineId(SpellCastingMobJS.class, EntityDataSerializers.BOOLEAN);
-            DATA_DRINKING_POTION = SynchedEntityData.defineId(SpellCastingMobJS.class, EntityDataSerializers.BOOLEAN);
-            SPEED_MODIFIER_DRINKING = new AttributeModifier(UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E"), "Drinking speed penalty", -0.15, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        }
+    static {
+        DATA_CANCEL_CAST = SynchedEntityData.defineId(SpellCastingMobJS.class, EntityDataSerializers.BOOLEAN);
+        DATA_DRINKING_POTION = SynchedEntityData.defineId(SpellCastingMobJS.class, EntityDataSerializers.BOOLEAN);
+        SPEED_MODIFIER_DRINKING = new AttributeModifier(UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E"), "Drinking speed penalty", -0.15, AttributeModifier.Operation.MULTIPLY_TOTAL);
+    }
 
     /**
      * EntityJS Builder Overrides Below
