@@ -18,11 +18,12 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -34,6 +35,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -44,7 +46,104 @@ import java.util.UUID;
 
 @Mixin(PathfinderMob.class)
 @SuppressWarnings("unused")
-public class PathfinderMobMixin extends Mob {
+public class PathfinderMobMixin {
+    @Shadow(aliases = "entityData")
+    protected SynchedEntityData entityData;
+    @Shadow(aliases = "random")
+    private RandomSource random;
+    @Shadow(aliases = "autoSpinAttackTicks")
+    private int autoSpinAttackTicks;
+    @Shadow(aliases = "yBodyRot")
+    private float yBodyRot;
+    @Shadow(aliases = "tickCount")
+    private int tickCount;
+
+    @Shadow(aliases = "getAttribute")
+    public AttributeInstance getAttribute(net.minecraft.world.entity.ai.attributes.Attribute pAttribute) {
+        return null;
+    }
+
+    @Shadow(aliases = "level")
+    public Level level() {
+        return null;
+    }
+
+    @Shadow(aliases = "heal")
+    public void heal(float pHealAmount) {
+    }
+
+    @Shadow(aliases = "isSilent")
+    public boolean isSilent() {
+        return true;
+    }
+
+    @Shadow(aliases = "getX")
+    public double getX() {
+        return 0;
+    }
+
+    @Shadow(aliases = "getY")
+    public double getY() {
+        return 0;
+    }
+
+    @Shadow(aliases = "getZ")
+    public double getZ() {
+        return 0;
+    }
+
+    @Shadow(aliases = "getMaxHealth")
+    public float getMaxHealth() {
+        return 0;
+    }
+
+    @Shadow(aliases = "getSoundSource")
+    public SoundSource getSoundSource() {
+        return null;
+    }
+
+    @Shadow(aliases = "getUUID")
+    public UUID getUUID() {
+        return null;
+    }
+
+    @Shadow(aliases = "getDeltaMovement")
+    public Vec3 getDeltaMovement() {
+        return null;
+    }
+
+    @Shadow(aliases = "setLivingEntityFlag")
+    public void setLivingEntityFlag(int pFlag, boolean pValue) {
+    }
+
+    @Shadow(aliases = "setYRot")
+    public void setYRot(float v) {
+    }
+
+    @Shadow(aliases = "getTarget")
+    public LivingEntity getTarget() {
+        return null;
+    }
+
+    @Shadow(aliases = "getBoundingBox")
+    public AABB getBoundingBox() {
+        return null;
+    }
+
+    @Shadow(aliases = "position")
+    public Vec3 position() {
+        return null;
+    }
+
+    @Shadow(aliases = "getEyeY")
+    public double getEyeY() {
+        return 0;
+    }
+
+    @Shadow(aliases = "setXRot")
+    public void setXRot(double v) {
+    }
+
     @Unique
     private static final EntityDataAccessor<Boolean> DATA_CANCEL_CAST;
     @Unique
@@ -63,13 +162,12 @@ public class PathfinderMobMixin extends Mob {
     @Unique
     public boolean hasUsedSingleAttack;
 
-    protected PathfinderMobMixin(EntityType<? extends Mob> pEntityType, Level pLevel) {
-        super(pEntityType, pLevel);
-    }
+    @Unique
+    private final PathfinderMob self = (PathfinderMob) (Object) this;
 
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     public void init(EntityType<? extends PathfinderMob> entityType, Level level, CallbackInfo ci) {
-        playerMagicData.setSyncedData(new SyncedSpellData(this));
+        playerMagicData.setSyncedData(new SyncedSpellData(self));
         this.entityData.define(DATA_CANCEL_CAST, false);
         this.entityData.define(DATA_DRINKING_POTION, false);
     }
@@ -105,14 +203,13 @@ public class PathfinderMobMixin extends Mob {
         this.setDrinkingPotion(false);
         this.heal(Math.min(Math.max(10.0F, this.getMaxHealth() / 10.0F), this.getMaxHealth() / 4.0F));
         this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MODIFIER_DRINKING);
-        if (!this.isSilent()) {
+        if (this.isSilent()) {
             this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
         }
     }
 
     @Unique
     public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
-        super.onSyncedDataUpdated(pKey);
         if (this.level().isClientSide) {
             if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
                 this.cancelCast();
@@ -123,15 +220,13 @@ public class PathfinderMobMixin extends Mob {
 
     @Unique
     public void addAdditionalSaveData(CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
         playerMagicData.getSyncedData().saveNBTData(pCompound);
         pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
     }
 
     @Unique
     public void readAdditionalSaveData(CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
-        SyncedSpellData syncedSpellData = new SyncedSpellData(this);
+        SyncedSpellData syncedSpellData = new SyncedSpellData(self);
         syncedSpellData.loadNBTData(pCompound);
         if (syncedSpellData.isCasting()) {
             AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
@@ -145,8 +240,7 @@ public class PathfinderMobMixin extends Mob {
     @Unique
     public void cancelCast() {
         if (this.isCasting()) {
-            if (this.level().isClientSide) {
-            } else {
+            if (!this.level().isClientSide) {
                 this.entityData.set(DATA_CANCEL_CAST, !(Boolean)this.entityData.get(DATA_CANCEL_CAST));
             }
             this.castComplete();
@@ -157,7 +251,7 @@ public class PathfinderMobMixin extends Mob {
     private void castComplete() {
         if (!this.level().isClientSide) {
             if (this.castingSpell != null) {
-                this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData, false);
+                this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), self, playerMagicData, false);
             }
         } else {
             playerMagicData.resetCastingState();
@@ -188,7 +282,7 @@ public class PathfinderMobMixin extends Mob {
                     AbstractSpell spell = playerMagicData.getCastingSpell().getSpell();
                     this.initiateCastSpell(spell, playerMagicData.getCastingSpellLevel());
                     if (this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                        this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), this, InteractionHand.MAIN_HAND, playerMagicData);
+                        this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), self, InteractionHand.MAIN_HAND, playerMagicData);
                         this.castComplete();
                     }
                 }
@@ -199,11 +293,10 @@ public class PathfinderMobMixin extends Mob {
 
     @Unique
     protected void customServerAiStep() {
-        super.customServerAiStep();
         if (this.isDrinkingPotion()) {
             if (this.drinkTime-- <= 0) {
                 this.finishDrinkingPotion();
-            } else if (this.drinkTime % 4 == 0 && !this.isSilent()) {
+            } else if (this.drinkTime % 4 == 0 && this.isSilent()) {
                 this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
             }
         }
@@ -211,18 +304,18 @@ public class PathfinderMobMixin extends Mob {
         if (this.castingSpell != null) {
             playerMagicData.handleCastDuration();
             if (playerMagicData.isCasting()) {
-                this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), this, playerMagicData);
+                this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), self, playerMagicData);
             }
 
             this.forceLookAtTarget(this.getTarget());
             if (playerMagicData.getCastDurationRemaining() <= 0) {
                 if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                    this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), this, CastSource.MOB, playerMagicData);
+                    this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self, CastSource.MOB, playerMagicData);
                 }
 
                 this.castComplete();
             } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
-                this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), this, CastSource.MOB, playerMagicData);
+                this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self, CastSource.MOB, playerMagicData);
             }
 
         }
@@ -239,7 +332,7 @@ public class PathfinderMobMixin extends Mob {
                 this.forceLookAtTarget(this.getTarget());
             }
 
-            if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, this, playerMagicData)) {
+            if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, self, playerMagicData)) {
                 this.castingSpell = null;
             } else {
                 if (spell != SpellRegistry.TELEPORT_SPELL.get() && spell != SpellRegistry.FROST_STEP_SPELL.get()) {
@@ -252,9 +345,9 @@ public class PathfinderMobMixin extends Mob {
                     this.setTeleportLocationBehindTarget(10);
                 }
 
-                playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), this), CastSource.MOB, SpellSelectionManager.MAINHAND);
+                playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), self), CastSource.MOB, SpellSelectionManager.MAINHAND);
                 if (!this.level().isClientSide) {
-                    this.castingSpell.getSpell().onServerPreCast(this.level(), this.castingSpell.getLevel(), this, playerMagicData);
+                    this.castingSpell.getSpell().onServerPreCast(this.level(), this.castingSpell.getLevel(), self, playerMagicData);
                 }
 
             }
@@ -284,7 +377,7 @@ public class PathfinderMobMixin extends Mob {
                 teleportPos = Utils.moveToRelativeGroundLevel(this.level(), target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
                 teleportPos = new Vec3(teleportPos.x, teleportPos.y + 0.10000000149011612, teleportPos.z);
                 AABB reposBB = this.getBoundingBox().move(teleportPos.subtract(this.position()));
-                if (!this.level().collidesWithSuffocatingBlock(this, reposBB.inflate(-0.05000000074505806))) {
+                if (!this.level().collidesWithSuffocatingBlock(self, reposBB.inflate(-0.05000000074505806))) {
                     valid = true;
                     break;
                 }
@@ -334,8 +427,8 @@ public class PathfinderMobMixin extends Mob {
     }
 
     static {
-        DATA_CANCEL_CAST = SynchedEntityData.defineId(PathfinderMobMixin.class, EntityDataSerializers.BOOLEAN);
-        DATA_DRINKING_POTION = SynchedEntityData.defineId(PathfinderMobMixin.class, EntityDataSerializers.BOOLEAN);
+        DATA_CANCEL_CAST = SynchedEntityData.defineId(PathfinderMob.class, EntityDataSerializers.BOOLEAN);
+        DATA_DRINKING_POTION = SynchedEntityData.defineId(PathfinderMob.class, EntityDataSerializers.BOOLEAN);
         SPEED_MODIFIER_DRINKING = new AttributeModifier(UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E"), "Drinking speed penalty", -0.15, AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
 }
