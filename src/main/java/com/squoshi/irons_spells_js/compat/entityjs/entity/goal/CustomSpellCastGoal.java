@@ -1,5 +1,6 @@
 package com.squoshi.irons_spells_js.compat.entityjs.entity.goal;
 
+import com.squoshi.irons_spells_js.compat.entityjs.entity.ISpellCastingMob;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -16,10 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.NavigableMap;
+import java.util.*;
 
 public class CustomSpellCastGoal extends Goal {
     protected final PathfinderMob mob;
@@ -172,16 +170,16 @@ public class CustomSpellCastGoal extends Goal {
         }
         if (--this.attackTime == 0) {
             resetAttackTimer(distanceSquared);
-            if (!mob.isCasting() && !mob.isDrinkingPotion()) {
+            if (!((ISpellCastingMob) mob).irons_spells_js$isCasting() && !((ISpellCastingMob) mob).irons_spells_js$isDrinkingPotion()) {
                 doSpellAction();
             }
         } else if (this.attackTime < 0) {
             this.attackTime = Mth.floor(Mth.lerp(Math.sqrt(distanceSquared) / (double) this.attackRadius, (double) this.attackIntervalMin, (double) this.attackIntervalMax));
         }
-        if (mob.isCasting()) {
+        if (((ISpellCastingMob) mob).irons_spells_js$isCasting()) {
             var spellData = MagicData.getPlayerMagicData(mob).getCastingSpell();
             if (target.isDeadOrDying() || spellData.getSpell().shouldAIStopCasting(spellData.getLevel(), mob, target)) {
-                mob.cancelCast();
+                ((ISpellCastingMob) mob).irons_spells_js$cancelCast();
             }
         }
     }
@@ -192,10 +190,10 @@ public class CustomSpellCastGoal extends Goal {
     }
 
     protected void doMovement(double distanceSquared) {
-        double speed = (mob.isCasting() ? .75f : 1f) * movementSpeed();
+        double speed = (((ISpellCastingMob) mob).irons_spells_js$isCasting() ? .75f : 1f) * movementSpeed();
         mob.lookAt(target, 30, 30);
         float fleeDist = .275f;
-        if (allowFleeing && (!mob.isCasting() && attackTime > 10) && --fleeCooldown <= 0 && distanceSquared < attackRadiusSqr * (fleeDist * fleeDist)) {
+        if (allowFleeing && (!((ISpellCastingMob) mob).irons_spells_js$isCasting() && attackTime > 10) && --fleeCooldown <= 0 && distanceSquared < attackRadiusSqr * (fleeDist * fleeDist)) {
             Vec3 flee = DefaultRandomPos.getPosAway(this.mob, 16, 7, target.position());
             if (flee != null) {
                 this.mob.getNavigation().moveTo(flee.x, flee.y, flee.z, speed * 1.5);
@@ -251,9 +249,9 @@ public class CustomSpellCastGoal extends Goal {
     }
 
     protected void doSpellAction() {
-        if (!mob.hasUsedSingleAttack && singleUseSpell != SpellRegistry.none() && singleUseDelay <= 0) {
-            mob.hasUsedSingleAttack = true;
-            mob.initiateCastSpell(singleUseSpell, singleUseLevel);
+        if (!((ISpellCastingMob) mob).irons_spells_js$hasUsedSingleAttack && singleUseSpell != SpellRegistry.none() && singleUseDelay <= 0) {
+            ((ISpellCastingMob) mob).irons_spells_js$hasUsedSingleAttack = true;
+            ((ISpellCastingMob) mob).irons_spells_js$initiateCastSpell(singleUseSpell, singleUseLevel);
             fleeCooldown = 7 + singleUseSpell.getCastTime(singleUseLevel);
         } else {
             var spell = getNextSpellType();
@@ -261,7 +259,7 @@ public class CustomSpellCastGoal extends Goal {
             spellLevel = Math.max(spellLevel, 1);
 
             if (!spell.shouldAIStopCasting(spellLevel, mob, target)) {
-                mob.initiateCastSpell(spell, spellLevel);
+                ((ISpellCastingMob) mob).irons_spells_js$initiateCastSpell(spell, spellLevel);
                 fleeCooldown = 7 + spell.getCastTime(spellLevel);
             } else {
                 attackTime = 5;
@@ -300,7 +298,7 @@ public class CustomSpellCastGoal extends Goal {
             lastSpellCategory = spellList;
             if (drinksPotions && spellList == supportSpells) {
                 if (supportSpells.isEmpty() || mob.getRandom().nextFloat() < .5f) {
-                    mob.startDrinkingPotion();
+                    ((ISpellCastingMob) mob).irons_spells_js$startDrinkingPotion();
                     return SpellRegistry.none();
                 }
             }
