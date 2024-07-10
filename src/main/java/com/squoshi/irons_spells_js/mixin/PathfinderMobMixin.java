@@ -1,6 +1,7 @@
 package com.squoshi.irons_spells_js.mixin;
 
 import com.google.common.collect.Maps;
+import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.entity.IMagicEntity;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.magic.SpellSelectionManager;
@@ -11,8 +12,10 @@ import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.SyncedSpellData;
+import io.redspace.ironsspellbooks.entity.mobs.abstract_spell_casting_mob.AbstractSpellCastingMob;
 import io.redspace.ironsspellbooks.spells.ender.TeleportSpell;
 import io.redspace.ironsspellbooks.spells.fire.BurningDashSpell;
+import io.redspace.ironsspellbooks.util.Log;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -28,6 +31,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
@@ -102,7 +106,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     @Unique
     private static final EntityDataAccessor<Boolean> DATA_DRINKING_POTION;
     @Unique
-    private static final MagicData playerMagicData = new MagicData(true);
+    private final MagicData playerMagicData = new MagicData(true);
     @Unique
     private static final AttributeModifier SPEED_MODIFIER_DRINKING;
 
@@ -115,18 +119,35 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     @Unique
     public boolean hasUsedSingleAttack;
 
-    @Unique
-    private final PathfinderMob self = (PathfinderMob) (Object) this;
-
     public PathfinderMob self() {
-        return self;
+        return (PathfinderMob) (Object) this;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     public void init(EntityType<? extends PathfinderMob> entityType, Level level, CallbackInfo ci) {
-        playerMagicData.setSyncedData(new SyncedSpellData(self));
-        this.entityData.define(DATA_CANCEL_CAST, false);
-        this.entityData.define(DATA_DRINKING_POTION, false);
+        if (!(self() instanceof AbstractSpellCastingMob)){
+            playerMagicData.setSyncedData(new SyncedSpellData(self()));
+            this.lookControl = createLookControl();
+        }
+    }
+
+    @Unique
+    private LookControl createLookControl() {
+        return new LookControl(this) {
+            @Override
+            protected boolean resetXRotOnTick() {
+                return getTarget() == null;
+            }
+        };
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        if (!(self() instanceof AbstractSpellCastingMob)){
+            this.entityData.define(DATA_CANCEL_CAST, false);
+            this.entityData.define(DATA_DRINKING_POTION, false);
+        }
     }
 
     @Override
@@ -154,7 +175,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
         }
     }
 
-    public void finishDrinkingPotion() {
+    private void finishDrinkingPotion() {
         this.setDrinkingPotion(false);
         this.heal(Math.min(Math.max(10.0F, this.getMaxHealth() / 10.0F), this.getMaxHealth() / 4.0F));
         this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MODIFIER_DRINKING);
@@ -165,31 +186,44 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
-        if (this.level().isClientSide) {
-            if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
-                this.cancelCast();
+        super.onSyncedDataUpdated(pKey);
+        if (!(self() instanceof AbstractSpellCastingMob)){
+            if (!self().level().isClientSide) {
+                return;
             }
 
+            if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
+                if (Log.SPELL_DEBUG) {
+                    IronsSpellbooks.LOGGER.debug("ASCM.onSyncedDataUpdated.1 this.isCasting:{}, playerMagicData.isCasting:{} isClient:{}", isCasting(), playerMagicData == null ? "null" : playerMagicData.isCasting(), self().level().isClientSide());
+                }
+                cancelCast();
+            }
         }
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
-        playerMagicData.getSyncedData().saveNBTData(pCompound);
-        pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
+        super.addAdditionalSaveData(pCompound);
+        if (!(self() instanceof AbstractSpellCastingMob)){
+            playerMagicData.getSyncedData().saveNBTData(pCompound);
+            pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
+        }
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
-        SyncedSpellData syncedSpellData = new SyncedSpellData(self);
-        syncedSpellData.loadNBTData(pCompound);
-        if (syncedSpellData.isCasting()) {
-            AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
-            this.initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());
-        }
+        super.readAdditionalSaveData(pCompound);
+        if (!(self() instanceof AbstractSpellCastingMob)){
+            SyncedSpellData syncedSpellData = new SyncedSpellData(self());
+            syncedSpellData.loadNBTData(pCompound);
+            if (syncedSpellData.isCasting()) {
+                AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
+                this.initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());
+            }
 
-        playerMagicData.setSyncedData(syncedSpellData);
-        this.hasUsedSingleAttack = pCompound.getBoolean("usedSpecial");
+            playerMagicData.setSyncedData(syncedSpellData);
+            this.hasUsedSingleAttack = pCompound.getBoolean("usedSpecial");
+        }
     }
 
     @Override
@@ -206,7 +240,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     public void castComplete() {
         if (!this.level().isClientSide) {
             if (this.castingSpell != null) {
-                this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), self, playerMagicData, false);
+                this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), self(), playerMagicData, false);
             }
         } else {
             playerMagicData.resetCastingState();
@@ -214,14 +248,14 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
         this.castingSpell = null;
     }
 
-    public void startAutoSpinAttack(int pAttackTicks) {
-        this.autoSpinAttackTicks = pAttackTicks;
-        if (!this.level().isClientSide) {
-            this.setLivingEntityFlag(4, true);
-        }
-
-        this.setYRot((float)(Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 57.2957763671875));
-    }
+//    public void startAutoSpinAttack(int pAttackTicks) {
+//        this.autoSpinAttackTicks = pAttackTicks;
+//        if (!this.level().isClientSide) {
+//            this.setLivingEntityFlag(4, true);
+//        }
+//
+//        this.setYRot((float)(Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 57.2957763671875));
+//    }
 
     @Override
     public void setSyncedSpellData(SyncedSpellData syncedSpellData) {
@@ -236,7 +270,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
                     AbstractSpell spell = playerMagicData.getCastingSpell().getSpell();
                     this.initiateCastSpell(spell, playerMagicData.getCastingSpellLevel());
                     if (this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                        this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), self, InteractionHand.MAIN_HAND, playerMagicData);
+                        this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), self(), InteractionHand.MAIN_HAND, playerMagicData);
                         this.castComplete();
                     }
                 }
@@ -247,31 +281,34 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
 
     @Override
     public void customServerAiStep() {
-        if (this.isDrinkingPotion()) {
-            if (this.drinkTime-- <= 0) {
-                this.finishDrinkingPotion();
-            } else if (this.drinkTime % 4 == 0 && this.isSilent()) {
-                this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
-            }
-        }
-
-        if (this.castingSpell != null) {
-            playerMagicData.handleCastDuration();
-            if (playerMagicData.isCasting()) {
-                this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), self, playerMagicData);
+        super.customServerAiStep();
+        if (!(self() instanceof AbstractSpellCastingMob)){
+            if (this.isDrinkingPotion()) {
+                if (this.drinkTime-- <= 0) {
+                    this.finishDrinkingPotion();
+                } else if (this.drinkTime % 4 == 0 && this.isSilent()) {
+                    this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
+                }
             }
 
-            this.forceLookAtTarget(this.getTarget());
-            if (playerMagicData.getCastDurationRemaining() <= 0) {
-                if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                    this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self, CastSource.MOB, playerMagicData);
+            if (this.castingSpell != null) {
+                playerMagicData.handleCastDuration();
+                if (playerMagicData.isCasting()) {
+                    this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), self(), playerMagicData);
                 }
 
-                this.castComplete();
-            } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
-                this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self, CastSource.MOB, playerMagicData);
-            }
+                this.forceLookAtTarget(this.getTarget());
+                if (playerMagicData.getCastDurationRemaining() <= 0) {
+                    if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
+                        this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self(), CastSource.MOB, playerMagicData);
+                    }
 
+                    this.castComplete();
+                } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
+                    this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self(), CastSource.MOB, playerMagicData);
+                }
+
+            }
         }
     }
 
@@ -286,7 +323,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
                 this.forceLookAtTarget(this.getTarget());
             }
 
-            if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, self, playerMagicData)) {
+            if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, self(), playerMagicData)) {
                 this.castingSpell = null;
             } else {
                 if (spell != SpellRegistry.TELEPORT_SPELL.get() && spell != SpellRegistry.FROST_STEP_SPELL.get()) {
@@ -299,9 +336,9 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
                     this.setTeleportLocationBehindTarget(10);
                 }
 
-                playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), self), CastSource.MOB, SpellSelectionManager.MAINHAND);
+                playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), self()), CastSource.MOB, SpellSelectionManager.MAINHAND);
                 if (!this.level().isClientSide) {
-                    this.castingSpell.getSpell().onServerPreCast(this.level(), this.castingSpell.getLevel(), self, playerMagicData);
+                    this.castingSpell.getSpell().onServerPreCast(this.level(), this.castingSpell.getLevel(), self(), playerMagicData);
                 }
 
             }
@@ -331,7 +368,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
                 teleportPos = Utils.moveToRelativeGroundLevel(this.level(), target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
                 teleportPos = new Vec3(teleportPos.x, teleportPos.y + 0.10000000149011612, teleportPos.z);
                 AABB reposBB = this.getBoundingBox().move(teleportPos.subtract(this.position()));
-                if (!this.level().collidesWithSuffocatingBlock(self, reposBB.inflate(-0.05000000074505806))) {
+                if (!this.level().collidesWithSuffocatingBlock(self(), reposBB.inflate(-0.05000000074505806))) {
                     valid = true;
                     break;
                 }
@@ -354,7 +391,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
         playerMagicData.setAdditionalCastData(new BurningDashSpell.BurningDashDirectionOverrideCastData());
     }
 
-    public void forceLookAtTarget(LivingEntity target) {
+    private void forceLookAtTarget(LivingEntity target) {
         if (target != null) {
             double d0 = target.getX() - this.getX();
             double d2 = target.getZ() - this.getZ();
@@ -367,16 +404,16 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
         }
     }
 
-    public void addClientSideParticles() {
-        double d0 = 0.4;
-        double d1 = 0.3;
-        double d2 = 0.35;
-        float f = this.yBodyRot * 0.017453292F + Mth.cos((float)this.tickCount * 0.6662F) * 0.25F;
-        float f1 = Mth.cos(f);
-        float f2 = Mth.sin(f);
-        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6, this.getY() + 1.8, this.getZ() + (double)f2 * 0.6, d0, d1, d2);
-        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
-    }
+//    public void addClientSideParticles() {
+//        double d0 = 0.4;
+//        double d1 = 0.3;
+//        double d2 = 0.35;
+//        float f = this.yBodyRot * 0.017453292F + Mth.cos((float)this.tickCount * 0.6662F) * 0.25F;
+//        float f1 = Mth.cos(f);
+//        float f2 = Mth.sin(f);
+//        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6, this.getY() + 1.8, this.getZ() + (double)f2 * 0.6, d0, d1, d2);
+//        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
+//    }
 
     @Override
     public boolean getHasUsedSingleAttack() {
