@@ -23,6 +23,7 @@ public abstract class SpellCastingMobBuilder<T extends PathfinderMob & IAnimatab
         this.isCasting = isCasting;
         return this;
     }
+
     @Info(value = """
             Sets a callback function to be executed when the entity stops casting a spell.
                         

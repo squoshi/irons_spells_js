@@ -28,11 +28,17 @@ public interface AbstractSpellWrapper {
         return o instanceof AbstractSpell;
     }
 
+    @Info(value = """
+        Returns either `ENABLED`, `DISABLED`, or `UNREGISTERED`, based on the spell inputted.
+    """)
     static SpellStatus checkStatus(ISSKJSUtils.SpellHolder spellHolder) {
         SpellStatus enabled = SpellRegistry.getSpell(spellHolder.getLocation()).isEnabled() ? SpellStatus.ENABLED : SpellStatus.DISABLED;
         return exists(spellHolder) ? enabled : SpellStatus.UNREGISTERED;
     }
 
+    @Info(value = """
+        Returns whether a spell is enabled in the config or not.
+    """)
     static boolean isEnabled(ISSKJSUtils.SpellHolder spellHolder) {
         return SpellRegistry.getSpell(spellHolder.getLocation()).isEnabled();
     }

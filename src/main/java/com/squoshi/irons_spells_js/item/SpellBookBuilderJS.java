@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import io.redspace.ironsspellbooks.api.registry.SpellDataRegistryHolder;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
@@ -39,16 +40,26 @@ public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
         return RegistryInfo.ITEM;
     }
 
+    @Info("""
+            Adds a default attribute to the item. Can be used multiple times. It takes an attribute ID (or just an attribute object), the modifier name, the modifier amount, and the modifier operation.
+            The modifier operation can be either `ADDITION`, `MULTIPLY_TOTAL` or `MULTIPLY_BASE`.
+    """)
     public SpellBookBuilderJS addDefaultAttribute(ISSKJSUtils.AttributeHolder attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
         defaultModifiers.add(new AttributeHolder(attribute.getLocation(), new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
         return this;
     }
 
+    @Info("""
+            Sets the maximum amount of spell slots the spell book can have.
+    """)
     public SpellBookBuilderJS setMaxSpellSlots(int maxSpellSlots) {
         this.maxSpellSlots = maxSpellSlots;
         return this;
     }
 
+    @Info("""
+            Adds a default spell to the item. Can be used multiple times. It takes a spell ID (or a spell object) and the spell level.
+    """)
     public SpellBookBuilderJS addDefaultSpell(ISSKJSUtils.SpellHolder spell, int spellLevel) {
         this.spellHolders.add(new SpellHolder(spell.getLocation(), spellLevel));
         return this;

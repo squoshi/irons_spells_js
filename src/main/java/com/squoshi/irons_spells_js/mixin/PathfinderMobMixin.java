@@ -46,6 +46,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.HashMap;
 import java.util.UUID;
 
+// pain.
 @Mixin(PathfinderMob.class)
 public class PathfinderMobMixin extends Mob implements IMagicEntity {
     protected PathfinderMobMixin(EntityType<? extends Mob> pEntityType, Level pLevel) {

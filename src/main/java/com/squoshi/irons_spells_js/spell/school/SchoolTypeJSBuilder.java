@@ -3,6 +3,7 @@ package com.squoshi.irons_spells_js.spell.school;
 import com.squoshi.irons_spells_js.IronsSpellsJSPlugin;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import io.redspace.ironsspellbooks.api.spells.SchoolType;
 import net.minecraft.core.registries.Registries;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
@@ -35,31 +36,51 @@ public class SchoolTypeJSBuilder extends BuilderBase<SchoolType> {
         this.schoolResource = i;
     }
 
+    @Info("""
+            Sets the ID of the item tag used for the focus item.
+            Focus items need the `"irons_spellbooks:school_focus"` tag, as well as the tag specified here.
+    """)
     public SchoolTypeJSBuilder setFocus(ResourceLocation focus) {
         this.focus = ItemTags.create(focus);
         return this;
     }
 
+    @Info("""
+            Sets the name of the school. It requires a `Component`, which allows custom colors and formatting. You can also use `Text`.
+    """)
     public SchoolTypeJSBuilder setName(Component name) {
         this.name = name;
         return this;
     }
 
+    @Info("""
+            Sets the power attribute of the school. It takes either a String, ResourceLocation, or just an Attribute.
+    """)
     public SchoolTypeJSBuilder setPowerAttribute(ISSKJSUtils.AttributeHolder powerAttribute) {
         this.powerAttribute = LazyOptional.of(() -> Objects.requireNonNull(ForgeRegistries.ATTRIBUTES.getValue(powerAttribute.getLocation())));
         return this;
     }
 
+    @Info("""
+            Sets the resistance attribute of the school. It takes either a String, ResourceLocation, or just an Attribute.
+    """)
     public SchoolTypeJSBuilder setResistanceAttribute(ISSKJSUtils.AttributeHolder resistanceAttribute) {
         this.resistanceAttribute = LazyOptional.of(() -> Objects.requireNonNull(ForgeRegistries.ATTRIBUTES.getValue(resistanceAttribute.getLocation())));
         return this;
     }
 
+    @Info("""
+            Sets the default cast sound of the school. It takes either a String, ResourceLocation, or just a SoundEvent.
+    """)
     public SchoolTypeJSBuilder setDefaultCastSound(ISSKJSUtils.SoundEventHolder defaultCastSound) {
         this.defaultCastSound = LazyOptional.of(() -> Objects.requireNonNull(ForgeRegistries.SOUND_EVENTS.getValue(defaultCastSound.getLocation())));
         return this;
     }
 
+    @Info("""
+            Sets the damage type of the school. It takes either a String, ResourceLocation, or just a DamageType.
+            Damage types can be created using datapacks or server scripts, or you can use an existing damage type.
+    """)
     public SchoolTypeJSBuilder setDamageType(ISSKJSUtils.DamageTypeHolder damageType) {
         this.damageType = ResourceKey.create(Registries.DAMAGE_TYPE, damageType.getLocation());
         return this;
