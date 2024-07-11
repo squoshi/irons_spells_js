@@ -16,7 +16,6 @@ import io.redspace.ironsspellbooks.entity.mobs.abstract_spell_casting_mob.Abstra
 import io.redspace.ironsspellbooks.spells.ender.TeleportSpell;
 import io.redspace.ironsspellbooks.spells.fire.BurningDashSpell;
 import io.redspace.ironsspellbooks.util.Log;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -49,57 +48,9 @@ import java.util.UUID;
 
 @Mixin(PathfinderMob.class)
 public class PathfinderMobMixin extends Mob implements IMagicEntity {
-//    @Shadow(aliases = "entityData")
-//    protected SynchedEntityData entityData;
-//    @Shadow(aliases = "random")
-//    private RandomSource random;
-//    @Shadow(aliases = "autoSpinAttackTicks")
-//    private int autoSpinAttackTicks;
-//    @Shadow(aliases = "yBodyRot")
-//    private float yBodyRot;
-//    @Shadow(aliases = "tickCount")
-//    private int tickCount;
-
     protected PathfinderMobMixin(EntityType<? extends Mob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
-
-//    @Shadow(aliases = "getAttribute")
-//    public AttributeInstance getAttribute(net.minecraft.world.entity.ai.attributes.Attribute pAttribute) { return null; }
-//    @Shadow(aliases = "level")
-//    public Level level() { return null; }
-//    @Shadow(aliases = "heal")
-//    public void heal(float pHealAmount) {}
-//    @Shadow(aliases = "isSilent")
-//    public boolean isSilent() { return true; }
-//    @Shadow(aliases = "getX")
-//    public double getX() { return 0; }
-//    @Shadow(aliases = "getY")
-//    public double getY() { return 0; }
-//    @Shadow(aliases = "getZ")
-//    public double getZ() { return 0; }
-//    @Shadow(aliases = "getMaxHealth")
-//    public float getMaxHealth() { return 0; }
-//    @Shadow(aliases = "getSoundSource")
-//    public SoundSource getSoundSource() { return null; }
-//    @Shadow(aliases = "getUUID")
-//    public UUID getUUID() { return null; }
-//    @Shadow(aliases = "getDeltaMovement")
-//    public Vec3 getDeltaMovement() { return null; }
-//    @Shadow(aliases = "setLivingEntityFlag")
-//    public void setLivingEntityFlag(int pFlag, boolean pValue) {}
-//    @Shadow(aliases = "setYRot")
-//    public void setYRot(float v) {}
-//    @Shadow(aliases = "getTarget")
-//    public LivingEntity getTarget() { return null; }
-//    @Shadow(aliases = "getBoundingBox")
-//    public AABB getBoundingBox() { return null; }
-//    @Shadow(aliases = "position")
-//    public Vec3 position() { return null; }
-//    @Shadow(aliases = "getEyeY")
-//    public double getEyeY() { return 0; }
-//    @Shadow(aliases = "setXRot")
-//    public void setXRot(double v) {}
 
     @Unique
     private static final EntityDataAccessor<Boolean> DATA_CANCEL_CAST;
@@ -248,15 +199,6 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
         this.castingSpell = null;
     }
 
-//    public void startAutoSpinAttack(int pAttackTicks) {
-//        this.autoSpinAttackTicks = pAttackTicks;
-//        if (!this.level().isClientSide) {
-//            this.setLivingEntityFlag(4, true);
-//        }
-//
-//        this.setYRot((float)(Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 57.2957763671875));
-//    }
-
     @Override
     public void setSyncedSpellData(SyncedSpellData syncedSpellData) {
         if (this.level().isClientSide) {
@@ -403,17 +345,6 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
             this.setYRot(f % 360.0F);
         }
     }
-
-//    public void addClientSideParticles() {
-//        double d0 = 0.4;
-//        double d1 = 0.3;
-//        double d2 = 0.35;
-//        float f = this.yBodyRot * 0.017453292F + Mth.cos((float)this.tickCount * 0.6662F) * 0.25F;
-//        float f1 = Mth.cos(f);
-//        float f2 = Mth.sin(f);
-//        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6, this.getY() + 1.8, this.getZ() + (double)f2 * 0.6, d0, d1, d2);
-//        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
-//    }
 
     @Override
     public boolean getHasUsedSingleAttack() {
