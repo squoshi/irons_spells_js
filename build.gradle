@@ -158,6 +158,7 @@ dependencies {
     implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
     implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
     implementation fg.deobf("io.redspace.ironsspellbooks:irons_spellbooks:${minecraft_version}-${irons_spells_version}")
+    implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 
     compileOnly fg.deobf("curse.maven:entityjs-967617:${entityjs_file_id}")
     compileOnly fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
@@ -166,7 +167,6 @@ dependencies {
     // Real dependencies for Runtime
     runtimeOnly fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
     runtimeOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_version}")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
     runtimeOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}")
     runtimeOnly fg.deobf("curse.maven:entityjs-967617:${entityjs_file_id}")
     //runtimeOnly fg.deobf("curse.maven:probejs-585406:5227399")
