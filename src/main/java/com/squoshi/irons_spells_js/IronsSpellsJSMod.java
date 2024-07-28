@@ -7,6 +7,7 @@ import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.item.SpellBook;
 import io.redspace.ironsspellbooks.render.SpellBookCurioRenderer;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -50,7 +51,7 @@ public class IronsSpellsJSMod {
     public static void clientSetup(FMLClientSetupEvent event){
         RegistryInfo.ITEM.objects.forEach((id, builderBase) -> {
             if (builderBase.get() instanceof SpellBook) {
-                CuriosRendererRegistry.register(builderBase.get(), SpellBookCurioRenderer::new);
+                CuriosRendererRegistry.register((Item) builderBase.get(), SpellBookCurioRenderer::new);
             }
         });
     }

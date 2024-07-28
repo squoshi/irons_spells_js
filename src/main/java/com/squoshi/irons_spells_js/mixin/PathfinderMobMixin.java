@@ -118,7 +118,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
 
     @Override
     public void startDrinkingPotion() {
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             this.setDrinkingPotion(true);
             this.drinkTime = 35;
             AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -132,7 +132,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
         this.heal(Math.min(Math.max(10.0F, this.getMaxHealth() / 10.0F), this.getMaxHealth() / 4.0F));
         this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MODIFIER_DRINKING);
         if (this.isSilent()) {
-            this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+            this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
         }
     }
 
@@ -140,13 +140,13 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
         super.onSyncedDataUpdated(pKey);
         if (!(self() instanceof AbstractSpellCastingMob)){
-            if (!self().level().isClientSide) {
+            if (!self().level.isClientSide) {
                 return;
             }
 
             if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
                 if (Log.SPELL_DEBUG) {
-                    IronsSpellbooks.LOGGER.debug("ASCM.onSyncedDataUpdated.1 this.isCasting:{}, playerMagicData.isCasting:{} isClient:{}", isCasting(), playerMagicData == null ? "null" : playerMagicData.isCasting(), self().level().isClientSide());
+                    IronsSpellbooks.LOGGER.debug("ASCM.onSyncedDataUpdated.1 this.isCasting:{}, playerMagicData.isCasting:{} isClient:{}", isCasting(), playerMagicData == null ? "null" : playerMagicData.isCasting(), self().level.isClientSide());
                 }
                 cancelCast();
             }
@@ -181,7 +181,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     @Override
     public void cancelCast() {
         if (this.isCasting()) {
-            if (!this.level().isClientSide) {
+            if (!this.level.isClientSide) {
                 this.entityData.set(DATA_CANCEL_CAST, !(Boolean)this.entityData.get(DATA_CANCEL_CAST));
             }
             this.castComplete();
@@ -190,9 +190,9 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
 
     @Override
     public void castComplete() {
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             if (this.castingSpell != null) {
-                this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), self(), playerMagicData, false);
+                this.castingSpell.getSpell().onServerCastComplete(this.level, this.castingSpell.getLevel(), self(), playerMagicData, false);
             }
         } else {
             playerMagicData.resetCastingState();
@@ -202,7 +202,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
 
     @Override
     public void setSyncedSpellData(SyncedSpellData syncedSpellData) {
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             boolean isCasting = playerMagicData.isCasting();
             playerMagicData.setSyncedData(syncedSpellData);
             this.castingSpell = playerMagicData.getCastingSpell();
@@ -213,7 +213,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
                     AbstractSpell spell = playerMagicData.getCastingSpell().getSpell();
                     this.initiateCastSpell(spell, playerMagicData.getCastingSpellLevel());
                     if (this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                        this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), self(), InteractionHand.MAIN_HAND, playerMagicData);
+                        this.castingSpell.getSpell().onClientPreCast(this.level, this.castingSpell.getLevel(), self(), InteractionHand.MAIN_HAND, playerMagicData);
                         this.castComplete();
                     }
                 }
@@ -230,25 +230,25 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
                 if (this.drinkTime-- <= 0) {
                     this.finishDrinkingPotion();
                 } else if (this.drinkTime % 4 == 0 && this.isSilent()) {
-                    this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
+                    this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
                 }
             }
 
             if (this.castingSpell != null) {
                 playerMagicData.handleCastDuration();
                 if (playerMagicData.isCasting()) {
-                    this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), self(), playerMagicData);
+                    this.castingSpell.getSpell().onServerCastTick(this.level, this.castingSpell.getLevel(), self(), playerMagicData);
                 }
 
                 this.forceLookAtTarget(this.getTarget());
                 if (playerMagicData.getCastDurationRemaining() <= 0) {
                     if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                        this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self(), CastSource.MOB, playerMagicData);
+                        this.castingSpell.getSpell().onCast(this.level, this.castingSpell.getLevel(), self(), CastSource.MOB, playerMagicData);
                     }
 
                     this.castComplete();
                 } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
-                    this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), self(), CastSource.MOB, playerMagicData);
+                    this.castingSpell.getSpell().onCast(this.level, this.castingSpell.getLevel(), self(), CastSource.MOB, playerMagicData);
                 }
 
             }
@@ -266,7 +266,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
                 this.forceLookAtTarget(this.getTarget());
             }
 
-            if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, self(), playerMagicData)) {
+            if (!this.level.isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level, spellLevel, self(), playerMagicData)) {
                 this.castingSpell = null;
             } else {
                 if (spell != SpellRegistry.TELEPORT_SPELL.get() && spell != SpellRegistry.FROST_STEP_SPELL.get()) {
@@ -280,8 +280,8 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
                 }
 
                 playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), self()), CastSource.MOB, SpellSelectionManager.MAINHAND);
-                if (!this.level().isClientSide) {
-                    this.castingSpell.getSpell().onServerPreCast(this.level(), this.castingSpell.getLevel(), self(), playerMagicData);
+                if (!this.level.isClientSide) {
+                    this.castingSpell.getSpell().onServerPreCast(this.level, this.castingSpell.getLevel(), self(), playerMagicData);
                 }
 
             }
@@ -308,10 +308,10 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
 
             for(int i = 0; i < 24; ++i) {
                 Vec3 randomness = Utils.getRandomVec3((double)(0.15F * (float)i)).multiply(1.0, 0.0, 1.0);
-                teleportPos = Utils.moveToRelativeGroundLevel(this.level(), target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
+                teleportPos = Utils.moveToRelativeGroundLevel(this.level, target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
                 teleportPos = new Vec3(teleportPos.x, teleportPos.y + 0.10000000149011612, teleportPos.z);
                 AABB reposBB = this.getBoundingBox().move(teleportPos.subtract(this.position()));
-                if (!this.level().collidesWithSuffocatingBlock(self(), reposBB.inflate(-0.05000000074505806))) {
+                if (!this.level.collidesWithSuffocatingBlock(self(), reposBB.inflate(-0.05000000074505806))) {
                     valid = true;
                     break;
                 }

@@ -36,7 +36,7 @@ public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
     }
 
     @Override
-    public RegistryInfo<Item> getRegistryType() {
+    public RegistryInfo getRegistryType() {
         return RegistryInfo.ITEM;
     }
 

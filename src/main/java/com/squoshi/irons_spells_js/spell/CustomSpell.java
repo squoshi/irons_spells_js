@@ -412,7 +412,7 @@ public class CustomSpell extends AbstractSpell {
         }
 
         @Override
-        public RegistryInfo<AbstractSpell> getRegistryType() {
+        public RegistryInfo getRegistryType() {
             return IronsSpellsJSPlugin.SPELL_REGISTRY;
         }
 

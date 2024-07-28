@@ -20,7 +20,7 @@ public class SpellAttributeBuilderJS extends BuilderBase<Attribute> {
     }
 
     @Override
-    public RegistryInfo<Attribute> getRegistryType() {
+    public RegistryInfo getRegistryType() {
         return RegistryInfo.ATTRIBUTE;
     }
 

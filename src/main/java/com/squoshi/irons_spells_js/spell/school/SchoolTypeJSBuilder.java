@@ -5,15 +5,12 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import io.redspace.ironsspellbooks.api.spells.SchoolType;
-import net.minecraft.core.registries.Registries;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.util.LazyOptional;
@@ -29,7 +26,6 @@ public class SchoolTypeJSBuilder extends BuilderBase<SchoolType> {
     public transient LazyOptional<Attribute> powerAttribute;
     public transient LazyOptional<Attribute> resistanceAttribute;
     public transient LazyOptional<SoundEvent> defaultCastSound;
-    public transient ResourceKey<DamageType> damageType;
 
     public SchoolTypeJSBuilder(ResourceLocation i) {
         super(i);
@@ -77,17 +73,9 @@ public class SchoolTypeJSBuilder extends BuilderBase<SchoolType> {
         return this;
     }
 
-    @Info("""
-            Sets the damage type of the school. It takes either a String, ResourceLocation, or just a DamageType.
-            Damage types can be created using datapacks or server scripts, or you can use an existing damage type.
-    """)
-    public SchoolTypeJSBuilder setDamageType(ISSKJSUtils.DamageTypeHolder damageType) {
-        this.damageType = ResourceKey.create(Registries.DAMAGE_TYPE, damageType.getLocation());
-        return this;
-    }
 
     @Override
-    public RegistryInfo<SchoolType> getRegistryType() {
+    public RegistryInfo getRegistryType() {
         return IronsSpellsJSPlugin.SCHOOL_REGISTRY;
     }
 
@@ -99,8 +87,7 @@ public class SchoolTypeJSBuilder extends BuilderBase<SchoolType> {
                 this.name,
                 this.powerAttribute,
                 this.resistanceAttribute,
-                this.defaultCastSound,
-                this.damageType
+                this.defaultCastSound
         );
     }
 }

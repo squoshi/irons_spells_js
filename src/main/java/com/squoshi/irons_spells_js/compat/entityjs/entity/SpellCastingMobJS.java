@@ -73,8 +73,8 @@ import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
+import net.liopyu.liolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -162,7 +162,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
 
     public void startDrinkingPotion() {
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
                 this.setDrinkingPotion(true);
                 this.drinkTime = 35;
                 AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -177,14 +177,14 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         this.heal(Math.min(Math.max(10.0F, this.getMaxHealth() / 10.0F), this.getMaxHealth() / 4.0F));
         this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MODIFIER_DRINKING);
         if (!this.isSilent()) {
-            this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+            this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
         }
 
     }
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
         super.onSyncedDataUpdated(pKey);
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
                 this.cancelCast();
             }
@@ -216,7 +216,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             builder.onCancelledCast.accept(this);
         }
         if (this.isCasting()) {
-            if (this.level().isClientSide) {
+            if (this.level.isClientSide) {
             } else {
                 this.entityData.set(DATA_CANCEL_CAST, !(Boolean)this.entityData.get(DATA_CANCEL_CAST));
             }
@@ -227,9 +227,9 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     }
 
     public void castComplete() {
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             if (this.castingSpell != null) {
-                this.castingSpell.getSpell().onServerCastComplete(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData, false);
+                this.castingSpell.getSpell().onServerCastComplete(this.level, this.castingSpell.getLevel(), this, this.playerMagicData, false);
             }
         } else {
             this.playerMagicData.resetCastingState();
@@ -240,7 +240,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public void startAutoSpinAttack(int pAttackTicks) {
         this.autoSpinAttackTicks = pAttackTicks;
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             this.setLivingEntityFlag(4, true);
         }
 
@@ -248,7 +248,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     }
 
     public void setSyncedSpellData(SyncedSpellData syncedSpellData) {
-        if (this.level().isClientSide) {
+        if (this.level.isClientSide) {
             boolean isCasting = this.playerMagicData.isCasting();
             this.playerMagicData.setSyncedData(syncedSpellData);
             this.castingSpell = this.playerMagicData.getCastingSpell();
@@ -260,7 +260,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
                     this.initiateCastSpell(spell, this.playerMagicData.getCastingSpellLevel());
                     if (this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
                         this.instantCastSpellType = this.castingSpell.getSpell();
-                        this.castingSpell.getSpell().onClientPreCast(this.level(), this.castingSpell.getLevel(), this, InteractionHand.MAIN_HAND, this.playerMagicData);
+                        this.castingSpell.getSpell().onClientPreCast(this.level, this.castingSpell.getLevel(), this, InteractionHand.MAIN_HAND, this.playerMagicData);
                         this.castComplete();
                     }
                 }
@@ -275,25 +275,25 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             if (this.drinkTime-- <= 0) {
                 this.finishDrinkingPotion();
             } else if (this.drinkTime % 4 == 0 && !this.isSilent()) {
-                this.level().playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
+                this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
             }
         }
 
         if (this.castingSpell != null) {
             this.playerMagicData.handleCastDuration();
             if (this.playerMagicData.isCasting()) {
-                this.castingSpell.getSpell().onServerCastTick(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData);
+                this.castingSpell.getSpell().onServerCastTick(this.level, this.castingSpell.getLevel(), this, this.playerMagicData);
             }
 
             this.forceLookAtTarget(this.getTarget());
             if (this.playerMagicData.getCastDurationRemaining() <= 0) {
                 if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
-                    this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
+                    this.castingSpell.getSpell().onCast(this.level, this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
                 }
 
                 this.castComplete();
             } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (this.playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
-                this.castingSpell.getSpell().onCast(this.level(), this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
+                this.castingSpell.getSpell().onCast(this.level, this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
             }
 
         }
@@ -309,7 +309,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
                 this.forceLookAtTarget(this.getTarget());
             }
 
-            if (!this.level().isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level(), spellLevel, this, this.playerMagicData)) {
+            if (!this.level.isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level, spellLevel, this, this.playerMagicData)) {
                 this.castingSpell = null;
             } else {
                 if (spell != SpellRegistry.TELEPORT_SPELL.get() && spell != SpellRegistry.FROST_STEP_SPELL.get()) {
@@ -323,8 +323,8 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
                 }
 
                 this.playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), this), CastSource.MOB, SpellSelectionManager.MAINHAND);
-                if (!this.level().isClientSide) {
-                    this.castingSpell.getSpell().onServerPreCast(this.level(), this.castingSpell.getLevel(), this, this.playerMagicData);
+                if (!this.level.isClientSide) {
+                    this.castingSpell.getSpell().onServerPreCast(this.level, this.castingSpell.getLevel(), this, this.playerMagicData);
                 }
 
             }
@@ -353,10 +353,10 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
             for(int i = 0; i < 24; ++i) {
                 Vec3 randomness = Utils.getRandomVec3((double)(0.15F * (float)i)).multiply(1.0, 0.0, 1.0);
-                teleportPos = Utils.moveToRelativeGroundLevel(this.level(), target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
+                teleportPos = Utils.moveToRelativeGroundLevel(this.level, target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
                 teleportPos = new Vec3(teleportPos.x, teleportPos.y + 0.10000000149011612, teleportPos.z);
                 AABB reposBB = this.getBoundingBox().move(teleportPos.subtract(this.position()));
-                if (!this.level().collidesWithSuffocatingBlock(this, reposBB.inflate(-0.05000000074505806))) {
+                if (!this.level.collidesWithSuffocatingBlock(this, reposBB.inflate(-0.05000000074505806))) {
                     valid = true;
                     break;
                 }
@@ -399,8 +399,8 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         float f = this.yBodyRot * 0.017453292F + Mth.cos((float)this.tickCount * 0.6662F) * 0.25F;
         float f1 = Mth.cos(f);
         float f2 = Mth.sin(f);
-        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6, this.getY() + 1.8, this.getZ() + (double)f2 * 0.6, d0, d1, d2);
-        this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
+        this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6, this.getY() + 1.8, this.getZ() + (double)f2 * 0.6, d0, d1, d2);
+        this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
     }
 
 
@@ -523,7 +523,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public void aiStep() {
         super.aiStep();
-        if (this.canJump() && this.onGround() && this.getNavigation().isInProgress() && this.shouldJump()) {
+        if (this.canJump() && this.isOnGround() && this.getNavigation().isInProgress() && this.shouldJump()) {
             this.jump();
         }
 
@@ -622,9 +622,9 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         double d1 = pTarget.getY(0.3333333333333333) - abstractarrow.getY();
         double d2 = pTarget.getZ() - this.getZ();
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        abstractarrow.shoot(d0, d1 + d3 * 0.20000000298023224, d2, 1.6F, (float)(14 - this.level().getDifficulty().getId() * 4));
+        abstractarrow.shoot(d0, d1 + d3 * 0.20000000298023224, d2, 1.6F, (float)(14 - this.level.getDifficulty().getId() * 4));
         this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level().addFreshEntity(abstractarrow);
+        this.level.addFreshEntity(abstractarrow);
     }
 
     protected AbstractArrow getArrow(ItemStack pArrowStack, float pVelocity) {
@@ -652,7 +652,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean shouldJump() {
         BlockPos forwardPos = this.blockPosition().relative(this.getDirection());
-        return this.level().loadedAndEntityCanStandOn(forwardPos, this) && (double)this.getStepHeight() < this.level().getBlockState(forwardPos).getShape(this.level(), forwardPos).max(Direction.Axis.Y);
+        return this.level.loadedAndEntityCanStandOn(forwardPos, this) && (double)this.getStepHeight() < this.level.getBlockState(forwardPos).getShape(this.level, forwardPos).max(Direction.Axis.Y);
     }
 
     public HumanoidArm getMainArm() {
@@ -871,7 +871,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public void tick() {
         super.tick();
-        if (this.builder.tick != null && !this.level().isClientSide()) {
+        if (this.builder.tick != null && !this.level.isClientSide()) {
             EntityJSHelperClass.consumerCallback(this.builder.tick, this, "[EntityJS]: Error in " + this.entityName() + "builder for field: tick.");
         }
 
@@ -879,7 +879,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public void onAddedToWorld() {
         super.onAddedToWorld();
-        if (this.builder.onAddedToWorld != null && !this.level().isClientSide()) {
+        if (this.builder.onAddedToWorld != null && !this.level.isClientSide()) {
             EntityJSHelperClass.consumerCallback(this.builder.onAddedToWorld, this, "[EntityJS]: Error in " + this.entityName() + "builder for field: onAddedToWorld.");
         }
 
@@ -985,7 +985,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     }
 
     public boolean ableToJump() {
-        return ModKeybinds.mount_jump.isDown() && this.onGround();
+        return ModKeybinds.mount_jump.isDown() && this.isOnGround();
     }
 
     public void setThisJumping(boolean value) {
@@ -1370,19 +1370,14 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         super.setSprinting(sprinting);
     }
 
-    public float getJumpBoostPower() {
-        if (this.builder.jumpBoostPower == null) {
-            return super.getJumpBoostPower();
-        } else {
-            Object obj = EntityJSHelperClass.convertObjectToDesired(this.builder.jumpBoostPower.apply(this), "float");
-            if (obj != null) {
-                return (Float)obj;
-            } else {
-                String var10000 = this.entityName();
-                EntityJSHelperClass.logErrorMessageOnce("[EntityJS]: Invalid return value for jumpBoostPower from entity: " + var10000 + ". Value: " + this.builder.jumpBoostPower.apply(this) + ". Must be a float. Defaulting to " + super.getJumpBoostPower());
-                return super.getJumpBoostPower();
-            }
-        }
+
+    @Override
+    public double getJumpBoostPower() {
+        if (builder.jumpBoostPower == null) return super.getJumpBoostPower();
+        Object obj = EntityJSHelperClass.convertObjectToDesired(builder.jumpBoostPower.apply(this), "double");
+        if (obj != null) return (double) obj;
+        EntityJSHelperClass.logErrorMessageOnce("[EntityJS]: Invalid return value for jumpBoostPower from entity: " + entityName() + ". Value: " + builder.jumpBoostPower.apply(this) + ". Must be a double. Defaulting to " + super.getJumpBoostPower());
+        return super.getJumpBoostPower();
     }
 
     public boolean canStandOnFluid(@NotNull FluidState fluidState) {
@@ -1496,7 +1491,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean canTakeItem(@NotNull ItemStack itemStack) {
         if (this.builder.canTakeItem != null) {
-            ContextUtils.EntityItemLevelContext context = new ContextUtils.EntityItemLevelContext(this, itemStack, this.level());
+            ContextUtils.EntityItemLevelContext context = new ContextUtils.EntityItemLevelContext(this, itemStack, this.level);
             Object obj = this.builder.canTakeItem.apply(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
@@ -1589,7 +1584,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     }
 
     public boolean isCurrentlyGlowing() {
-        if (this.builder.isCurrentlyGlowing != null && !this.level().isClientSide()) {
+        if (this.builder.isCurrentlyGlowing != null && !this.level.isClientSide()) {
             Object obj = this.builder.isCurrentlyGlowing.apply(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;

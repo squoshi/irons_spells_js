@@ -1,7 +1,7 @@
 package com.squoshi.irons_spells_js.mixin;
 
-import com.probejs.docs.formatter.NameResolver;
-import com.probejs.docs.formatter.SpecialTypes;
+import com.probejs.compiler.formatter.NameResolver;
+import com.probejs.compiler.formatter.SpecialTypes;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
@@ -24,7 +24,6 @@ public class NameResolverMixin {
         NameResolver.putSpecialAssignments(ISSKJSUtils.SoundEventHolder.class, () -> List.of("Special.SoundEvent"));
         NameResolver.putSpecialAssignments(ISSKJSUtils.SchoolHolder.class, () -> List.of("Special.School"));
         NameResolver.putSpecialAssignments(ISSKJSUtils.SpellHolder.class, () -> List.of("Special.Spells"));
-        NameResolver.putSpecialAssignments(ISSKJSUtils.DamageTypeHolder.class, () -> List.of("Special.DamageType"));
         SpecialTypes.assignRegistry(AbstractSpell.class, SpellRegistry.SPELL_REGISTRY_KEY);
         SpecialTypes.assignRegistry(SchoolType.class, SchoolRegistry.SCHOOL_REGISTRY_KEY);
     }
