@@ -1,6 +1,7 @@
 package com.squoshi.irons_spells_js.mixin;
 
 import com.google.common.collect.Maps;
+import com.squoshi.irons_spells_js.compat.entityjs.entity.SpellCastingMobJS;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.entity.IMagicEntity;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -77,7 +78,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
 
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     public void init(EntityType<? extends PathfinderMob> entityType, Level level, CallbackInfo ci) {
-        if (!(self() instanceof AbstractSpellCastingMob)){
+        if (!(self() instanceof AbstractSpellCastingMob) && !(self() instanceof SpellCastingMobJS)){
             playerMagicData.setSyncedData(new SyncedSpellData(self()));
             this.lookControl = createLookControl();
         }
@@ -96,7 +97,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        if (!(self() instanceof AbstractSpellCastingMob)){
+        if (!(self() instanceof AbstractSpellCastingMob)&& !(self() instanceof SpellCastingMobJS)){
             this.entityData.define(DATA_CANCEL_CAST, false);
             this.entityData.define(DATA_DRINKING_POTION, false);
         }
@@ -139,7 +140,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
         super.onSyncedDataUpdated(pKey);
-        if (!(self() instanceof AbstractSpellCastingMob)){
+        if (!(self() instanceof AbstractSpellCastingMob)&& !(self() instanceof SpellCastingMobJS)){
             if (!self().level.isClientSide) {
                 return;
             }
@@ -156,7 +157,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        if (!(self() instanceof AbstractSpellCastingMob)){
+        if (!(self() instanceof AbstractSpellCastingMob)&& !(self() instanceof SpellCastingMobJS)){
             playerMagicData.getSyncedData().saveNBTData(pCompound);
             pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
         }
@@ -165,7 +166,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
-        if (!(self() instanceof AbstractSpellCastingMob)){
+        if (!(self() instanceof AbstractSpellCastingMob)&& !(self() instanceof SpellCastingMobJS)){
             SyncedSpellData syncedSpellData = new SyncedSpellData(self());
             syncedSpellData.loadNBTData(pCompound);
             if (syncedSpellData.isCasting()) {
@@ -225,7 +226,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     @Override
     public void customServerAiStep() {
         super.customServerAiStep();
-        if (!(self() instanceof AbstractSpellCastingMob)){
+        if (!(self() instanceof AbstractSpellCastingMob)&& !(self() instanceof SpellCastingMobJS)){
             if (this.isDrinkingPotion()) {
                 if (this.drinkTime-- <= 0) {
                     this.finishDrinkingPotion();

@@ -23,6 +23,7 @@ public class SpellProjectileJSBuilder extends ProjectileEntityBuilder<SpellProje
         this.onAntiMagic = onAntiMagic;
         return this;
     }
+
     @Info(value = """
             A consumer determining the impact particles for the spell.
                         
