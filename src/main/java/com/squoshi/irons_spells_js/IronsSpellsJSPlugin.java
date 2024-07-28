@@ -13,13 +13,18 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
-import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.CastType;
+import io.redspace.ironsspellbooks.api.spells.SchoolType;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
+import io.redspace.ironsspellbooks.api.util.AnimationHolder;
+import io.redspace.ironsspellbooks.api.util.Utils;
+import io.redspace.ironsspellbooks.entity.mobs.goals.WizardAttackGoal;
+import io.redspace.ironsspellbooks.registries.PotionRegistry;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.alchemy.Potions;
 
 public class IronsSpellsJSPlugin extends KubeJSPlugin {
     public static final RegistryInfo SPELL_REGISTRY = RegistryInfo.of(SpellRegistry.SPELL_REGISTRY_KEY);
@@ -29,6 +34,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
     public void init() {
         SPELL_REGISTRY.addType("basic", CustomSpell.Builder.class, CustomSpell.Builder::new);
         SCHOOL_REGISTRY.addType("basic", SchoolTypeJSBuilder.class, SchoolTypeJSBuilder::new);
+        RegistryInfo.ATTRIBUTE.addType("spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
         RegistryInfo.ATTRIBUTE.addType("irons_spells_js:spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:spellbook", SpellBookBuilderJS.class, SpellBookBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:staff", StaffItemBuilderJS.class, StaffItemBuilderJS::new);
@@ -45,6 +51,15 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("ItemTags", ItemTags.class);
         event.add("Player", Player.class);
         event.add("SpellData", SpellData.class);
+        event.add("Spell", AbstractSpellWrapper.class);
+        event.add("ISSAnimationHolder", AnimationHolder.class);
+        event.add("ISSUpdateClient", UpdateClient.class);
+        event.add("ISSUtils", Utils.class);
+        event.add("TargetEntityCastData", TargetEntityCastData.class);
+        event.add("Potions", Potions.class);
+        event.add("ISSPotionRegistry", PotionRegistry.class);
+        event.add("AlchemistCauldronRecipeBuilder", AlchemistCauldronKubeJSRecipes.AlchemistCauldronRecipeBuilder.class);
+        event.add("WizardAttackGoal", WizardAttackGoal.class);
     }
 
     @Override
@@ -53,9 +68,9 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         typeWrappers.registerSimple(ISSKJSUtils.SoundEventHolder.class, ISSKJSUtils.SoundEventHolder::of);
         typeWrappers.registerSimple(ISSKJSUtils.SpellHolder.class, ISSKJSUtils.SpellHolder::of);
         typeWrappers.registerSimple(ISSKJSUtils.SchoolHolder.class, ISSKJSUtils.SchoolHolder::of);
-        typeWrappers.registerSimple(AbstractSpell.class, o -> {
-            if (o instanceof AbstractSpell spell) return spell;
-            return SpellRegistry.getSpell(ISSKJSUtils.SpellHolder.of(o).getLocation());
+        typeWrappers.registerSimple(SchoolType.class, o -> {
+            if (o instanceof SchoolType school) return school;
+            return SchoolRegistry.getSchool(ISSKJSUtils.SchoolHolder.of(o).getLocation());
         });
     }
 

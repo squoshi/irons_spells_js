@@ -2,6 +2,7 @@ package com.squoshi.irons_spells_js.entity.attribute;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import io.redspace.ironsspellbooks.api.attribute.MagicRangedAttribute;
 
 import net.minecraft.resources.ResourceLocation;
@@ -19,22 +20,31 @@ public class SpellAttributeBuilderJS extends BuilderBase<Attribute> {
     }
 
     @Override
-    public RegistryInfo getRegistryType() {
+    public RegistryInfo<Attribute> getRegistryType() {
         return RegistryInfo.ATTRIBUTE;
     }
 
+    @Info("""
+            Sets the default value for the attribute.
+    """)
     @SuppressWarnings("unused")
     public SpellAttributeBuilderJS setDefaultValue(double defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }
 
+    @Info("""
+            Sets the minimum value for the attribute.
+    """)
     @SuppressWarnings("unused")
     public SpellAttributeBuilderJS setMinimumValue(double minimumValue) {
         this.minimumValue = minimumValue;
         return this;
     }
 
+    @Info("""
+            Sets the maximum value for the attribute.
+    """)
     @SuppressWarnings("unused")
     public SpellAttributeBuilderJS setMaximumValue(double maximumValue) {
         this.maximumValue = maximumValue;

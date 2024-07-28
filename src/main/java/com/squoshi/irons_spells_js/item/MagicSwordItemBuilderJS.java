@@ -2,6 +2,7 @@ package com.squoshi.irons_spells_js.item;
 
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.item.custom.HandheldItemBuilder;
+import dev.latvian.mods.kubejs.typings.Info;
 import io.redspace.ironsspellbooks.api.item.weapons.MagicSwordItem;
 import io.redspace.ironsspellbooks.api.registry.SpellDataRegistryHolder;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
@@ -22,11 +23,18 @@ public class MagicSwordItemBuilderJS extends HandheldItemBuilder {
         super(i, 3f, -2.4f);
     }
 
+    @Info("""
+            Adds a spell to the default spell list of the item. It takes a spell ID (or just a spell object), and the spell level as an integer.
+    """)
     public MagicSwordItemBuilderJS addDefaultSpell(ISSKJSUtils.SpellHolder spell, int spellLevel) {
         this.spellHolders.add(new SpellHolder(spell.getLocation(), spellLevel));
         return this;
     }
 
+    @Info("""
+            Adds an additional attribute to the item. It takes an attribute ID (or just an attribute object), the modifier name, the modifier amount, and the modifier operation.
+            The modifier operation can be either `ADDITION`, `MULTIPLY_TOTAL` or `MULTIPLY_BASE`.
+    """)
     public MagicSwordItemBuilderJS addAdditionalAttribute(ISSKJSUtils.AttributeHolder attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
         additionalAttributes.add(new AttributeHolder(attribute.getLocation(), new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
         return this;
