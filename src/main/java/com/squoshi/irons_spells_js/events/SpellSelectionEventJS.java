@@ -37,6 +37,13 @@ public class SpellSelectionEventJS extends PlayerEventJS {
         event.addSelectionOption(spellData, slotId, localSlotIndex, globalIndex);
     }
 
+    @Info(value = """
+        Adds spell option to the end of a player's spell bar.
+    """)
+    public void addSelectionOption(SpellData spellData, String slotId, int localSlotIndex) {
+        event.addSelectionOption(spellData, slotId, localSlotIndex);
+    }
+
     public SpellSelectionManager getManager() {
         return event.getManager();
     }

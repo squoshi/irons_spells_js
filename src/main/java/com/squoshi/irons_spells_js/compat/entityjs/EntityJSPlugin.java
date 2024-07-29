@@ -10,7 +10,5 @@ public class EntityJSPlugin extends KubeJSPlugin {
     @Override
     public void init() {
         RegistryInfo.ENTITY_TYPE.addType(IronsSpellsJSMod.MODID + ":spellcasting", SpellCastingMobJSBuilder.class, SpellCastingMobJSBuilder::new);
-        RegistryInfo.ENTITY_TYPE.addType(IronsSpellsJSMod.MODID + ":spell_projectile", SpellProjectileJSBuilder.class, SpellProjectileJSBuilder::new);
-
-    }
+        RegistryInfo.ENTITY_TYPE.addType(IronsSpellsJSMod.MODID + ":spell_projectile", SpellProjectileJSBuilder.class, SpellProjectileJSBuilder::new);    }
 }

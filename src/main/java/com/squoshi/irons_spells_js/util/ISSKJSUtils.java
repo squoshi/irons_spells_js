@@ -43,6 +43,12 @@ public class ISSKJSUtils {
         }
     }
 
+    public record DamageTypeHolder(ResourceLocation getLocation) implements ResourceHolder<DamageTypeHolder> {
+        public static DamageTypeHolder of(Object o){
+            return ResourceHolder.of(o, DamageTypeHolder::new);
+        }
+    }
+
     @SuppressWarnings("rawtypes")
     public interface ResourceHolder<T extends ResourceHolder<T>> {
         static <T extends ResourceHolder<T>> T of(Object o, Function<ResourceLocation, T> constructor){

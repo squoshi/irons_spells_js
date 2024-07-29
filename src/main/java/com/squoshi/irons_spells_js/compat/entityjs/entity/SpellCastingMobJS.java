@@ -1,10 +1,22 @@
 package com.squoshi.irons_spells_js.compat.entityjs.entity;
 
+import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
 import com.squoshi.irons_spells_js.compat.entityjs.entity.builder.SpellCastingMobJSBuilder;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import io.redspace.ironsspellbooks.entity.mobs.abstract_spell_casting_mob.AbstractSpellCastingMob;
+import io.redspace.ironsspellbooks.api.entity.IMagicEntity;
+import io.redspace.ironsspellbooks.api.magic.MagicData;
+import io.redspace.ironsspellbooks.api.magic.SpellSelectionManager;
+import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
+import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
+import io.redspace.ironsspellbooks.api.spells.CastSource;
+import io.redspace.ironsspellbooks.api.spells.CastType;
+import io.redspace.ironsspellbooks.api.spells.SpellData;
+import io.redspace.ironsspellbooks.api.util.Utils;
+import io.redspace.ironsspellbooks.capabilities.magic.SyncedSpellData;
+import io.redspace.ironsspellbooks.spells.ender.TeleportSpell;
+import io.redspace.ironsspellbooks.spells.fire.BurningDashSpell;
 import net.liopyu.entityjs.builders.living.BaseLivingEntityBuilder;
 import net.liopyu.entityjs.entities.living.entityjs.IAnimatableJS;
 import net.liopyu.entityjs.entities.nonliving.entityjs.PartEntityJS;
@@ -16,62 +28,385 @@ import net.liopyu.entityjs.util.ContextUtils;
 import net.liopyu.entityjs.util.EntityJSHelperClass;
 import net.liopyu.entityjs.util.EventHandlers;
 import net.liopyu.entityjs.util.ModKeybinds;
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
+import net.liopyu.liolib.util.GeckoLibUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnimatableJS {
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.*;
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+@SuppressWarnings("unused")
+public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, IMagicEntity {
+    private static final EntityDataAccessor<Boolean> DATA_CANCEL_CAST;
+    private static final EntityDataAccessor<Boolean> DATA_DRINKING_POTION;
+    private final MagicData playerMagicData = new MagicData(true);
+    private static final AttributeModifier SPEED_MODIFIER_DRINKING;
+    @javax.annotation.Nullable
+    private SpellData castingSpell;
+    private final HashMap<String, AbstractSpell> spells = Maps.newHashMap();
+    private int drinkTime;
+    public boolean hasUsedSingleAttack;
+    private AbstractSpell lastCastSpellType = SpellRegistry.none();
+    private AbstractSpell instantCastSpellType = SpellRegistry.none();
+    // EntityJS implementations
     private final SpellCastingMobJSBuilder builder;
     private final AnimatableInstanceCache animationFactory;
     protected PathNavigation navigation;
     public final PartEntityJS<?>[] partEntities;
-    public String entityName() {
-        return this.getType().toString();
-    }
-    public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<? extends AbstractSpellCastingMob> pEntityType, Level pLevel) {
+    protected boolean thisJumping;
+    
+    public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<SpellCastingMobJS> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.playerMagicData.setSyncedData(new SyncedSpellData(this));
+        this.lookControl = this.createLookControl();
+        this.thisJumping = false;
         this.builder = builder;
-        this.animationFactory = net.liopyu.liolib.util.GeckoLibUtil.createInstanceCache(this);
+        this.animationFactory = GeckoLibUtil.createInstanceCache(this);
         List<PartEntityJS<?>> tempPartEntities = new ArrayList<>();
         for (ContextUtils.PartEntityParams<SpellCastingMobJS> params : builder.partEntityParamsList) {
             PartEntityJS<?> partEntity = new PartEntityJS<>(this, params.name, params.width, params.height, params.builder);
             tempPartEntities.add(partEntity);
         }
+
         partEntities = tempPartEntities.toArray(new PartEntityJS<?>[0]);
         this.navigation = this.createNavigation(pLevel);
     }
+
+    protected LookControl createLookControl() {
+        return new LookControl(this) {
+            protected boolean resetXRotOnTick() {
+                return SpellCastingMobJS.this.getTarget() == null;
+            }
+        };
+    }
+
+    public MagicData getMagicData() {
+        return this.playerMagicData;
+    }
+
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_CANCEL_CAST, false);
+        this.entityData.define(DATA_DRINKING_POTION, false);
+    }
+
+    public boolean isDrinkingPotion() {
+        return (Boolean)this.entityData.get(DATA_DRINKING_POTION);
+    }
+
+    @Override
+    public boolean getHasUsedSingleAttack() {
+        return hasUsedSingleAttack;
+    }
+
+    @Override
+    public void setHasUsedSingleAttack(boolean bool) {
+        hasUsedSingleAttack = bool;
+    }
+
+    protected void setDrinkingPotion(boolean drinkingPotion) {
+        this.entityData.set(DATA_DRINKING_POTION, drinkingPotion);
+    }
+
+    public void startDrinkingPotion() {
+        if (!this.level.isClientSide) {
+            this.setDrinkingPotion(true);
+            this.drinkTime = 35;
+            AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
+            attributeinstance.removeModifier(SPEED_MODIFIER_DRINKING);
+            attributeinstance.addTransientModifier(SPEED_MODIFIER_DRINKING);
+        }
+
+    }
+
+    private void finishDrinkingPotion() {
+        this.setDrinkingPotion(false);
+        this.heal(Math.min(Math.max(10.0F, this.getMaxHealth() / 10.0F), this.getMaxHealth() / 4.0F));
+        this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(SPEED_MODIFIER_DRINKING);
+        if (!this.isSilent()) {
+            this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+        }
+
+    }
+
+    public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
+        super.onSyncedDataUpdated(pKey);
+        if (this.level.isClientSide) {
+            if (pKey.getId() == DATA_CANCEL_CAST.getId()) {
+                this.cancelCast();
+            }
+
+        }
+    }
+
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        this.playerMagicData.getSyncedData().saveNBTData(pCompound);
+        pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
+    }
+
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        SyncedSpellData syncedSpellData = new SyncedSpellData(this);
+        syncedSpellData.loadNBTData(pCompound);
+        if (syncedSpellData.isCasting()) {
+            AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
+            this.initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());
+        }
+
+        this.playerMagicData.setSyncedData(syncedSpellData);
+        this.hasUsedSingleAttack = pCompound.getBoolean("usedSpecial");
+    }
+
+    public void cancelCast() {
+        if (builder.onCancelledCast != null) {
+            builder.onCancelledCast.accept(this);
+        }
+        if (this.isCasting()) {
+            if (this.level.isClientSide) {
+            } else {
+                this.entityData.set(DATA_CANCEL_CAST, !(Boolean)this.entityData.get(DATA_CANCEL_CAST));
+            }
+
+            this.castComplete();
+        }
+
+    }
+
+    public void castComplete() {
+        if (!this.level.isClientSide) {
+            if (this.castingSpell != null) {
+                this.castingSpell.getSpell().onServerCastComplete(this.level, this.castingSpell.getLevel(), this, this.playerMagicData, false);
+            }
+        } else {
+            this.playerMagicData.resetCastingState();
+        }
+
+        this.castingSpell = null;
+    }
+
+    public void startAutoSpinAttack(int pAttackTicks) {
+        this.autoSpinAttackTicks = pAttackTicks;
+        if (!this.level.isClientSide) {
+            this.setLivingEntityFlag(4, true);
+        }
+
+        this.setYRot((float)(Math.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * 57.2957763671875));
+    }
+
+    public void setSyncedSpellData(SyncedSpellData syncedSpellData) {
+        if (this.level.isClientSide) {
+            boolean isCasting = this.playerMagicData.isCasting();
+            this.playerMagicData.setSyncedData(syncedSpellData);
+            this.castingSpell = this.playerMagicData.getCastingSpell();
+            if (this.castingSpell != null) {
+                if (!this.playerMagicData.isCasting() && isCasting) {
+                    this.castComplete();
+                } else if (this.playerMagicData.isCasting() && !isCasting) {
+                    AbstractSpell spell = this.playerMagicData.getCastingSpell().getSpell();
+                    this.initiateCastSpell(spell, this.playerMagicData.getCastingSpellLevel());
+                    if (this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
+                        this.instantCastSpellType = this.castingSpell.getSpell();
+                        this.castingSpell.getSpell().onClientPreCast(this.level, this.castingSpell.getLevel(), this, InteractionHand.MAIN_HAND, this.playerMagicData);
+                        this.castComplete();
+                    }
+                }
+
+            }
+        }
+    }
+
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        if (this.isDrinkingPotion()) {
+            if (this.drinkTime-- <= 0) {
+                this.finishDrinkingPotion();
+            } else if (this.drinkTime % 4 == 0 && !this.isSilent()) {
+                this.level.playSound((Player)null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_DRINK, this.getSoundSource(), 1.0F, Utils.random.nextFloat() * 0.1F + 0.9F);
+            }
+        }
+
+        if (this.castingSpell != null) {
+            this.playerMagicData.handleCastDuration();
+            if (this.playerMagicData.isCasting()) {
+                this.castingSpell.getSpell().onServerCastTick(this.level, this.castingSpell.getLevel(), this, this.playerMagicData);
+            }
+
+            this.forceLookAtTarget(this.getTarget());
+            if (this.playerMagicData.getCastDurationRemaining() <= 0) {
+                if (this.castingSpell.getSpell().getCastType() == CastType.LONG || this.castingSpell.getSpell().getCastType() == CastType.INSTANT) {
+                    this.castingSpell.getSpell().onCast(this.level, this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
+                }
+
+                this.castComplete();
+            } else if (this.castingSpell.getSpell().getCastType() == CastType.CONTINUOUS && (this.playerMagicData.getCastDurationRemaining() + 1) % 10 == 0) {
+                this.castingSpell.getSpell().onCast(this.level, this.castingSpell.getLevel(), this, CastSource.MOB, this.playerMagicData);
+            }
+
+        }
+    }
+
+    public void initiateCastSpell(AbstractSpell spell, int spellLevel) {
+        if (spell == SpellRegistry.none()) {
+            this.castingSpell = null;
+        } else {
+
+            this.castingSpell = new SpellData(spell, spellLevel);
+            if (this.getTarget() != null) {
+                this.forceLookAtTarget(this.getTarget());
+            }
+
+            if (!this.level.isClientSide && !this.castingSpell.getSpell().checkPreCastConditions(this.level, spellLevel, this, this.playerMagicData)) {
+                this.castingSpell = null;
+            } else {
+                if (spell != SpellRegistry.TELEPORT_SPELL.get() && spell != SpellRegistry.FROST_STEP_SPELL.get()) {
+                    if (spell == SpellRegistry.BLOOD_STEP_SPELL.get()) {
+                        this.setTeleportLocationBehindTarget(3);
+                    } else if (spell == SpellRegistry.BURNING_DASH_SPELL.get()) {
+                        this.setBurningDashDirectionData();
+                    }
+                } else {
+                    this.setTeleportLocationBehindTarget(10);
+                }
+
+                this.playerMagicData.initiateCast(this.castingSpell.getSpell(), this.castingSpell.getLevel(), this.castingSpell.getSpell().getEffectiveCastTime(this.castingSpell.getLevel(), this), CastSource.MOB, SpellSelectionManager.MAINHAND);
+                if (!this.level.isClientSide) {
+                    this.castingSpell.getSpell().onServerPreCast(this.level, this.castingSpell.getLevel(), this, this.playerMagicData);
+                }
+
+            }
+        }
+    }
+
+    public void notifyDangerousProjectile(Projectile projectile) {
+    }
+
+    public boolean isCasting() {
+        if (builder.isCasting != null){
+            Object obj = builder.isCasting.apply(this);
+            if (obj instanceof Boolean b) return b;
+            EntityJSHelperClass.logErrorMessageOnce("[KubeJS Irons Spells]: Invalid return value for isCasting from entity: " + entityName() + ". Value: " + obj + ". Must be a boolean. Defaulting to " + this.playerMagicData.isCasting());
+        }
+        return this.playerMagicData.isCasting();
+    }
+
+    public boolean setTeleportLocationBehindTarget(int distance) {
+        LivingEntity target = this.getTarget();
+        boolean valid = false;
+        if (target != null) {
+            Vec3 rotation = target.getLookAngle().normalize().scale((double)(-distance));
+            Vec3 pos = target.position();
+            Vec3 teleportPos = rotation.add(pos);
+
+            for(int i = 0; i < 24; ++i) {
+                Vec3 randomness = Utils.getRandomVec3((double)(0.15F * (float)i)).multiply(1.0, 0.0, 1.0);
+                teleportPos = Utils.moveToRelativeGroundLevel(this.level, target.position().subtract((new Vec3(0.0, 0.0, (double)((float)distance / (float)(i / 7 + 1)))).yRot(-(target.getYRot() + (float)(i * 45)) * 0.017453292F)).add(randomness), 5);
+                teleportPos = new Vec3(teleportPos.x, teleportPos.y + 0.10000000149011612, teleportPos.z);
+                AABB reposBB = this.getBoundingBox().move(teleportPos.subtract(this.position()));
+                if (!this.level.collidesWithSuffocatingBlock(this, reposBB.inflate(-0.05000000074505806))) {
+                    valid = true;
+                    break;
+                }
+            }
+
+            if (valid) {
+                this.playerMagicData.setAdditionalCastData(new TeleportSpell.TeleportData(teleportPos));
+            } else {
+                this.playerMagicData.setAdditionalCastData(new TeleportSpell.TeleportData(this.position()));
+            }
+        } else {
+            this.playerMagicData.setAdditionalCastData(new TeleportSpell.TeleportData(this.position()));
+        }
+
+        return valid;
+    }
+
+    public void setBurningDashDirectionData() {
+        this.playerMagicData.setAdditionalCastData(new BurningDashSpell.BurningDashDirectionOverrideCastData());
+    }
+
+    private void forceLookAtTarget(LivingEntity target) {
+        if (target != null) {
+            double d0 = target.getX() - this.getX();
+            double d2 = target.getZ() - this.getZ();
+            double d1 = target.getEyeY() - this.getEyeY();
+            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+            float f = (float)(Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F;
+            float f1 = (float)(-(Mth.atan2(d1, d3) * 57.2957763671875));
+            this.setXRot(f1 % 360.0F);
+            this.setYRot(f % 360.0F);
+        }
+
+    }
+
+    private void addClientSideParticles() {
+        double d0 = 0.4;
+        double d1 = 0.3;
+        double d2 = 0.35;
+        float f = this.yBodyRot * 0.017453292F + Mth.cos((float)this.tickCount * 0.6662F) * 0.25F;
+        float f1 = Mth.cos(f);
+        float f2 = Mth.sin(f);
+        this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6, this.getY() + 1.8, this.getZ() + (double)f2 * 0.6, d0, d1, d2);
+        this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6, this.getY() + 1.8, this.getZ() - (double)f2 * 0.6, d0, d1, d2);
+    }
+
+
+    static {
+        DATA_CANCEL_CAST = SynchedEntityData.defineId(SpellCastingMobJS.class, EntityDataSerializers.BOOLEAN);
+        DATA_DRINKING_POTION = SynchedEntityData.defineId(SpellCastingMobJS.class, EntityDataSerializers.BOOLEAN);
+        SPEED_MODIFIER_DRINKING = new AttributeModifier(UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E"), "Drinking speed penalty", -0.15, AttributeModifier.Operation.MULTIPLY_TOTAL);
+    }
+
+    /**
+     * EntityJS Builder Overrides Below
+     */
+
     // Part Entity Logical Overrides --------------------------------
     @Override
     public void setId(int entityId) {
@@ -112,7 +447,8 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
     public PartEntity<?>[] getParts() {
         return Objects.requireNonNullElseGet(partEntities, () -> new PartEntity<?>[0]);
     }
-    // Builder overrrides
+
+    //Builder and Animatable logic
     @Override
     public BaseLivingEntityBuilder<?> getBuilder() {
         return builder;
@@ -122,26 +458,9 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return animationFactory;
     }
-    // SpellJS Overrides
-    @Override
-    public void cancelCast() {
-        super.cancelCast();
-        if (builder.onCancelledCast != null) {
-            builder.onCancelledCast.accept(this);
-        }
-    }
 
-    @Override
-    public boolean isCasting() {
-        if (builder.isCasting != null){
-            Object obj = builder.isCasting.apply(this);
-            if (obj instanceof Boolean b) return b;
-            EntityJSHelperClass.logErrorMessageOnce("[KubeJS Irons Spells]: Invalid return value for isCasting from entity: " + entityName() + ". Value: " + obj + ". Must be a boolean. Defaulting to " + super.isCasting());
-        }
-        return super.isCasting();
-    }
+    //Some logic overrides up here because there are different implementations in the other builders.
 
-    //Everything below here are Base EntityJS Overrides, These are needed to let entityjs override the default implementations.
     @Override
     public InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
         if (builder.onInteract != null) {
@@ -150,8 +469,13 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
         }
         return super.mobInteract(pPlayer, pHand);
     }
+
+    public String entityName() {
+        return this.getType().toString();
+    }
+
     @Override
-    protected Brain.Provider<?> brainProvider() {
+    public Brain.Provider<?> brainProvider() {
         if (EventHandlers.buildBrainProvider.hasListeners()) {
             final BuildBrainProviderEventJS<SpellCastingMobJS> event = new BuildBrainProviderEventJS<>();
             EventHandlers.buildBrainProvider.post(event, getTypeId());
@@ -171,6 +495,7 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
             return UtilsJS.cast(super.makeBrain(p_21069_));
         }
     }
+
     @Override
     protected void registerGoals() {
         if (EventHandlers.addGoalTargets.hasListeners()) {
@@ -267,7 +592,32 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
 
     @Override
     public MobType getMobType() {
-        return builder.mobType;
+        if (builder != null) {
+            return builder.mobType;
+        }
+        return super.getMobType();
+    }
+
+    public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
+        ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, (item) -> {
+            return item instanceof BowItem;
+        })));
+        AbstractArrow abstractarrow = this.getArrow(itemstack, pDistanceFactor);
+        if (this.getMainHandItem().getItem() instanceof BowItem) {
+            abstractarrow = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrow);
+        }
+
+        double d0 = pTarget.getX() - this.getX();
+        double d1 = pTarget.getY(0.3333333333333333) - abstractarrow.getY();
+        double d2 = pTarget.getZ() - this.getZ();
+        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+        abstractarrow.shoot(d0, d1 + d3 * 0.20000000298023224, d2, 1.6F, (float) (14 - this.level.getDifficulty().getId() * 4));
+        this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        this.level.addFreshEntity(abstractarrow);
+    }
+
+    protected AbstractArrow getArrow(ItemStack pArrowStack, float pVelocity) {
+        return ProjectileUtil.getMobArrow(this, pArrowStack, pVelocity);
     }
 
     public boolean canJump() {
@@ -446,6 +796,17 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
     }
 
     //(Base LivingEntity/Entity Overrides)
+    @Override
+    public boolean isAlliedTo(Entity pEntity) {
+        if (builder.isAlliedTo != null) {
+            final ContextUtils.LineOfSightContext context = new ContextUtils.LineOfSightContext(pEntity, this);
+            Object obj = builder.isAlliedTo.apply(context);
+            if (obj instanceof Boolean b) return b;
+            EntityJSHelperClass.logErrorMessageOnce("[EntityJS]: Invalid return value for isAlliedTo from entity: " + entityName() + ". Value: " + obj + ". Must be a boolean. Defaulting to " + super.isAlliedTo(pEntity));
+        }
+        return super.isAlliedTo(pEntity);
+    }
+
     @Override
     public void travel(Vec3 pTravelVector) {
         LivingEntity livingentity = this.getControllingPassenger();
@@ -629,7 +990,7 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
         super.onFlap();
     }
 
-    protected boolean thisJumping = false;
+    protected boolean isJumping = false;
 
     public boolean ableToJump() {
         return ModKeybinds.mount_jump.isDown() && this.isOnGround();
@@ -659,6 +1020,16 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
             """)
     public void triggerAnimation(String controllerName, String animName) {
         triggerAnim(controllerName, animName);
+    }
+
+    @Override
+    public boolean doHurtTarget(Entity pEntity) {
+        if (builder != null && builder.onHurtTarget != null) {
+            final ContextUtils.LineOfSightContext context = new ContextUtils.LineOfSightContext(pEntity, this);
+            EntityJSHelperClass.consumerCallback(builder.onHurtTarget, context, "[EntityJS]: Error in " + entityName() + "builder for field: onHurtTarget.");
+
+        }
+        return super.doHurtTarget(pEntity);
     }
 
     @Override
@@ -720,6 +1091,16 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
             EntityJSHelperClass.logErrorMessageOnce("[EntityJS]: Invalid return value for blockSpeedFactor from entity: " + builder.get() + ". Value: " + builder.blockSpeedFactor.apply(this) + ". Must be a float, defaulting to " + super.getBlockSpeedFactor());
             return super.getBlockSpeedFactor();
         }
+    }
+
+    @Override
+    public void positionRider(Entity pPassenger) {
+        if (builder.positionRider != null) {
+            final ContextUtils.PositionRiderContext context = new ContextUtils.PositionRiderContext(this, pPassenger);
+            EntityJSHelperClass.consumerCallback(builder.positionRider, context, "[EntityJS]: Error in " + entityName() + "builder for field: positionRider.");
+            return;
+        }
+        super.positionRider(pPassenger);
     }
 
     @Override
@@ -1426,11 +1807,10 @@ public class SpellCastingMobJS extends AbstractSpellCastingMob implements IAnima
 
     @Override
     public void onRemovedFromWorld() {
-        super.onRemovedFromWorld();
         if (builder.onRemovedFromWorld != null) {
             EntityJSHelperClass.consumerCallback(builder.onRemovedFromWorld, this, "[EntityJS]: Error in " + entityName() + "builder for field: onRemovedFromWorld.");
-
         }
+        super.onRemovedFromWorld();
     }
 
 
