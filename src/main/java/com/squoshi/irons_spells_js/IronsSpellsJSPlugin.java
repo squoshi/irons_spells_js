@@ -22,7 +22,7 @@ import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import io.redspace.ironsspellbooks.api.util.UpdateClient;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.TargetEntityCastData;
-import io.redspace.ironsspellbooks.entity.mobs.goals.WizardAttackGoal;
+import io.redspace.ironsspellbooks.entity.mobs.goals.*;
 import io.redspace.ironsspellbooks.registries.PotionRegistry;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
 import net.minecraft.tags.ItemTags;
@@ -63,6 +63,12 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("ISSPotionRegistry", PotionRegistry.class);
         event.add("AlchemistCauldronRecipeBuilder", AlchemistCauldronKubeJSRecipes.AlchemistCauldronRecipeBuilder.class);
         event.add("WizardAttackGoal", WizardAttackGoal.class);
+        event.add("WarlockAttackGoal", WarlockAttackGoal.class);
+        event.add("WizardRecoverGoal", WizardRecoverGoal.class);
+        event.add("WizardSupportGoal", WizardSupportGoal.class);
+        event.add("SpellBarrageGoal", SpellBarrageGoal.class);
+        event.add("GustDefenseGoal", GustDefenseGoal.class);
+        event.add("WispAttackGoal", WispAttackGoal.class);
     }
 
     @Override
