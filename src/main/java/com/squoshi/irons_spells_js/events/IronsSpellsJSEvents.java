@@ -16,7 +16,7 @@ public class IronsSpellsJSEvents {
     public static final EventHandler spellCast = PlayerEvents.GROUP.server("spellOnCast", () -> SpellOnCastEventJS.class);
     public static final EventHandler spellPreCast = PlayerEvents.GROUP.server("spellPreCast", () -> SpellPreCastEventJS.class).hasResult();
     public static final EventHandler spellSelectionManager = PlayerEvents.GROUP.startup("spellSelection", () -> SpellSelectionEventJS.class);
-    public static final EventHandler entitySpellPreCast = EntityEvents.GROUP.server("spellPreCast", () -> EntitySpellPreCastEventJS.class);
+    public static final EventHandler entitySpellPreCast = EntityEvents.GROUP.server("spellPreCast", () -> EntitySpellPreCastEventJS.class).hasResult();
     public static final EventHandler entitySpellCast = EntityEvents.GROUP.server("spellOnCast", () -> EntitySpellCastEventJS.class);
 
     public static void changeMana(ChangeManaEvent event) {
