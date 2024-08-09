@@ -7,8 +7,8 @@ A KubeJS addon that allows for:
 - Compatibility with other KubeJS addons (AnimationJS, EntityJS, ProbeJS)
 - Alchemist Cauldron recipes
 
-- Main wiki: https://kubejs.com/wiki/addons/irons-spells
-- EntityJS compatibility wiki: https://github.com/liopyu/EntityJS/wiki/Addon-Compatibilities
+Main wiki: https://kubejs.com/wiki/addons/irons-spells \
+EntityJS compatibility wiki: https://github.com/liopyu/EntityJS/wiki/Addon-Compatibilities
 
 ## Credits
 - **Uncandango** [aka **pietro-lopes**]
