@@ -20,6 +20,9 @@ build
 # other
 eclipse
 run
+!run/kubejs/client_scripts/test/
+!run/kubejs/server_scripts/test/
+!run/kubejs/startup_scripts/test/
 runs
 run-data
 
