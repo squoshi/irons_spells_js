@@ -19,11 +19,18 @@ build
 
 # other
 eclipse
-run
+runs
+run-data
+repo
+run/*
+!run/kubejs/
+run/kubejs/*
+!run/kubejs/client_scripts/
+!run/kubejs/server_scripts/
+!run/kubejs/startup_scripts/
+run/kubejs/client_scripts/*
+run/kubejs/server_scripts/*
+run/kubejs/startup_scripts/*
 !run/kubejs/client_scripts/test/
 !run/kubejs/server_scripts/test/
 !run/kubejs/startup_scripts/test/
-runs
-run-data
-
-repo
