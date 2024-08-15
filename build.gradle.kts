@@ -4,7 +4,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("net.neoforged.moddev") version "2.0.10-beta"
+    id("net.neoforged.moddev") version "2.0.15-beta"
 }
 
 val minecraftVersion: String by project
