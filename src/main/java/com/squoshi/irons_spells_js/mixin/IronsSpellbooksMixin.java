@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(value = IronsSpellbooks.class, remap = false)
 public class IronsSpellbooksMixin {
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/neoforged/fml/ModContainer;registerConfig(Lnet/neoforged/fml/config/ModConfig$Type;Lnet/neoforged/fml/config/IConfigSpec;Ljava/lang/String;)V", ordinal = 1))
-    private void kjs_irons_spells$cancelConfig(ModContainer instance, ModConfig.Type type, IConfigSpec configSpec, String fileName) {
-        IronsSpellsJSMod.LOGGER.info("Postponing IronSpells server config...");
-    }
+	@Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/neoforged/fml/ModContainer;registerConfig(Lnet/neoforged/fml/config/ModConfig$Type;Lnet/neoforged/fml/config/IConfigSpec;Ljava/lang/String;)V", ordinal = 1))
+	private void kjs_irons_spells$cancelConfig(ModContainer instance, ModConfig.Type type, IConfigSpec configSpec, String fileName) {
+		IronsSpellsJSMod.LOGGER.info("Postponing IronSpells server config...");
+	}
 }

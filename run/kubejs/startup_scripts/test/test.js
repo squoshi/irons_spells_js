@@ -1,8 +1,6 @@
 // Visit the wiki for more info - https://kubejs.com/
 console.info('Hello, World! (Loaded startup TEST example script)')
 
-const $MobEffectInstance = Java.loadClass("net.minecraft.world.effect.MobEffectInstance")
-
 StartupEvents.registry("attribute", event => {
     // Attributes should be registered here first before using on the event below, like schools
     event.create("test_spell_power", "spell")
@@ -69,60 +67,82 @@ StartupEvents.registry('irons_spellbooks:spells', event => {
 })
 
 StartupEvents.registry("item", event => {
-//    event.create("test_spellbook", "irons_spells_js:spellbook")
-//        .setMaxSpellSlots(3)
-//
-//    event.create("test_attribute_spellbook", "irons_spells_js:spellbook")
-//        .setMaxSpellSlots(8)
-//        .addDefaultAttribute("kubejs:test_spell_power", "Test Spell Power", 2.0, "multiply_total")
-//        .addDefaultAttribute("minecraft:generic.movement_speed", "Test Movement Speed", 1.2, "multiply_total")
-//
-//    event.create("test_unique_spellbook", "irons_spells_js:spellbook")
-//        .setMaxSpellSlots(4)
-//        .addDefaultAttribute("kubejs:test_spell_power", "Test Spell Power", 2.0, "multiply_total")
-//        .addDefaultAttribute("minecraft:generic.movement_speed", "Test Movement Speed", 1.2, "multiply_total")
-//        .addDefaultSpell(SpellRegistry.FIREBOLT_SPELL, 1)
-//
-//    event.create("test_staff", "irons_spells_js:staff")
-//        .addAdditionalAttribute("kubejs:test_spell_power", "Test Spell Power", 2.0, "multiply_total")
-//        .attackDamageBaseline(50)
-//        .speedBaseline(-2.4)
+    event.create("test_spellbook", "spellbook")
+        .setMaxSpellSlots(3)
+        .rarity("UNCOMMON")
+
+    event.create("test_attribute_spellbook", "spellbook")
+        .setMaxSpellSlots(8)
+        .addAttribute("kubejs:test_spell_power", 2.0, "add_multiplied_total")
+        .addAttribute("kubejs:test_spell_resistance", 5.0, "add_value")
+        .rarity("RARE")
+
+    event.create("test_unique_spellbook", "spellbook")
+        .setMaxSpellSlots(4)
+        .addAttribute("kubejs:test_spell_power", 4.0, "add_multiplied_total")
+        .addAttribute("kubejs:test_spell_resistance", 2.0, "add_value")
+        .addSpell("irons_spellbooks:firebolt", 1)
+        .rarity("EPIC")
+
+    event.create("test_affinity_spellbook", "spellbook")
+        .setMaxSpellSlots(3)
+        .addAttribute("kubejs:test_spell_power", 2.0, "add_multiplied_total")
+        .addAttribute("kubejs:test_spell_resistance", 5.0, "add_value")
+        .addSpell("irons_spellbooks:firebolt", 3)
+        .setAffinitySpell("irons_spellbooks:raise_dead")
+        .rarity("EPIC")
+
+    event.create("test_staff", "staff")
+        .setEnchantmentValue(30)
+        .setTier(tier => {
+            // valid tiers are: GRAYBEARD, ARTIFICER, ICE_STAFF, LIGHTNING_ROD, BLOOD_STAFF
+            // boolean is to merge or not Tier with your attributes
+            tier.useBaseTier("ICE_STAFF", true)
+                .addAttribute("kubejs:test_spell_power", 2.0, "add_multiplied_total")
+                .addAttribute("kubejs:test_spell_resistance", 5.0, "add_value")
+                .setSpeed(-2)
+                .setDamage(42)
+        })
 
     event.create("test_magic_sword", "magic_sword")
-        .modifyTier(tier => {
-            tier.setUses(666)
+        .addSpell("irons_spellbooks:firebolt", 1)
+        .addSpell("irons_spellbooks:raise_dead", 2)
+        .setTier(tier => {
+            // valid tiers are: KEEPER_FLAMBERGE, DREADSWORD, MISERY,
+            // METAL_MAGEHUNTER, CRYSTAL_MAGEHUNTER, SPELLBREAKER, TRUTHSEEKER,
+            // CLAYMORE, AMETHYST_RAPIER
+            // boolean is to merge or not Tier with your attributes
+            tier.useBaseTier("CRYSTAL_MAGEHUNTER", true)
+                .addAttribute("kubejs:test_spell_power", 2.0, "add_multiplied_total")
+                .setUses(666)
                 .setDamage(12)
                 .setSpeed(-3)
                 .setEnchantmentValue(6)
                 .setIncorrectBlocksForDrops("minecraft:incorrect_for_gold_tool")
                 .setRepairIngredient(() => Ingredient.of("minecraft:gold_ingot"))
-                .addAdditionalAttribute(["kubejs:test_spell_power", 2.0, "add_multiplied_total"])
         })
-        .modifyProperties(prop => {
-            prop.food([4, 4, true, 3, Item.of("minecraft:bucket"), [[() => new $MobEffectInstance("minecraft:invisibility", 30), 0.5]]])
-                .stacksTo(1)
-                .durability(500)
-                .craftRemainder("minecraft:acacia_boat")
-                .rarity("epic")
-                .fireResistant()
-                .jukeboxPlayable("cat")
-                .setNoRepair()
-                // .component("...", value)
-                // DO NOT USE THIS, USE .addAdditionalAttribute on .modifyTier(tier => tier.addAdditionalAttribute(...))
-                // .attributes([[["kubejs:test_spell_resistance", ["kubejs:some_id", 1.0, "add_value"], "mainhand"]], true])
+        .food(builder => {
+            builder.nutrition(4)
+                .saturation(0.4)
+                .alwaysEdible()
+                .eatSeconds(3)
+                // .fastToEat() // 0.8s
+                .usingConvertsTo("minecraft:bucket")
+                .effect("minecraft:invisibility", 100, 0, 0.5)
+                .eaten(ctx => ctx.entity.tell("Did you just eat a sword, fam?"))
         })
-        .addDefaultSpell("irons_spellbooks:firebolt", 1)
-        .addDefaultSpell("irons_spellbooks:raise_dead", 2)
+        // .component("...", value)
+        .maxStackSize(1)
+        .maxDamage(500)
+        .containerItem("minecraft:acacia_boat")
+        .rarity("epic")
+        .fireResistant()
+        // .setNoRepair missing, report to KubeJS
+        // .jukeboxPlayable("minecraft:cat", true) not working, report to kubejs
 
-
-//    event.create("test_magic_sword_2", "irons_spells_js:magic_sword")
-//        .addAdditionalAttribute("kubejs:test_spell_power", "Test Spell Power", 2.0, "multiply_total")
-//        .attackDamageBaseline(100)
-//        .speedBaseline(3)
-//        .addDefaultSpell("irons_spellbooks:starfall", 1)
-//        .addDefaultSpell("irons_spellbooks:planar_sight", 2)
 })
 
+// This needs to be a KubeJS PR
 NativeEvents.onEvent("net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent", event => {
     event.types.forEach(type => {
         event.add(type, "kubejs:test_spell_power")

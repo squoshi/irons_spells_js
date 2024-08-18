@@ -20,22 +20,21 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Mod(IronsSpellsJSMod.MODID)
 public final class IronsSpellsJSMod {
-    public static final String MODID = "irons_spells_js";
-    public static final Logger LOGGER = LogManager.getLogger(MODID);
-    public static final List<DeferredRegister<?>> MODDED_REGISTRIES = new ArrayList<>();
+	public static final String MODID = "irons_spells_js";
+	public static final Logger LOGGER = LogManager.getLogger(MODID);
+	public static final List<DeferredRegister<?>> MODDED_REGISTRIES = new ArrayList<>();
 
-    public IronsSpellsJSMod(ModContainer mod, IEventBus bus) {
-        LOGGER.info("Initializing IronSpellsJS");
-        bus.addListener(this::runIronSpellsConfig);
-    }
+	public IronsSpellsJSMod(ModContainer mod, IEventBus bus) {
+		LOGGER.info("Initializing IronSpellsJS");
+		bus.addListener(this::runIronSpellsConfig);
+	}
 
-    private void runIronSpellsConfig(InterModEnqueueEvent event) {
-        LOGGER.info("Registering spells on Config File...");
-        ServerConfigsAccessor.getBuilder().push("Spells");
-        RegistryObjectStorage.of(SpellRegistry.SPELL_REGISTRY_KEY).objects.values().forEach(builder -> {
-            ServerConfigsAccessor.invoke$createSpellConfig(builder.get());
-        });
-        ServerConfigsAccessor.getBuilder().pop();
-        ModList.get().getModContainerById("irons_spellbooks").get().registerConfig(ModConfig.Type.SERVER, ServerConfigsAccessor.getBuilder().build(), String.format("%s-server.toml", IronsSpellbooks.MODID));
-    }
+	private void runIronSpellsConfig(InterModEnqueueEvent event) {
+		LOGGER.info("Registering spells on Config File...");
+		ServerConfigsAccessor.getBuilder().push("Spells");
+		RegistryObjectStorage.of(SpellRegistry.SPELL_REGISTRY_KEY).objects.values()
+			.forEach(builder -> ServerConfigsAccessor.invoke$createSpellConfig(builder.get()));
+		ServerConfigsAccessor.getBuilder().pop();
+		ModList.get().getModContainerById("irons_spellbooks").get().registerConfig(ModConfig.Type.SERVER, ServerConfigsAccessor.getBuilder().build(), String.format("%s-server.toml", IronsSpellbooks.MODID));
+	}
 }
