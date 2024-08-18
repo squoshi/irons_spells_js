@@ -24,9 +24,9 @@ public final class IronsSpellsJSMod {
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 	public static final List<DeferredRegister<?>> MODDED_REGISTRIES = new ArrayList<>();
 
-	public IronsSpellsJSMod(ModContainer mod, IEventBus bus) {
+	public IronsSpellsJSMod(ModContainer mod, IEventBus modBus) {
 		LOGGER.info("Initializing IronSpellsJS");
-		bus.addListener(this::runIronSpellsConfig);
+		modBus.addListener(this::runIronSpellsConfig);
 	}
 
 	private void runIronSpellsConfig(InterModEnqueueEvent event) {
