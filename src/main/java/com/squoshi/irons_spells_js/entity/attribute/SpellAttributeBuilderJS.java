@@ -1,51 +1,45 @@
 package com.squoshi.irons_spells_js.entity.attribute;
 
-import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.typings.Info;
+import com.google.common.base.Predicates;
+import dev.latvian.mods.kubejs.entity.AttributeBuilder;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
+import dev.latvian.mods.rhino.util.ReturnsSelf;
 import io.redspace.ironsspellbooks.api.attribute.MagicRangedAttribute;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 
-public class SpellAttributeBuilderJS extends BuilderBase<Attribute> {
-	public transient String descriptionId;
-	public transient double defaultValue;
-	public transient double minimumValue;
-	public transient double maximumValue;
+@ReturnsSelf
+public class SpellAttributeBuilderJS extends AttributeBuilder {
 
+	private Range range = null;
 	public SpellAttributeBuilderJS(ResourceLocation i) {
 		super(i);
-		this.descriptionId = "attribute." + i.getNamespace() + "." + i.getPath();
 	}
 
-	@Info("""
-		        Sets the default value for the attribute.
-		""")
-	@SuppressWarnings("unused")
-	public SpellAttributeBuilderJS setDefaultValue(double defaultValue) {
-		this.defaultValue = defaultValue;
+	@Override
+	public AttributeBuilder range(double defaultValue, double min, double max) {
+		this.range = new Range(defaultValue, min, max);
 		return this;
 	}
 
-	@Info("""
-		        Sets the minimum value for the attribute.
-		""")
-	@SuppressWarnings("unused")
-	public SpellAttributeBuilderJS setMinimumValue(double minimumValue) {
-		this.minimumValue = minimumValue;
-		return this;
-	}
-
-	@Info("""
-		        Sets the maximum value for the attribute.
-		""")
-	@SuppressWarnings("unused")
-	public SpellAttributeBuilderJS setMaximumValue(double maximumValue) {
-		this.maximumValue = maximumValue;
+	@HideFromJS
+	@Override
+	public AttributeBuilder bool(boolean defaultValue) {
+		ConsoleJS.STARTUP.warn("Boolean not supported for Magic Attributes!");
 		return this;
 	}
 
 	@Override
 	public Attribute createObject() {
-		return new MagicRangedAttribute(this.descriptionId, this.defaultValue, this.minimumValue, this.maximumValue).setSyncable(true);
+		if (range == null) {
+			throw new IllegalArgumentException("You need to set a range, use range() method.");
+		}
+
+		// Temp fix, wait for KubeJS to merge Attribute fix
+		if (this.getPredicateList().isEmpty()) {
+			getPredicateList().add(Predicates.alwaysTrue());
+		}
+		return new MagicRangedAttribute(this.getBuilderTranslationKey(), this.range.defaultValue(), this.range.min(), this.range.max()).setSyncable(true);
 	}
 }

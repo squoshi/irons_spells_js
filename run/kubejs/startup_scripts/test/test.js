@@ -4,14 +4,15 @@ console.info('Hello, World! (Loaded startup TEST example script)')
 StartupEvents.registry("attribute", event => {
     // Attributes should be registered here first before using on the event below, like schools
     event.create("test_spell_power", "spell")
-        .setDefaultValue(1.0)
-        .setMinimumValue(0.0)
-        .setMaximumValue(10.0)
+        .range(6.0, 0, 10)
+        .attachToPlayers()
 
     event.create("test_spell_resistance", "spell")
-        .setDefaultValue(1.0)
-        .setMinimumValue(0.0)
-        .setMaximumValue(10.0)
+        .range(4.0, 0, 10)
+        .attachToPlayers()
+
+    event.create("test_spell_default", "spell")
+        .range(2.0, 0, 10)
 })
 
 StartupEvents.registry("irons_spellbooks:schools", event => {
@@ -137,15 +138,6 @@ StartupEvents.registry("item", event => {
         .containerItem("minecraft:acacia_boat")
         .rarity("epic")
         .fireResistant()
-        // .setNoRepair missing, report to KubeJS
-        // .jukeboxPlayable("minecraft:cat", true) not working, report to kubejs
-
-})
-
-// This needs to be a KubeJS PR
-NativeEvents.onEvent("net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent", event => {
-    event.types.forEach(type => {
-        event.add(type, "kubejs:test_spell_power")
-        event.add(type, "kubejs:test_spell_resistance")
-    })
+        .disableRepair()
+        .jukeboxPlayable("minecraft:cat", true)
 })
