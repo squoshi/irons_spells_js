@@ -16,7 +16,7 @@ public final class IronsSpellsJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void init() {
-		IronsSpellsJSMod.LOGGER.info("Initiating IronsSpellsJSPlugin");
+		IronsSpellsJSMod.LOGGER.debug("Initiating IronsSpellsJSPlugin");
 	}
 
 	@Override

@@ -10,19 +10,14 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("unused")
 @Mod(IronsSpellsJSMod.MODID)
 public final class IronsSpellsJSMod {
 	public static final String MODID = "irons_spells_js";
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
-	public static final List<DeferredRegister<?>> MODDED_REGISTRIES = new ArrayList<>();
 
 	public IronsSpellsJSMod(ModContainer mod, IEventBus modBus) {
 		LOGGER.info("Initializing IronSpellsJS");

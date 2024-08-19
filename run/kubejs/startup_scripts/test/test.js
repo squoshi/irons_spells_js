@@ -141,3 +141,8 @@ StartupEvents.registry("item", event => {
         .disableRepair()
         .jukeboxPlayable("minecraft:cat", true)
 })
+
+PlayerEvents.spellSelection(event => {
+	console.log("Firing selection from Startup")
+	console.log("Is client side?: " + event.entity.level.clientSide)
+})
