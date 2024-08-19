@@ -1,11 +1,14 @@
 package com.squoshi.irons_spells_js;
 
 import com.squoshi.irons_spells_js.entity.attribute.SpellAttributeBuilderJS;
+import com.squoshi.irons_spells_js.event.CauldronRecipeEventJS;
+import com.squoshi.irons_spells_js.event.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.item.CustomMagicSwordItem;
 import com.squoshi.irons_spells_js.item.CustomSpellBook;
 import com.squoshi.irons_spells_js.item.CustomStaff;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
+import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
@@ -27,5 +30,19 @@ public final class IronsSpellsJSPlugin implements KubeJSPlugin {
 		registry.of(Registries.ITEM, reg -> reg.add("magic_sword", CustomMagicSwordItem.Builder.class, CustomMagicSwordItem.Builder::new));
 		registry.of(Registries.ITEM, reg -> reg.add("staff", CustomStaff.Builder.class, CustomStaff.Builder::new));
 		registry.of(Registries.ITEM, reg -> reg.add("spellbook", CustomSpellBook.Builder.class, CustomSpellBook.Builder::new));
+	}
+
+	@Override
+	public void afterInit() {
+		if (IronsSpellsJSEvents.caldron.hasListeners()) {
+			var caldronEvent = new CauldronRecipeEventJS();
+			IronsSpellsJSEvents.caldron.post(caldronEvent);
+			caldronEvent.registerAll();
+		}
+	}
+
+	@Override
+	public void registerEvents(EventGroupRegistry registry) {
+		registry.register(IronsSpellsJSEvents.GROUP);
 	}
 }

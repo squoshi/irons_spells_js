@@ -2,13 +2,15 @@ package com.squoshi.irons_spells_js.event;
 
 import com.squoshi.irons_spells_js.IronsSpellsJSMod;
 import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
-import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
+import dev.latvian.mods.kubejs.event.TargetedEventHandler;
 import io.redspace.ironsspellbooks.api.events.ChangeManaEvent;
 import io.redspace.ironsspellbooks.api.events.SpellOnCastEvent;
 import io.redspace.ironsspellbooks.api.events.SpellPreCastEvent;
 import io.redspace.ironsspellbooks.api.magic.SpellSelectionManager;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -17,13 +19,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class IronsSpellsJSEvents {
 	public static final EventGroup GROUP = EventGroup.of("ISSEvents");
 
-	public static final EventHandler changeMana = PlayerEvents.GROUP.server("changeMana", () -> ChangeManaEventJS.class).hasResult();
-	public static final EventHandler spellCast = PlayerEvents.GROUP.server("spellOnCast", () -> SpellOnCastEventJS.class);
-	public static final EventHandler spellPreCast = PlayerEvents.GROUP.server("spellPreCast", () -> SpellPreCastEventJS.class).hasResult();
-	public static final EventHandler spellSelectionManager = PlayerEvents.GROUP.startup("spellSelection", () -> SpellSelectionEventJS.class);
-
-	public static final EventHandler entitySpellPreCast = EntityEvents.GROUP.server("spellPreCast", () -> EntitySpellPreCastEventJS.class).hasResult();
-	public static final EventHandler entitySpellCast = EntityEvents.GROUP.server("spellOnCast", () -> EntitySpellCastEventJS.class);
+	public static final EventHandler changeMana = GROUP.server("changeMana", () -> ChangeManaEventJS.class).hasResult();
+	public static final TargetedEventHandler<ResourceKey<EntityType<?>>> spellPreCast = GROUP.server("spellPreCast", () -> SpellPreCastEventJS.class).supportsTarget(EntityEvents.TARGET).hasResult();
+	public static final EventHandler spellCast = GROUP.server("spellOnCast", () -> SpellOnCastEventJS.class);
+	public static final TargetedEventHandler<ResourceKey<EntityType<?>>> spellPostCast = GROUP.server("spellPostCast", () -> SpellPostCastEventJS.class).supportsTarget(EntityEvents.TARGET);
+	public static final EventHandler spellSelectionManager = GROUP.startup("spellSelection", () -> SpellSelectionEventJS.class);
+	public static final EventHandler caldron = GROUP.startup("caldron", () -> CauldronRecipeEventJS.class);
 
 	@SubscribeEvent
 	public static void changeMana(ChangeManaEvent event) {
@@ -41,8 +42,10 @@ public class IronsSpellsJSEvents {
 
 	@SubscribeEvent
 	public static void spellPreCast(SpellPreCastEvent event) {
-		if (spellPreCast.hasListeners()) {
-			spellPreCast.post(new SpellPreCastEventJS(event)).applyCancel(event);
+		var playerKey = EntityType.PLAYER.kjs$getKey();
+		if (spellPreCast.hasListeners(playerKey)) {
+			var kjsEvent = new SpellPreCastEventJS(event.getEntity(), event.getSpellId(), event.getSpellLevel(), event.getSchoolType(), event.getCastSource());
+			spellPreCast.post(event.getEntity(), playerKey, kjsEvent).applyCancel(event);
 		}
 	}
 

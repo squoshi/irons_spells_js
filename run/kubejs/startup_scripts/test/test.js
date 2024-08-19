@@ -142,7 +142,18 @@ StartupEvents.registry("item", event => {
         .jukeboxPlayable("minecraft:cat", true)
 })
 
-PlayerEvents.spellSelection(event => {
-	console.log("Firing selection from Startup")
-	console.log("Is client side?: " + event.entity.level.clientSide)
+ISSEvents.spellSelection(event => {
+	console.log("-- @" + event.entity.scriptType)
+	console.log("-- SPELL-SELECTION --")
+	console.log(event.entity ?? undefined)
+	console.log(event.manager ?? undefined)
+})
+
+ISSEvents.caldron(event => {
+	// up to 4x on input and on output
+	// ONLY SUPPORTS:
+	// POTIONS, INK AND ELIXIR on INPUT
+	// Use glass bottle to collect output
+	event.add('4x minecraft:potion[potion_contents={potion:"minecraft:thick"}]', "gold_ingot", "golden_apple")
+	event.add('2x irons_spellbooks:common_ink', "gold_ore", "2x nether_gold_ore")
 })
