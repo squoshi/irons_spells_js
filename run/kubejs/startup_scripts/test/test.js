@@ -154,6 +154,17 @@ ISSEvents.caldron(event => {
 	// ONLY SUPPORTS:
 	// POTIONS, INK AND ELIXIR on INPUT
 	// Use glass bottle to collect output
-	event.add('4x minecraft:potion[potion_contents={potion:"minecraft:thick"}]', "gold_ingot", "golden_apple")
-	event.add('2x irons_spellbooks:common_ink', "gold_ore", "2x nether_gold_ore")
+
+	// event.add(output, input, ingredient)
+	event.add("golden_apple", '4x minecraft:potion[potion_contents={potion:"minecraft:thick"}]', "gold_ingot")
+	event.add("2x nether_gold_ore", '2x irons_spellbooks:common_ink', "gold_ore")
+})
+
+StartupEvents.postInit(event => {
+	console.log("Invalid Spell: " + Spell.of("asdasdasd"))
+	console.log("Valid Spell: " + Spell.of("irons_spellbooks:raise_dead"))
+	console.log("As Holder Spell: " + Spell.ofHolder("irons_spellbooks:raise_dead"))
+	console.log("What? " + Spell.of(Spell.ofHolder("irons_spellbooks:raise_dead")))
+	console.log("Exists Spell: " + Spell.exists("irons_spellbooks:raise_dead"))
+	console.log("Is Spell: " + Spell.isSpell(Spell.of("irons_spellbooks:raise_dead")))
 })

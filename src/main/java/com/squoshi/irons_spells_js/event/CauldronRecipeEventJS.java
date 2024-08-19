@@ -14,7 +14,7 @@ import java.util.List;
 public class CauldronRecipeEventJS implements KubeEvent {
 	private final List<CauldronRecipe> recipes = new ArrayList<>();
 
-	public CauldronRecipe add(ItemStack input, ItemStack ingredient, ItemStack output) {
+	public CauldronRecipe add(ItemStack output, ItemStack input, ItemStack ingredient) {
 		var recipe = new CauldronRecipe(input, ingredient, output);
 		recipes.add(recipe);
 		return recipe;

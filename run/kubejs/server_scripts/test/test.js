@@ -56,3 +56,8 @@ ISSEvents.spellPostCast(event => {
 	console.log(event.magicData ?? undefined)
 //	console.log(event.entity.magicData ?? undefined)
 })
+
+ServerEvents.loaded(event => {
+	console.log("Status: " + Spell.checkStatus("irons_spellbooks:raise_dead"))
+	console.log("Enabled: " + Spell.isEnabled("irons_spellbooks:raise_dead"))
+})

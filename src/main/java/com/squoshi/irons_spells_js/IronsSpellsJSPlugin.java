@@ -6,11 +6,13 @@ import com.squoshi.irons_spells_js.event.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.item.CustomMagicSwordItem;
 import com.squoshi.irons_spells_js.item.CustomSpellBook;
 import com.squoshi.irons_spells_js.item.CustomStaff;
+import com.squoshi.irons_spells_js.spell.AbstractSpellWrapper;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
+import dev.latvian.mods.kubejs.script.BindingRegistry;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import net.minecraft.core.registries.Registries;
@@ -30,6 +32,33 @@ public final class IronsSpellsJSPlugin implements KubeJSPlugin {
 		registry.of(Registries.ITEM, reg -> reg.add("magic_sword", CustomMagicSwordItem.Builder.class, CustomMagicSwordItem.Builder::new));
 		registry.of(Registries.ITEM, reg -> reg.add("staff", CustomStaff.Builder.class, CustomStaff.Builder::new));
 		registry.of(Registries.ITEM, reg -> reg.add("spellbook", CustomSpellBook.Builder.class, CustomSpellBook.Builder::new));
+	}
+
+	@Override
+	public void registerBindings(BindingRegistry event) {
+//		event.add("SpellRarity", SpellRarity.class);
+//		event.add("SchoolRegistry", SchoolRegistry.class);
+//		event.add("CastType", CastType.class);
+//		event.add("IronsSpellsParticleHelper", ParticleHelper.class);
+//		event.add("SpellRegistry", SpellRegistry.class);
+//		event.add("ItemTags", ItemTags.class);
+//		event.add("Player", Player.class);
+//		event.add("SpellData", SpellData.class);
+		event.add("Spell", AbstractSpellWrapper.class);
+//		event.add("ISSAnimationHolder", AnimationHolder.class);
+//		event.add("ISSUpdateClient", UpdateClient.class);
+//		event.add("ISSUtils", Utils.class);
+//		event.add("TargetEntityCastData", TargetEntityCastData.class);
+//		event.add("Potions", Potions.class);
+//		event.add("ISSPotionRegistry", PotionRegistry.class);
+//		event.add("AlchemistCauldronRecipeBuilder", AlchemistCauldronKubeJSRecipes.AlchemistCauldronRecipeBuilder.class);
+//		event.add("WizardAttackGoal", WizardAttackGoal.class);
+//		event.add("WarlockAttackGoal", WarlockAttackGoal.class);
+//		event.add("WizardRecoverGoal", WizardRecoverGoal.class);
+//		event.add("WizardSupportGoal", WizardSupportGoal.class);
+//		event.add("SpellBarrageGoal", SpellBarrageGoal.class);
+//		event.add("GustDefenseGoal", GustDefenseGoal.class);
+//		event.add("WispAttackGoal", WispAttackGoal.class);
 	}
 
 	@Override
