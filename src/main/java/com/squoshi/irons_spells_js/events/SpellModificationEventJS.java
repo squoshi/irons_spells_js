@@ -47,11 +47,8 @@ public class SpellModificationEventJS extends EventJS {
         return builder;
     }
 
-    public void modify(ResourceLocation spellResource, Consumer<SpellModificationBuilder> modifyBuilder) {
-        /*var abstractSpell = this.spell;
-        boolean spellMatch = abstractSpell == spell;
-        if (!spellMatch) return;*/
-        SpellModificationBuilder builder = getOrCreate(spellResource).getBuilder();
+    public void modify(AbstractSpell spell, Consumer<SpellModificationBuilder> modifyBuilder) {
+        SpellModificationBuilder builder = getOrCreate(spell.getSpellResource()).getBuilder();
         modifyBuilder.accept(builder);
     }
 }
