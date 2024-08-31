@@ -29,7 +29,7 @@ public class CustomSpell extends AbstractSpell {
 
     record PreCastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData){}
     record PreCastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, InteractionHand getHand, MagicData getPlayerMagicData){}
-    record PreCastTargetingContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData, AbstractSpell getSpell){}
+    record PreCastConditionsContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData, AbstractSpell getSpell){}
 
     private final ResourceLocation spellResource;
     private final DefaultConfig defaultConfig;
@@ -45,7 +45,7 @@ public class CustomSpell extends AbstractSpell {
     private final BiFunction<Integer,LivingEntity,List<MutableComponent>> uniqueInfo;
     private final AnimationHolder castStartAnimation;
     private final AnimationHolder castFinishAnimation;
-    private final Predicate<PreCastTargetingContext> preCastConditions;
+    private final Predicate<PreCastConditionsContext> preCastConditions;
 
     public CustomSpell(Builder b) {
         this.spellResource = b.spellResource;
@@ -181,7 +181,7 @@ public class CustomSpell extends AbstractSpell {
     @Override
     public boolean checkPreCastConditions(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {
         if (this.preCastConditions != null) {
-            return this.preCastConditions.test(new PreCastTargetingContext(level, spellLevel, entity, playerMagicData, this));
+            return this.preCastConditions.test(new PreCastConditionsContext(level, spellLevel, entity, playerMagicData, this));
         }
         return super.checkPreCastConditions(level, spellLevel, entity, playerMagicData);
     }
@@ -211,7 +211,7 @@ public class CustomSpell extends AbstractSpell {
         private BiFunction<Integer,LivingEntity,List<MutableComponent>> uniqueInfo;
         private AnimationHolder castStartAnimation = null;
         private AnimationHolder castFinishAnimation = null;
-        private Predicate<PreCastTargetingContext> preCastConditions = null;
+        private Predicate<PreCastConditionsContext> preCastConditions = null;
 
         public Builder(ResourceLocation i) {
             super(i);
@@ -406,7 +406,7 @@ public class CustomSpell extends AbstractSpell {
             })
             ```
         """)
-        public Builder checkPreCastConditions(Predicate<PreCastTargetingContext> predicate) {
+        public Builder checkPreCastConditions(Predicate<PreCastConditionsContext> predicate) {
             this.preCastConditions = predicate;
             return this;
         }

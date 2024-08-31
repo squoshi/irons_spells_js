@@ -6,13 +6,7 @@ import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
-import net.liopyu.entityjs.builders.modification.ModifyEntityBuilder;
-import net.liopyu.entityjs.builders.modification.ModifyLivingEntityBuilder;
-import net.liopyu.entityjs.builders.modification.ModifyMobBuilder;
-import net.liopyu.entityjs.builders.modification.ModifyPathfinderMobBuilder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.projectile.Projectile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +41,7 @@ public class SpellModificationEventJS extends EventJS {
         return builder;
     }
 
+    @SuppressWarnings("unused")
     public void modify(AbstractSpell spell, Consumer<SpellModificationBuilder> modifyBuilder) {
         SpellModificationBuilder builder = getOrCreate(spell.getSpellResource()).getBuilder();
         modifyBuilder.accept(builder);

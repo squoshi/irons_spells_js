@@ -7,6 +7,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class ISSKJSUtils {
     public static <T> boolean safeCallback(Consumer<T> consumer, T value, String errorMessage) {
@@ -17,6 +18,15 @@ public class ISSKJSUtils {
             return false;
         }
         return true;
+    }
+
+    public static <T> boolean safePredicate(Predicate<T> predicate, T value, String errorMessage) {
+        try {
+            return predicate.test(value);
+        } catch (Throwable e) {
+            ConsoleJS.STARTUP.error(errorMessage, e);
+            return false;
+        }
     }
 
     public record AttributeHolder(ResourceLocation getLocation) implements ResourceHolder<AttributeHolder>{
