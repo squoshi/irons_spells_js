@@ -35,18 +35,22 @@ public class SpellModificationBuilder extends EventJS {
     public record ModifiedServerPreCastCallback(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {}
 
     private final ResourceLocation spellResource;
-    public transient Consumer<AbstractSpell> setPreSpellCastCallback;
     public transient Function<Integer, Integer> castTimeCallback;
     public transient CastType castType;
     public transient Optional<SoundEvent> startSound, finishSound;
     public transient AnimationHolder castStartAnimation, castFinishAnimation;
-    public transient int recastCount = 0;
+    public transient Optional<Integer> recastCount = Optional.empty();
     public transient Consumer<ModifiedClientCastCallback> setClientCastCallback;
+    public transient boolean cancelClientCast = false;
     public transient Consumer<ModifiedServerCastCallback> setServerCastCallback;
+    public transient boolean cancelServerCast = false;
     public transient Predicate<ModifiedPreCastConditionsCallback> setPreCastConditionsCallback;
     public transient Consumer<ModifiedServerCastCompleteCallback> setServerCastCompleteCallback;
+    public transient boolean cancelServerCastComplete = false;
     public transient Consumer<ModifiedClientPreCastCallback> setClientPreCastCallback;
+    public transient boolean cancelClientPreCast = false;
     public transient Consumer<ModifiedServerPreCastCallback> setServerPreCastCallback;
+    public transient boolean cancelServerPreCast = false;
     public transient Predicate<Player> isLearnedCallback;
     public transient BiFunction<Integer, LivingEntity, List<MutableComponent>> customUniqueInfo;
 
@@ -56,11 +60,6 @@ public class SpellModificationBuilder extends EventJS {
 
     public SpellModificationBuilder setCastTimeCallback(Function<Integer, Integer> callback) {
         this.castTimeCallback = callback;
-        return this;
-    }
-
-    public SpellModificationBuilder setCastType(CastType castType) {
-        this.castType = castType;
         return this;
     }
 
@@ -85,16 +84,18 @@ public class SpellModificationBuilder extends EventJS {
     }
 
     public SpellModificationBuilder setRecastCount(int recastCount) {
-        this.recastCount = recastCount;
+        this.recastCount = Optional.of(recastCount);
         return this;
     }
 
-    public SpellModificationBuilder setClientCastCallback(Consumer<ModifiedClientCastCallback> setClientCastCallback) {
+    public SpellModificationBuilder setClientCastCallback(boolean cancelOriginal, Consumer<ModifiedClientCastCallback> setClientCastCallback) {
+        this.cancelClientCast = cancelOriginal;
         this.setClientCastCallback = setClientCastCallback;
         return this;
     }
 
-    public SpellModificationBuilder setServerCastCallback(Consumer<ModifiedServerCastCallback> setServerCastCallback) {
+    public SpellModificationBuilder setServerCastCallback(boolean cancelOriginal, Consumer<ModifiedServerCastCallback> setServerCastCallback) {
+        this.cancelServerCast = cancelOriginal;
         this.setServerCastCallback = setServerCastCallback;
         return this;
     }
@@ -104,17 +105,20 @@ public class SpellModificationBuilder extends EventJS {
         return this;
     }
 
-    public SpellModificationBuilder setServerCastCompleteCallback(Consumer<ModifiedServerCastCompleteCallback> setServerCastCompleteCallback) {
+    public SpellModificationBuilder setServerCastCompleteCallback(boolean cancelOriginal, Consumer<ModifiedServerCastCompleteCallback> setServerCastCompleteCallback) {
+        this.cancelServerCastComplete = cancelOriginal;
         this.setServerCastCompleteCallback = setServerCastCompleteCallback;
         return this;
     }
 
-    public SpellModificationBuilder setClientPreCastCallback(Consumer<ModifiedClientPreCastCallback> setClientPreCastCallback) {
+    public SpellModificationBuilder setClientPreCastCallback(boolean cancelOriginal, Consumer<ModifiedClientPreCastCallback> setClientPreCastCallback) {
+        this.cancelClientPreCast = cancelOriginal;
         this.setClientPreCastCallback = setClientPreCastCallback;
         return this;
     }
 
-    public SpellModificationBuilder setServerPreCastCallback(Consumer<ModifiedServerPreCastCallback> setServerPreCastCallback) {
+    public SpellModificationBuilder setServerPreCastCallback(boolean cancelOriginal, Consumer<ModifiedServerPreCastCallback> setServerPreCastCallback) {
+        this.cancelServerPreCast = cancelOriginal;
         this.setServerPreCastCallback = setServerPreCastCallback;
         return this;
     }
