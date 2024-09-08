@@ -27,12 +27,12 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public class SpellModificationBuilder extends EventJS {
-    public record ModifiedClientCastCallback(Level level, int spellLevel, LivingEntity entity, ICastData castData) {}
-    public record ModifiedServerCastCallback(Level level, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData) {}
-    public record ModifiedPreCastConditionsCallback(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {}
-    public record ModifiedServerCastCompleteCallback(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData, boolean cancelled) {}
-    public record ModifiedClientPreCastCallback(Level level, int spellLevel, LivingEntity entity, InteractionHand hand, MagicData playerMagicData) {}
-    public record ModifiedServerPreCastCallback(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData) {}
+    public record ModifiedClientCastCallback(Level getLevel, int getSpellLevel, LivingEntity getEntity, ICastData getCastData) {}
+    public record ModifiedServerCastCallback(Level getLevel, int getSpellLevel, LivingEntity getEntity, CastSource getCastSource, MagicData getPlayerMagicData) {}
+    public record ModifiedPreCastConditionsCallback(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData) {}
+    public record ModifiedServerCastCompleteCallback(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData, boolean getCancelled) {}
+    public record ModifiedClientPreCastCallback(Level getLevel, int getSpellLevel, LivingEntity getEntity, InteractionHand getHand, MagicData getPlayerMagicData) {}
+    public record ModifiedServerPreCastCallback(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData) {}
 
     private final ResourceLocation spellResource;
     public transient Function<Integer, Integer> castTimeCallback;
