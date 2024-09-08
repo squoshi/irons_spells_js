@@ -4,6 +4,6 @@ import com.squoshi.irons_spells_js.spell.SpellModificationBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 public interface ISpellModify {
-    SpellModificationBuilder getBuilder();
-    void setBuilder(ResourceLocation resourceLocation);
+    SpellModificationBuilder irons_spells_js$getBuilder();
+    void irons_spells_js$setBuilder(ResourceLocation resourceLocation);
 }

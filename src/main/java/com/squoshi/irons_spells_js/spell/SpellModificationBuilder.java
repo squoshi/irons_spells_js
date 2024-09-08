@@ -35,7 +35,7 @@ public class SpellModificationBuilder extends EventJS {
     public record ModifiedServerPreCastCallback(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData) {}
 
     private final ResourceLocation spellResource;
-    public transient Function<Integer, Integer> castTimeCallback;
+    public transient Function<Integer, Object> castTimeCallback;
     public transient CastType castType;
     public transient Optional<SoundEvent> startSound = Optional.empty(), finishSound = Optional.empty();
     public transient AnimationHolder castStartAnimation, castFinishAnimation;
@@ -58,7 +58,7 @@ public class SpellModificationBuilder extends EventJS {
         this.spellResource = spellResource;
     }
 
-    public SpellModificationBuilder setCastTimeCallback(Function<Integer, Integer> callback) {
+    public SpellModificationBuilder setCastTimeCallback(Function<Integer, Object> callback) {
         this.castTimeCallback = callback;
         return this;
     }
@@ -123,15 +123,15 @@ public class SpellModificationBuilder extends EventJS {
         return this;
     }
 
-    public SpellModificationBuilder setIsLearnedCallback(Predicate<Player> player) {
-        this.isLearnedCallback = player;
-        return this;
-    }
-
-    public SpellModificationBuilder setUniqueInfoCallback(BiFunction<Integer, LivingEntity, List<MutableComponent>> uniqueInfoCallback) {
-        this.customUniqueInfo = uniqueInfoCallback;
-        return this;
-    }
+//    public SpellModificationBuilder setIsLearnedCallback(Predicate<Player> player) {
+//        this.isLearnedCallback = player;
+//        return this;
+//    }
+//
+//    public SpellModificationBuilder setUniqueInfoCallback(BiFunction<Integer, LivingEntity, List<MutableComponent>> uniqueInfoCallback) {
+//        this.customUniqueInfo = uniqueInfoCallback;
+//        return this;
+//    }
 
     public AbstractSpell getSpell() {
         return SpellRegistry.getSpell(spellResource);

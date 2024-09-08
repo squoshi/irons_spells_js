@@ -18,7 +18,7 @@ public class ServerEvents {
             if (spell instanceof ISpellModify spellModify) {
                 if (IronsSpellsJSEvents.modifySpell.hasListeners()) {
                     var eventJS = getOrCreate(spell.getSpellResource());
-                    spellModify.setBuilder(spell.getSpellResource());
+                    spellModify.irons_spells_js$setBuilder(spell.getSpellResource());
                     IronsSpellsJSEvents.modifySpell.post(eventJS);
                     ConsoleJS.STARTUP.info("Adding spell builder for " + spell.getSpellId());
                     ConsoleJS.STARTUP.info(spell.getSpellResource());
