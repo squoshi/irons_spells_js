@@ -37,7 +37,7 @@ public class SpellModificationBuilder extends EventJS {
     private final ResourceLocation spellResource;
     public transient Function<Integer, Integer> castTimeCallback;
     public transient CastType castType;
-    public transient Optional<SoundEvent> startSound, finishSound;
+    public transient Optional<SoundEvent> startSound = Optional.empty(), finishSound = Optional.empty();
     public transient AnimationHolder castStartAnimation, castFinishAnimation;
     public transient Optional<Integer> recastCount = Optional.empty();
     public transient Consumer<ModifiedClientCastCallback> setClientCastCallback;

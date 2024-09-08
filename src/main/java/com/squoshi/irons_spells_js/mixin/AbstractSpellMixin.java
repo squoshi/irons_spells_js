@@ -12,7 +12,7 @@ import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.ICastData;
 import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import net.minecraft.network.chat.MutableComponent;
-//import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,13 +36,12 @@ import static com.squoshi.irons_spells_js.events.SpellModificationEventJS.getOrC
 public abstract class AbstractSpellMixin implements ISpellModify {
     @Shadow public abstract String getSpellName();
 
-//    @Unique
-//    private SpellModificationBuilder irons_spells_js$builder;
-//
-//    public void setBuilder(ResourceLocation resourceLocation){
-//        irons_spells_js$builder = getOrCreate(resourceLocation).getBuilder();
-//    }
-    // ^ do we really need this?
+    @Unique
+    private SpellModificationBuilder irons_spells_js$builder;
+
+    public void setBuilder(ResourceLocation resourceLocation){
+        irons_spells_js$builder = getOrCreate(resourceLocation).getBuilder();
+    }
 
     public SpellModificationBuilder getBuilder(){
        return getOrCreate(irons_spells_js$getSpell().getSpellResource()).getBuilder();
