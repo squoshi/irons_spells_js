@@ -25,7 +25,7 @@ public class FormatterRegistryMixin<T> {
     @Shadow @Final private ResourceKey<Registry<T>> registry;
 
     @Inject(method = "format", at = @At(value = "HEAD"), cancellable = true)
-    private void kjs_irons_spells$useForge(Integer indent, Integer stepIndent, CallbackInfoReturnable<List<String>> cir){
+    private void irons_spells_js$useForge(Integer indent, Integer stepIndent, CallbackInfoReturnable<List<String>> cir){
         List<String> items = new ArrayList<>();
         String typeName = RLHelper.finalComponentToTitle(registry.location().getPath());
         var builtinRegistry = ProbeCommands.COMMAND_LEVEL.registryAccess().registry(registry).orElse(null);

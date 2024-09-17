@@ -3,10 +3,12 @@ package com.squoshi.irons_spells_js;
 import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.mixin.ServerConfigsAccessor;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.item.SpellBook;
 import io.redspace.ironsspellbooks.render.SpellBookCurioRenderer;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,11 +22,15 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
+import java.util.ArrayList;
+
 @Mod(IronsSpellsJSMod.MODID)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class IronsSpellsJSMod {
     public static final String MODID = "irons_spells_js";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
+    @HideFromJS
+    public static ArrayList<Item> MANA_BAR_ITEMS = new ArrayList<>();
 
     public IronsSpellsJSMod() {
         final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();

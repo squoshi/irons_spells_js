@@ -28,7 +28,6 @@ public class SpellModificationEventJS extends EventJS {
         }
     }
 
-
     public static SpellModificationEventJS getOrCreate(ResourceLocation spellResource) {
         if (!eventMap.containsKey(spellResource)) {
             return new SpellModificationEventJS(spellResource);

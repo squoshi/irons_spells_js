@@ -21,7 +21,7 @@ import java.util.Map;
 @Mixin(value = SnippetCompiler.KubeDump.class, remap = false)
 public class SnippetCompilerMixin {
     @Inject(method = "putRegistry", at = @At(value = "HEAD"), cancellable = true)
-    private static <T> void kjs_irons_spells$useForge(Map<String, List<String>> registries, String type, ResourceKey<Registry<T>> registry, CallbackInfo ci){
+    private static <T> void irons_spells_js$useForge(Map<String, List<String>> registries, String type, ResourceKey<Registry<T>> registry, CallbackInfo ci){
         var builtinRegistry = RegistryInfo.of(registry).getVanillaRegistry();
         if (builtinRegistry == null) {
             builtinRegistry = ProbeCommands.COMMAND_LEVEL.registryAccess().registry(registry).orElse(null);

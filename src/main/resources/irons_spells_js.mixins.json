@@ -5,11 +5,14 @@
   "refmap": "${mod_id}.refmap.json",
   "mixins": [
     "AbstractSpellMixin",
+    "ClientInitEventJSMixin",
     "FormatterRegistryMixin",
     "IronsSpellbooksMixin",
+    "ManaBarOverlayMixin",
     "NameResolverMixin",
     "PathfinderMobMixin",
     "ServerConfigsAccessor",
+    "ServerPlayerMixin",
     "SnippetCompilerMixin"
   ],
   "client": [],
