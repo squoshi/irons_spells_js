@@ -21,6 +21,7 @@ val modGroupId: String by project
 val modAuthors: String by project
 val modDescription: String by project
 
+val rhino_version: String by project
 val ironsSpellbooksVersion: String by project
 val ironsSpellbooksFileId: String by project
 val kubejsVersion: String by project
@@ -31,6 +32,26 @@ repositories {
     maven("https://code.redspace.io/releases")
     maven("https://maven.kosmx.dev/")
     maven("https://www.cursemaven.com")
+    maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        url = uri("https://maven.saps.dev/releases")
+        content {
+            includeGroup("dev.latvian.mods")
+            includeGroup("dev.latvian.apps")
+        }
+    }
+    maven {
+        url = uri("https://jitpack.io")
+        content {
+            includeGroup("com.github.rtyley")
+        }
+    }
+    maven {
+        setUrl("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
+        content {
+            includeGroup("software.bernie.geckolib")
+        }
+    }
     flatDir {
         dir("libs")
     }
@@ -85,8 +106,9 @@ dependencies {
     runtimeOnly("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.21")
     implementation("curse.maven:adorned-1036809:5546365") // curios-neoforge-9.0.5+1.21.0.jar
     runtimeOnly("curse.maven:caelus-308989:5442975") // caelus-neoforge-7.0.0+1.21.jar
-    runtimeOnly("curse.maven:geckolib-388172:5605715") // geckolib-neoforge-1.21-4.5.8.jar
-
+    implementation("curse.maven:geckolib-388172:5605715") // geckolib-neoforge-1.21-4.5.8.jar
+    compileOnly("curse.maven:entityjs-967617:5731799")
+    implementation("dev.latvian.mods:rhino:$rhino_version")
     runtimeOnly("curse.maven:emi-580555:5619579")
     runtimeOnly("curse.maven:jade-324717:5591256")
 //    runtimeOnly("curse.maven:probejs-585406:5536459")
