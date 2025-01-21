@@ -31,7 +31,6 @@ import net.liopyu.entityjs.util.ModKeybinds;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -134,8 +133,6 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return new MoveControl(this);
     }
 
-
-
     private JumpControl createJumpControl() {
         if (builder.setJumpControl != null) {
             Object obj = builder.setJumpControl.apply(this);
@@ -166,7 +163,6 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             this.entityData.define(DATA_CANCEL_CAST, false);
             this.entityData.define(DATA_DRINKING_POTION, false);
         }
-
         public boolean isDrinkingPotion() {
             return (Boolean)this.entityData.get(DATA_DRINKING_POTION);
         }
