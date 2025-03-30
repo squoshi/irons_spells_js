@@ -13,6 +13,7 @@ public class IronsSpellsJSEvents {
     public static final EventGroup GROUP = EventGroup.of("ISSEvents");
 
     public static final EventHandler changeMana = PlayerEvents.GROUP.server("changeMana", () -> ChangeManaEventJS.class);
+    public static final EventHandler manaRegen = PlayerEvents.GROUP.server("manaRegen", () -> ManaRegenEventJS.class).hasResult();
     public static final EventHandler spellCast = PlayerEvents.GROUP.server("spellOnCast", () -> SpellOnCastEventJS.class);
     public static final EventHandler spellPreCast = PlayerEvents.GROUP.server("spellPreCast", () -> SpellPreCastEventJS.class).hasResult();
     public static final EventHandler spellSelectionManager = PlayerEvents.GROUP.startup("spellSelection", () -> SpellSelectionEventJS.class);

@@ -183,6 +183,7 @@ dependencies {
     }
 
     implementation 'org.reflections:reflections:0.10.2'
+    implementation 'org.javassist:javassist:3.20.0-GA'
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']

@@ -8,6 +8,7 @@
     "ClientInitEventJSMixin",
     "FormatterRegistryMixin",
     "IronsSpellbooksMixin",
+    "MagicManagerMixin",
     "ManaBarOverlayMixin",
     "NameResolverMixin",
     "PathfinderMobMixin",

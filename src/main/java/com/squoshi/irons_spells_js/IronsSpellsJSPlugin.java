@@ -69,6 +69,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("SpellBarrageGoal", SpellBarrageGoal.class);
         event.add("GustDefenseGoal", GustDefenseGoal.class);
         event.add("WispAttackGoal", WispAttackGoal.class);
+        event.add("ISSKJSUtils", ISSKJSUtils.class);
     }
 
     @Override
