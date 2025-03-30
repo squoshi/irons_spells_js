@@ -31,7 +31,6 @@ import net.liopyu.entityjs.util.ModKeybinds;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -52,7 +51,9 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.JumpControl;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -96,10 +97,9 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     // EntityJS implementations
     private final SpellCastingMobJSBuilder builder;
     private final AnimatableInstanceCache animationFactory;
-    protected PathNavigation navigation;
+
     public final PartEntityJS<?>[] partEntities;
-    private final NonNullList<ItemStack> handItems;
-    private final NonNullList<ItemStack> armorItems;
+
     protected boolean thisJumping;
 
     public String entityName() {
@@ -108,10 +108,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         public SpellCastingMobJS(SpellCastingMobJSBuilder builder, EntityType<SpellCastingMobJS> pEntityType, Level pLevel) {
             super(pEntityType, pLevel);
             this.playerMagicData.setSyncedData(new SyncedSpellData(this));
-            this.lookControl = this.createLookControl();
 
-            this.handItems = NonNullList.withSize(2, ItemStack.EMPTY);
-            this.armorItems = NonNullList.withSize(4, ItemStack.EMPTY);
             this.thisJumping = false;
             this.builder = builder;
             this.animationFactory = GeckoLibUtil.createInstanceCache(this);
@@ -123,9 +120,33 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
             partEntities = tempPartEntities.toArray(new PartEntityJS<?>[0]);
             this.navigation = this.createNavigation(pLevel);
+            this.lookControl = createLookControl();
+            this.moveControl = createMoveControl();
+            this.jumpControl = createJumpControl();
         }
+    private MoveControl createMoveControl() {
+        if (builder.setMoveControl != null) {
+            Object obj = builder.setMoveControl.apply(this);
+            if (obj != null) return (MoveControl) obj;
+            EntityJSHelperClass.logErrorMessageOnce("[EntityJS]: Invalid return value for setMoveControl from entity: " + entityName() + ". Value: " + obj + ". Must be a MoveControl object. Defaulting to super method.");
+        }
+        return new MoveControl(this);
+    }
 
+    private JumpControl createJumpControl() {
+        if (builder.setJumpControl != null) {
+            Object obj = builder.setJumpControl.apply(this);
+            if (obj != null) return (JumpControl) obj;
+            EntityJSHelperClass.logErrorMessageOnce("[EntityJS]: Invalid return value for setJumpControl from entity: " + entityName() + ". Value: " + obj + ". Must be a JumpControl object. Defaulting to super method.");
+        }
+        return new JumpControl(this);
+    }
     protected LookControl createLookControl() {
+        if (builder.setLookControl != null) {
+            Object obj = builder.setLookControl.apply(this);
+            if (obj != null) return (LookControl) obj;
+            EntityJSHelperClass.logErrorMessageOnce("[EntityJS]: Invalid return value for setLookControl from entity: " + entityName() + ". Value: " + obj + ". Must be a LookControl object. Defaulting to super method.");
+        }
             return new LookControl(this) {
                 protected boolean resetXRotOnTick() {
                     return SpellCastingMobJS.this.getTarget() == null;
@@ -142,7 +163,6 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             this.entityData.define(DATA_CANCEL_CAST, false);
             this.entityData.define(DATA_DRINKING_POTION, false);
         }
-
         public boolean isDrinkingPotion() {
             return (Boolean)this.entityData.get(DATA_DRINKING_POTION);
         }
@@ -1782,39 +1802,4 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     }
 
-    public Iterable<ItemStack> getArmorSlots() {
-        return this.armorItems;
-    }
-
-    public Iterable<ItemStack> getHandSlots() {
-        return this.handItems;
-    }
-
-    public ItemStack getItemBySlot(EquipmentSlot slot) {
-        ItemStack var10000;
-        switch (slot.getType()) {
-            case HAND:
-                var10000 = (ItemStack)this.handItems.get(slot.getIndex());
-                break;
-            case ARMOR:
-                var10000 = (ItemStack)this.armorItems.get(slot.getIndex());
-                break;
-            default:
-                throw new IncompatibleClassChangeError();
-        }
-
-        return var10000;
-    }
-
-    public void setItemSlot(EquipmentSlot slot, ItemStack stack) {
-        this.verifyEquippedItem(stack);
-        switch (slot.getType()) {
-            case HAND:
-                this.onEquipItem(slot, (ItemStack)this.handItems.set(slot.getIndex(), stack), stack);
-                break;
-            case ARMOR:
-                this.onEquipItem(slot, (ItemStack)this.armorItems.set(slot.getIndex(), stack), stack);
-        }
-
-    }
 }
