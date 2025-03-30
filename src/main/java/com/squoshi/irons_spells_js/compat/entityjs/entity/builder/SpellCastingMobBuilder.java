@@ -18,7 +18,16 @@ public abstract class SpellCastingMobBuilder<T extends PathfinderMob & IAnimatab
     public SpellCastingMobBuilder(ResourceLocation i) {
         super(i);
     }
-
+	@Info(value = """
+            Sets a callback function to determine whether the entity is currently casting.
+                        
+            Example usage:
+            ```javascript
+            spellEntityBuilder.isCasting(entity => {
+                return true;
+            });
+            ```
+            """)
     public SpellCastingMobBuilder<T> isCasting(Function<LivingEntity, Object> isCasting){
         this.isCasting = isCasting;
         return this;

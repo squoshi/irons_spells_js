@@ -107,7 +107,7 @@ dependencies {
     implementation("curse.maven:adorned-1036809:5546365") // curios-neoforge-9.0.5+1.21.0.jar
     runtimeOnly("curse.maven:caelus-308989:5442975") // caelus-neoforge-7.0.0+1.21.jar
     implementation("curse.maven:geckolib-388172:5605715") // geckolib-neoforge-1.21-4.5.8.jar
-    implementation("curse.maven:entityjs-967617:5731799")
+    implementation("curse.maven:entityjs-967617:6107773")
     implementation("dev.latvian.mods:rhino:$rhino_version")
     runtimeOnly("curse.maven:emi-580555:5619579")
     runtimeOnly("curse.maven:jade-324717:5591256")
