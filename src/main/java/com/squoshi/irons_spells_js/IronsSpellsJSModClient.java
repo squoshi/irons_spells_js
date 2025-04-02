@@ -35,14 +35,18 @@ public class IronsSpellsJSModClient {
 
 	@SubscribeEvent
 	public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+		Item[] registeredStaves = RegistryObjectStorage.ITEM.objects.values().stream()
+			.map(BuilderBase::get).filter(item -> item instanceof StaffItem)
+			.toArray(Item[]::new);
+		if (registeredStaves.length == 0) {
+			return;
+		}
 		event.registerItem(new IClientItemExtensions() {
 			@Nullable
 			@Override
 			public HumanoidModel.ArmPose getArmPose(@NotNull LivingEntity entityLiving, @NotNull InteractionHand hand, @NotNull ItemStack itemStack) {
 				return StaffArmPose.STAFF_ARM_POSE.getValue();
 			}
-		}, RegistryObjectStorage.ITEM.objects.values().stream()
-			.map(BuilderBase::get).filter(item -> item instanceof StaffItem)
-			.toArray(Item[]::new));
+		}, registeredStaves);
 	}
 }
