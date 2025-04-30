@@ -185,25 +185,25 @@ public class CustomSpell extends AbstractSpell {
 		return super.checkPreCastConditions(level, spellLevel, entity, playerMagicData);
 	}
 
-	record CastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, CastSource getCastSource,
+	public record CastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, CastSource getCastSource,
 					   MagicData getPlayerMagicData) {
 	}
 
-	record CastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, ICastData getCastData) {
+	public record CastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, ICastData getCastData) {
 	}
 
-	record PreCastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData) {
+	public record PreCastContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, MagicData getPlayerMagicData) {
 	}
 
-	record PreCastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, InteractionHand getHand,
+	public record PreCastClientContext(Level getLevel, int getSpellLevel, LivingEntity getEntity, InteractionHand getHand,
 								MagicData getPlayerMagicData) {
 	}
 
-	record PreCastTargetingContext(Level getLevel, int getSpellLevel, LivingEntity getEntity,
+	public record PreCastTargetingContext(Level getLevel, int getSpellLevel, LivingEntity getEntity,
 								   MagicData getPlayerMagicData, AbstractSpell getSpell) {
 	}
 
-	@SuppressWarnings({"unused", "ClassEscapesDefinedScope"})
+	@SuppressWarnings({"unused"})
 	public static class Builder extends BuilderBase<CustomSpell> {
 		private final ResourceLocation spellResource;
 		private SpellRarity minRarity = SpellRarity.COMMON;

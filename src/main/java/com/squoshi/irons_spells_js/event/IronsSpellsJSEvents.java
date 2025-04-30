@@ -24,7 +24,6 @@ public class IronsSpellsJSEvents {
 	public static final EventHandler spellCast = GROUP.server("spellOnCast", () -> SpellOnCastEventJS.class);
 	public static final TargetedEventHandler<ResourceKey<EntityType<?>>> spellPostCast = GROUP.server("spellPostCast", () -> SpellPostCastEventJS.class).supportsTarget(EntityEvents.TARGET);
 	public static final EventHandler spellSelectionManager = GROUP.startup("spellSelection", () -> SpellSelectionEventJS.class);
-	public static final EventHandler caldron = GROUP.startup("caldron", () -> CauldronRecipeEventJS.class);
 
 	@SubscribeEvent
 	public static void changeMana(ChangeManaEvent event) {

@@ -133,7 +133,10 @@ public class CustomMagicSwordItem extends MagicSwordItem {
 		}
 
 		public enum ExtendedWeaponTierEnum {
-			KEEPER_FLAMBERGE(ExtendedWeaponTier.KEEPER_FLAMBERGE),
+			HELLRAZOR(ExtendedWeaponTier.HELLRAZOR),
+			LEGIONNAIRE_FLAMBERGE(ExtendedWeaponTier.LEGIONNAIRE_FLAMBERGE),
+			DECREPIT_FLAMBERGE(ExtendedWeaponTier.DECREPIT_FLAMBERGE),
+			DECREPIT_SCYTHE(ExtendedWeaponTier.DECREPIT_SCYTHE),
 			DREADSWORD(ExtendedWeaponTier.DREADSWORD),
 			MISERY(ExtendedWeaponTier.MISERY),
 			METAL_MAGEHUNTER(ExtendedWeaponTier.METAL_MAGEHUNTER),

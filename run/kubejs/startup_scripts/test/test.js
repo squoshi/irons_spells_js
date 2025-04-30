@@ -109,7 +109,8 @@ StartupEvents.registry("item", event => {
         .addSpell("irons_spellbooks:firebolt", 1)
         .addSpell("irons_spellbooks:raise_dead", 2)
         .setTier(tier => {
-            // valid tiers are: KEEPER_FLAMBERGE, DREADSWORD, MISERY,
+            // valid tiers are: HELLRAZOR, LEGIONNAIRE_FLAMBERGE, DECREPIT_FLAMBERGE,
+            // DECREPIT_SCYTHE, DREADSWORD, MISERY,
             // METAL_MAGEHUNTER, CRYSTAL_MAGEHUNTER, SPELLBREAKER, TRUTHSEEKER,
             // CLAYMORE, AMETHYST_RAPIER
             // boolean is to merge or not Tier with your attributes
@@ -147,17 +148,6 @@ ISSEvents.spellSelection(event => {
 	console.log("-- SPELL-SELECTION --")
 	console.log(event.entity ?? undefined)
 	console.log(event.manager ?? undefined)
-})
-
-ISSEvents.caldron(event => {
-	// up to 4x on input and on output
-	// ONLY SUPPORTS:
-	// POTIONS, INK AND ELIXIR on INPUT
-	// Use glass bottle to collect output
-
-	// event.add(output, input, ingredient)
-	event.add("golden_apple", '4x minecraft:potion[potion_contents={potion:"minecraft:thick"}]', "gold_ingot")
-	event.add("2x nether_gold_ore", '2x irons_spellbooks:common_ink', "gold_ore")
 })
 
 StartupEvents.postInit(event => {

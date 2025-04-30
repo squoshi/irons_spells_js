@@ -61,3 +61,40 @@ ServerEvents.loaded(event => {
 	console.log("Status: " + Spell.checkStatus("irons_spellbooks:raise_dead"))
 	console.log("Enabled: " + Spell.isEnabled("irons_spellbooks:raise_dead"))
 })
+
+ServerEvents.recipes(event => {
+	let brew = event.recipes.irons_spellbooks.alchemist_cauldron_brew
+	// results - list of fluids to be created in the caldron
+	// input - ingredient (item)
+	// base_fluid - Fluid to be consumed in the cauldron
+	// byproduct - itemstack (optional)
+
+	// This fills cauldron with 500x milk, consuming white terracotta and 1000x water
+	brew(["0.5B x minecraft:milk"], "minecraft:white_terracotta", "1B x minecraft:water")
+	// with optional byproduct
+	// brew(["0.5B x minecraft:milk"], "minecraft:white_terracotta", "1B x minecraft:water", "minecraft:terracotta")
+
+	let empty = event.recipes.irons_spellbooks.alchemist_cauldron_empty
+	// result - itemstack (at your hand)
+  // input - ingredient (item)
+  // fluid - Fluid to be consumed in the cauldron
+  // sound - Sound to be played (optional, default is glass bottle filling sound)
+
+	// This returns white concrete, consuming dirt and 250x milk
+	empty("minecraft:white_concrete", "minecraft:dirt", "250x minecraft:milk")
+	// with optional sound
+	// empty("minecraft:white_concrete", "minecraft:dirt", "250x minecraft:milk", "irons_spellbooks:cast.generic.lightning")
+
+  let fill = event.recipes.irons_spellbooks.alchemist_cauldron_fill
+	// result - itemstack (at your hand)
+	// input - ingredient (item)
+	// fluid - Fluid filled in the cauldron
+	// mustFitAll - true or false (optional, default is true)
+	// sound - Sound to be played (optional, default is glass bottle emptying sound)
+
+	// This fills cauldron with 1000x milk, consuming a milk_bucket and returns an empty bucket
+	fill("1000x minecraft:milk", "minecraft:milk_bucket", "minecraft:bucket")
+	// with optional mustFitAll and sound
+	// fill("1000x minecraft:milk", "minecraft:milk_bucket", "minecraft:bucket", false)
+	// fill("1000x minecraft:milk", "minecraft:milk_bucket", "minecraft:bucket", false, "irons_spellbooks:cast.generic.lightning")
+})

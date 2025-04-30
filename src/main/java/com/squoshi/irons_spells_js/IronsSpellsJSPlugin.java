@@ -1,16 +1,17 @@
 package com.squoshi.irons_spells_js;
 
 import com.squoshi.irons_spells_js.entity.attribute.SpellAttributeBuilderJS;
-import com.squoshi.irons_spells_js.event.CauldronRecipeEventJS;
 import com.squoshi.irons_spells_js.event.IronsSpellsJSEvents;
 import com.squoshi.irons_spells_js.item.CustomMagicSwordItem;
 import com.squoshi.irons_spells_js.item.CustomSpellBook;
 import com.squoshi.irons_spells_js.item.CustomStaff;
+import com.squoshi.irons_spells_js.recipe.ISSSchemas;
 import com.squoshi.irons_spells_js.spell.AbstractSpellWrapper;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
@@ -62,7 +63,6 @@ public final class IronsSpellsJSPlugin implements KubeJSPlugin {
 		event.add("TargetEntityCastData", TargetEntityCastData.class);
 		event.add("Potions", Potions.class);
 		event.add("ISSPotionRegistry", PotionRegistry.class);
-//		event.add("AlchemistCauldronRecipeBuilder", AlchemistCauldronKubeJSRecipes.AlchemistCauldronRecipeBuilder.class);
 		event.add("WizardAttackGoal", WizardAttackGoal.class);
 		event.add("WarlockAttackGoal", WarlockAttackGoal.class);
 		event.add("WizardRecoverGoal", WizardRecoverGoal.class);
@@ -73,16 +73,15 @@ public final class IronsSpellsJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void afterInit() {
-		if (IronsSpellsJSEvents.caldron.hasListeners()) {
-			var caldronEvent = new CauldronRecipeEventJS();
-			IronsSpellsJSEvents.caldron.post(caldronEvent);
-			caldronEvent.registerAll();
-		}
+	public void registerEvents(EventGroupRegistry registry) {
+		registry.register(IronsSpellsJSEvents.GROUP);
 	}
 
 	@Override
-	public void registerEvents(EventGroupRegistry registry) {
-		registry.register(IronsSpellsJSEvents.GROUP);
+	public void registerRecipeSchemas(RecipeSchemaRegistry registry) {
+		var iss = registry.namespace("irons_spellbooks");
+		iss.register("alchemist_cauldron_brew", ISSSchemas.BREW);
+		iss.register("alchemist_cauldron_empty", ISSSchemas.EMPTY);
+		iss.register("alchemist_cauldron_fill", ISSSchemas.FILL);
 	}
 }

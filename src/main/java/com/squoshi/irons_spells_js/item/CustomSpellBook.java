@@ -69,10 +69,9 @@ public class CustomSpellBook extends SpellBook {
 	public void appendHoverText(@NotNull ItemStack itemStack, TooltipContext context, @NotNull List<Component> lines, @NotNull TooltipFlag flag) {
 		super.appendHoverText(itemStack, context, lines, flag);
 		var affinityData = AffinityData.getAffinityData(itemStack);
-		var spell = affinityData.getSpell();
-		if (spell != SpellRegistry.none()) {
+		if (!affinityData.affinityData().isEmpty()) {
 			int i = TooltipsUtils.indexOfComponent(lines, "tooltip.irons_spellbooks.spellbook_spell_count");
-			lines.add(i < 0 ? lines.size() : i + 1, Component.translatable("tooltip.irons_spellbooks.enhance_spell_level", spell.getDisplayName(MinecraftInstanceHelper.instance.player()).withStyle(spell.getSchoolType().getDisplayName().getStyle())).withStyle(ChatFormatting.YELLOW));
+			lines.addAll(i < 0 ? lines.size() : i + 1, affinityData.getDescriptionComponent());
 		}
 	}
 

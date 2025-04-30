@@ -24,8 +24,6 @@ public final class IronsSpellsJSMod {
 	public IronsSpellsJSMod(ModContainer mod, IEventBus modBus) {
 		LOGGER.info("Initializing IronSpellsJS");
 		modBus.addListener(this::runIronSpellsConfig);
-		var gameBus = NeoForge.EVENT_BUS;
-		gameBus.addListener(this::caldronInteraction);
 	}
 
 	private void runIronSpellsConfig(InterModEnqueueEvent event) {
@@ -37,9 +35,4 @@ public final class IronsSpellsJSMod {
 		ModList.get().getModContainerById("irons_spellbooks").get().registerConfig(ModConfig.Type.SERVER, ServerConfigsAccessor.getBuilder().build(), String.format("%s-server.toml", IronsSpellbooks.MODID));
 	}
 
-
-
-	private void caldronInteraction(AlchemistCauldronBuildInteractionsEvent event) {
-		// Does NOT work, fires too soon (EVENT_BUS was not started yet), might report to Devs
-	}
 }

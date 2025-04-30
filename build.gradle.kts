@@ -4,7 +4,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("net.neoforged.moddev") version "2.0.15-beta"
+    id("net.neoforged.moddev") version "2.0.74"
 }
 
 val minecraftVersion: String by project
@@ -103,13 +103,16 @@ dependencies {
     implementation(accessTransformers(interfaceInjectionData("dev.latvian.mods:kubejs-neoforge:$kubejsVersion")!!)!!)
 
     implementation("io.redspace:irons_spellbooks:$ironsSpellbooksVersion")
-    runtimeOnly("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.21")
-    implementation("curse.maven:adorned-1036809:5546365") // curios-neoforge-9.0.5+1.21.0.jar
+    runtimeOnly("dev.kosmx.player-anim:player-animation-lib-forge:2.0.1+1.21.1")
+    implementation("curse.maven:curios-309927:6401872") // curios-neoforge-9.4.2+1.21.1.jar
     runtimeOnly("curse.maven:caelus-308989:5442975") // caelus-neoforge-7.0.0+1.21.jar
-    implementation("curse.maven:geckolib-388172:5605715") // geckolib-neoforge-1.21-4.5.8.jar
+    implementation("curse.maven:geckolib-388172:6304958") // geckolib-neoforge-1.21.1-4.7.5.1.jar
     implementation("curse.maven:entityjs-967617:6107773")
     implementation("dev.latvian.mods:rhino:$rhino_version")
-    runtimeOnly("curse.maven:emi-580555:5619579")
+    runtimeOnly("curse.maven:jei-238222:5846880")
+
+//    runtimeOnly("curse.maven:emi-580555:6205506")
+//    runtimeOnly("curse.maven:tmrv-1194921:6269681")
     runtimeOnly("curse.maven:jade-324717:5591256")
 //    runtimeOnly("curse.maven:probejs-585406:5536459")
 
