@@ -28,13 +28,13 @@ val kubejsVersion: String by project
 
 repositories {
     mavenLocal()
-    maven("https://maven.saps.dev/minecraft")
+    maven("https://maven.latvian.dev/releases")
     maven("https://code.redspace.io/releases")
     maven("https://maven.kosmx.dev/")
     maven("https://www.cursemaven.com")
     maven {
         // saps.dev Maven (KubeJS and Rhino)
-        url = uri("https://maven.saps.dev/releases")
+        url = uri("https://maven.latvian.dev/releases")
         content {
             includeGroup("dev.latvian.mods")
             includeGroup("dev.latvian.apps")

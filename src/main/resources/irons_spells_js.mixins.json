@@ -2,7 +2,7 @@
 	"required": true,
 	"package": "com.squoshi.irons_spells_js.mixin",
 	"compatibilityLevel": "JAVA_21",
-	"mixins": ["AbstractSpellMixin", "IronsSpellbooksMixin", "LivingEntityMixin", "ServerConfigsAccessor"],
+	"mixins": ["AbstractSpellMixin", "IronsSpellbooksMixin", "LivingEntityMixin", "PathfinderMobMixin", "ServerConfigsAccessor"],
 	"client": [],
 	"minVersion": "0.8.5"
 }
