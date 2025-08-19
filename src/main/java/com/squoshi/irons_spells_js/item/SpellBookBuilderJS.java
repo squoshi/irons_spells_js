@@ -28,7 +28,7 @@ public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
     public transient SpellDataRegistryHolder[] spellDataRegistryHolder = SpellDataRegistryHolder.of();
     public transient List<SpellHolder> spellHolders = new ArrayList<>();
     public transient int maxSpellSlots = 1;
-    public transient List<AttributeHolder> defaultModifiers = new ArrayList<>();
+    public transient List<Supplier<AttributeHolder>> defaultModifiers = new ArrayList<>();
 
     public SpellBookBuilderJS(ResourceLocation i) {
         super(i);
@@ -45,7 +45,7 @@ public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
             The modifier operation can be either `ADDITION`, `MULTIPLY_TOTAL` or `MULTIPLY_BASE`.
     """)
     public SpellBookBuilderJS addDefaultAttribute(ISSKJSUtils.AttributeHolder attribute, String modifierName, double modifierAmount, AttributeModifier.Operation modifierOperation) {
-        defaultModifiers.add(new AttributeHolder(attribute.getLocation(), new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
+        defaultModifiers.add(() -> new AttributeHolder(attribute.getLocation(), new AttributeModifier(modifierName, modifierAmount, modifierOperation)));
         return this;
     }
 
@@ -68,7 +68,8 @@ public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
     @Override
     public SpellBook createObject() {
         final Multimap<Attribute, AttributeModifier> map = ArrayListMultimap.create();
-        for (AttributeHolder holder : defaultModifiers) {
+        for (Supplier<AttributeHolder> holderSupplier : defaultModifiers) {
+            var holder = holderSupplier.get();
             final Attribute attribute = Objects.requireNonNull(ForgeRegistries.ATTRIBUTES.getValue(holder.attribute()));
             map.put(attribute, holder.modifier());
         }
