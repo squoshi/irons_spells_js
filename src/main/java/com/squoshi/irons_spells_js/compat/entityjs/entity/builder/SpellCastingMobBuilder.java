@@ -9,11 +9,12 @@ import net.minecraft.world.entity.PathfinderMob;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public abstract class SpellCastingMobBuilder<T extends PathfinderMob & IAnimatableJS> extends PathfinderMobBuilder<T> {
     public transient Consumer<LivingEntity> onCancelledCast;
-    public transient Function<LivingEntity, Object> isCasting;
+    public transient Predicate<LivingEntity> isCasting;
 
     public SpellCastingMobBuilder(ResourceLocation i) {
         super(i);
@@ -28,7 +29,7 @@ public abstract class SpellCastingMobBuilder<T extends PathfinderMob & IAnimatab
             });
             ```
             """)
-    public SpellCastingMobBuilder<T> isCasting(Function<LivingEntity, Object> isCasting){
+    public SpellCastingMobBuilder<T> isCasting(Predicate<LivingEntity> isCasting){
         this.isCasting = isCasting;
         return this;
     }
