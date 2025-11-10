@@ -1,10 +1,10 @@
 package com.squoshi.irons_spells_js.event;
 
 import com.squoshi.irons_spells_js.IronsSpellsJSMod;
-import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.TargetedEventHandler;
+import dev.latvian.mods.kubejs.plugin.builtin.event.EntityEvents;
 import io.redspace.ironsspellbooks.api.events.ChangeManaEvent;
 import io.redspace.ironsspellbooks.api.events.SpellOnCastEvent;
 import io.redspace.ironsspellbooks.api.events.SpellPreCastEvent;
@@ -15,7 +15,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 @SuppressWarnings("unused")
-@EventBusSubscriber(modid = IronsSpellsJSMod.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = IronsSpellsJSMod.MODID)
 public class IronsSpellsJSEvents {
 	public static final EventGroup GROUP = EventGroup.of("ISSEvents");
 
