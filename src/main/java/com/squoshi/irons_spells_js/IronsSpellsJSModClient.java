@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 @SuppressWarnings("unused")
-@EventBusSubscriber(modid = IronsSpellsJSMod.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = IronsSpellsJSMod.MODID, value = Dist.CLIENT)
 public class IronsSpellsJSModClient {
 	@SubscribeEvent
 	public static void clientSetup(FMLClientSetupEvent event) {

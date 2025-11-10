@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.registry.RegistryType;
-import dev.latvian.mods.kubejs.util.Cast;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
@@ -26,13 +26,16 @@ public class ISSSchemas {
 	static {
 		RecipeKey<FluidStack> BASE_FLUID = FluidStackComponent.FLUID_STACK.inputKey("base_fluid");
 		RecipeKey<Ingredient> INPUT = IngredientComponent.INGREDIENT.inputKey("input");
-		RecipeKey<List<FluidStack>> RESULTS = FluidStackComponent.FLUID_STACK.asList().outputKey("results").allowEmpty();
+		RecipeKey<List<FluidStack>> RESULTS = FluidStackComponent.FLUID_STACK.instance().asList().outputKey("results");
 		RecipeKey<ItemStack> BYPRODUCT = ItemStackComponent.ITEM_STACK.outputKey("byproduct").defaultOptional();
 		BREW = new RecipeSchema(RESULTS, INPUT, BASE_FLUID, BYPRODUCT);
 
 		RecipeKey<ItemStack> RESULT = ItemStackComponent.ITEM_STACK.outputKey("result");
 		RecipeKey<FluidStack> FLUID = FluidStackComponent.FLUID_STACK.otherKey("fluid");
-		RecipeKey<SoundEvent> SOUND = new RegistryComponent<>(BuiltInRegistries.SOUND_EVENT, Cast.to(RegistryType.ofKey(BuiltInRegistries.SOUND_EVENT.key())), BuiltInRegistries.SOUND_EVENT.byNameCodec()).otherKey("sound").defaultOptional();
+
+		var reg = BuiltInRegistries.SOUND_EVENT;
+		var regType = RegistryType.ofKey(reg.key());
+		RecipeKey<Holder<SoundEvent>> SOUND = new RegistryComponent<>(reg, regType, reg.holderByNameCodec(), regType.type()).otherKey("sound").defaultOptional();
 		EMPTY = new RecipeSchema(RESULT, INPUT, FLUID, SOUND);
 
 		RecipeKey<Boolean> MUST_FIT_ALL = BooleanComponent.BOOLEAN.otherKey("mustFitAll").optional(true);

@@ -11,8 +11,8 @@ public class EntityJSPlugin implements KubeJSPlugin {
     @Override
 	public void registerBuilderTypes(BuilderTypeRegistry registry) {
 		registry.of(Registries.ENTITY_TYPE, reg -> {
-			reg.add(IronsSpellsJSMod.MODID + ":spellcasting", SpellCastingMobJSBuilder.class, SpellCastingMobJSBuilder::new);
-			reg.add(IronsSpellsJSMod.MODID + ":spell_projectile", SpellProjectileJSBuilder.class, SpellProjectileJSBuilder::new);
+			reg.add(IronsSpellsJSMod.id("spellcasting"), SpellCastingMobJSBuilder.class, SpellCastingMobJSBuilder::new);
+			reg.add(IronsSpellsJSMod.id("spell_projectile"), SpellProjectileJSBuilder.class, SpellProjectileJSBuilder::new);
 		});
 	}
 }
