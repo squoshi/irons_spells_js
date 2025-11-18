@@ -41,10 +41,10 @@ public final class IronsSpellsJSPlugin implements KubeJSPlugin {
 	public void registerBuilderTypes(BuilderTypeRegistry registry) {
 		registry.addDefault(SpellRegistry.SPELL_REGISTRY_KEY, CustomSpell.Builder.class, CustomSpell.Builder::new);
 		registry.addDefault(SchoolRegistry.SCHOOL_REGISTRY_KEY, SchoolTypeJSBuilder.class, SchoolTypeJSBuilder::new);
-		registry.of(Registries.ATTRIBUTE, reg -> reg.add("spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new));
-		registry.of(Registries.ITEM, reg -> reg.add("magic_sword", CustomMagicSwordItem.Builder.class, CustomMagicSwordItem.Builder::new));
-		registry.of(Registries.ITEM, reg -> reg.add("staff", CustomStaff.Builder.class, CustomStaff.Builder::new));
-		registry.of(Registries.ITEM, reg -> reg.add("spellbook", CustomSpellBook.Builder.class, CustomSpellBook.Builder::new));
+		registry.of(Registries.ATTRIBUTE, reg -> reg.add(IronsSpellsJSMod.id("spell"), SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new));
+		registry.of(Registries.ITEM, reg -> reg.add(IronsSpellsJSMod.id("magic_sword"), CustomMagicSwordItem.Builder.class, CustomMagicSwordItem.Builder::new));
+		registry.of(Registries.ITEM, reg -> reg.add(IronsSpellsJSMod.id("staff"), CustomStaff.Builder.class, CustomStaff.Builder::new));
+		registry.of(Registries.ITEM, reg -> reg.add(IronsSpellsJSMod.id("spellbook"), CustomSpellBook.Builder.class, CustomSpellBook.Builder::new));
 	}
 
 	@Override

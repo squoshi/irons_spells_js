@@ -106,15 +106,15 @@ dependencies {
     runtimeOnly("dev.kosmx.player-anim:player-animation-lib-forge:2.0.1+1.21.1")
     implementation("curse.maven:curios-309927:6401872") // curios-neoforge-9.4.2+1.21.1.jar
     runtimeOnly("curse.maven:caelus-308989:5442975") // caelus-neoforge-7.0.0+1.21.jar
-    implementation("curse.maven:geckolib-388172:6304958") // geckolib-neoforge-1.21.1-4.7.5.1.jar
+    implementation("curse.maven:geckolib-388172:7023453") // geckolib-neoforge-1.21.1-4.7.5.1.jar
     implementation("curse.maven:entityjs-967617:7127692")
     implementation("dev.latvian.mods:rhino:$rhino_version")
-    runtimeOnly("curse.maven:jei-238222:5846880")
+    runtimeOnly("curse.maven:jei-238222:7229074")
 
 //    runtimeOnly("curse.maven:emi-580555:6205506")
 //    runtimeOnly("curse.maven:tmrv-1194921:6269681")
     runtimeOnly("curse.maven:jade-324717:5591256")
-//    runtimeOnly("curse.maven:probejs-585406:5536459")
+    runtimeOnly("curse.maven:probejs-585406:7105159")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
