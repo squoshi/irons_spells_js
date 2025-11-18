@@ -21,7 +21,6 @@ import java.util.*;
 public class MagicSwordItemBuilderJS extends HandheldItemBuilder {
     public transient List<AttributeHolder> additionalAttributes = new ArrayList<>();
     public transient List<SpellHolder> spellHolders = new ArrayList<>();
-    public transient boolean multihanded = false;
 
     public MagicSwordItemBuilderJS(ResourceLocation i) {
         super(i, 3f, -2.4f);
@@ -44,14 +43,6 @@ public class MagicSwordItemBuilderJS extends HandheldItemBuilder {
         return this;
     }
 
-    @Info("""
-            Makes the item's attributes apply in either hand.
-    """)
-    public MagicSwordItemBuilderJS multihanded() {
-        this.multihanded = true;
-        return this;
-    }
-
     @Override
     public MagicSwordItem createObject() {
         Map<Attribute, AttributeModifier> map = new HashMap<>(Map.of());
@@ -66,17 +57,7 @@ public class MagicSwordItemBuilderJS extends HandheldItemBuilder {
             spellDataHolders[i] = new SpellDataRegistryHolder(RegistryObject.create(spells.spell, SpellRegistry.REGISTRY.get()), spells.spellLevel);
         }
 
-        if (multihanded) {
-            return new MultihandMagicSwordItem(this.toolTier, this.attackDamageBaseline, this.speedBaseline, spellDataHolders, map, this.createItemProperties());
-        } else {
-            return new MagicSwordItem(this.toolTier, this.attackDamageBaseline, this.speedBaseline, spellDataHolders, map, this.createItemProperties());
-        }
-    }
-
-    private static class MultihandMagicSwordItem extends MagicSwordItem implements IMultihandWeapon {
-        public MultihandMagicSwordItem(Tier tier, double attackDamage, double attackSpeed, SpellDataRegistryHolder[] spellDataRegistryHolders, Map<Attribute, AttributeModifier> additionalAttributes, Item.Properties properties) {
-            super(tier, attackDamage, attackSpeed, spellDataRegistryHolders, additionalAttributes, properties);
-        }
+        return new MagicSwordItem(this.toolTier, this.attackDamageBaseline, this.speedBaseline, spellDataHolders, map, this.createItemProperties());
     }
 
     public record AttributeHolder(ResourceLocation attribute, AttributeModifier modifier) {

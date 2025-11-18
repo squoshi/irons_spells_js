@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class ManaRegenEventJS extends PlayerEventJS {
     private final Player player;
-    private final float mana;
+    private float mana;
 
     public ManaRegenEventJS(Player player, float mana) {
         this.player = player;
@@ -15,6 +15,11 @@ public class ManaRegenEventJS extends PlayerEventJS {
     @SuppressWarnings("unused")
     public float getAmount() {
         return mana;
+    }
+
+    @SuppressWarnings("unused")
+    public void setAmount(float mana) {
+        this.mana = mana;
     }
 
     @Override
