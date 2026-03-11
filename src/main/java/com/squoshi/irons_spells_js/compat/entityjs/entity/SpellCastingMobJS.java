@@ -72,11 +72,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 @MethodsReturnNonnullByDefault
@@ -214,14 +214,14 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        this.playerMagicData.getSyncedData().saveNBTData(pCompound);
+        this.playerMagicData.getSyncedData().saveNBTData(pCompound,level().registryAccess());
         pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
     }
 
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         SyncedSpellData syncedSpellData = new SyncedSpellData(this);
-        syncedSpellData.loadNBTData(pCompound);
+        syncedSpellData.loadNBTData(pCompound,level().registryAccess());
         if (syncedSpellData.isCasting()) {
             AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
             this.initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());
@@ -905,7 +905,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     }
 
-    protected void doAutoAttackOnTouch(@NotNull LivingEntity target) {
+    protected void doAutoAttackOnTouch( LivingEntity target) {
         super.doAutoAttackOnTouch(target);
         if (this.builder.doAutoAttackOnTouch != null) {
             ContextUtils.AutoAttackContext context = new ContextUtils.AutoAttackContext(this, target);
@@ -930,7 +930,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return super.increaseAirSupply(p_21307_);
     }
 
-    protected void blockedByShield(@NotNull LivingEntity p_21246_) {
+    protected void blockedByShield( LivingEntity p_21246_) {
         super.blockedByShield(p_21246_);
         if (this.builder.onBlockedByShield != null) {
             ContextUtils.LivingEntityContext context = new ContextUtils.LivingEntityContext(this, p_21246_);
@@ -948,7 +948,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     }
 
-    public void onEffectAdded(@NotNull MobEffectInstance effectInstance, @Nullable Entity entity) {
+    public void onEffectAdded( MobEffectInstance effectInstance, @Nullable Entity entity) {
         if (this.builder.onEffectAdded != null) {
             ContextUtils.OnEffectContext context = new ContextUtils.OnEffectContext(effectInstance, this);
             EntityJSHelperClass.consumerCallback(this.builder.onEffectAdded, context, "[EntityJS]: Error in " + this.entityName() + "builder for field: onEffectAdded.");
@@ -958,7 +958,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     }
 
-    protected void onEffectRemoved(@NotNull MobEffectInstance effectInstance) {
+    protected void onEffectRemoved( MobEffectInstance effectInstance) {
         if (this.builder.onEffectRemoved != null) {
             ContextUtils.OnEffectContext context = new ContextUtils.OnEffectContext(effectInstance, this);
             EntityJSHelperClass.consumerCallback(this.builder.onEffectRemoved, context, "[EntityJS]: Error in " + this.entityName() + "builder for field: onEffectRemoved.");
@@ -977,7 +977,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     }
 
-    public void die(@NotNull DamageSource damageSource) {
+    public void die( DamageSource damageSource) {
         super.die(damageSource);
         if (this.builder.onDeath != null) {
             ContextUtils.DeathContext context = new ContextUtils.DeathContext(this, damageSource);
@@ -986,7 +986,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     }
 
-    protected void dropCustomDeathLoot(@NotNull DamageSource damageSource, int lootingMultiplier, boolean allowDrops) {
+    protected void dropCustomDeathLoot( DamageSource damageSource, int lootingMultiplier, boolean allowDrops) {
         if (this.builder.dropCustomDeathLoot != null) {
             ContextUtils.EntityLootContext context = new ContextUtils.EntityLootContext(damageSource, lootingMultiplier, allowDrops, this);
             EntityJSHelperClass.consumerCallback(this.builder.dropCustomDeathLoot, context, "[EntityJS]: Error in " + this.entityName() + "builder for field: dropCustomDeathLoot.");
@@ -1108,7 +1108,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
     }
 
-    protected boolean canAddPassenger(@NotNull Entity entity) {
+    protected boolean canAddPassenger( Entity entity) {
         if (this.builder.canAddPassenger == null) {
             return super.canAddPassenger(entity);
         } else {
@@ -1215,7 +1215,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return super.nextStep();
     }
 
-    protected @Nullable SoundEvent getHurtSound(@NotNull DamageSource p_21239_) {
+    protected @Nullable SoundEvent getHurtSound( DamageSource p_21239_) {
         if (this.builder.setHurtSound == null) {
             return super.getHurtSound(p_21239_);
         } else {
@@ -1239,7 +1239,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return this.builder.setSwimSound == null ? super.getSwimSound() : (SoundEvent)Objects.requireNonNull((SoundEvent)ForgeRegistries.SOUND_EVENTS.getValue((ResourceLocation)this.builder.setSwimSound));
     }
 
-    public boolean canAttackType(@NotNull EntityType<?> entityType) {
+    public boolean canAttackType( EntityType<?> entityType) {
         if (this.builder.canAttackType != null) {
             ContextUtils.EntityTypeEntityContext context = new ContextUtils.EntityTypeEntityContext(this, entityType);
             Object obj = this.builder.canAttackType.apply(context);
@@ -1297,7 +1297,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
     }
 
-    public boolean canAttack(@NotNull LivingEntity entity) {
+    public boolean canAttack( LivingEntity entity) {
         if (this.builder.canAttack != null) {
             ContextUtils.LivingEntityContext context = new ContextUtils.LivingEntityContext(this, entity);
             Object obj = this.builder.canAttack.apply(context);
@@ -1311,7 +1311,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return super.canAttack(entity);
     }
 
-    public boolean canBeAffected(@NotNull MobEffectInstance effectInstance) {
+    public boolean canBeAffected( MobEffectInstance effectInstance) {
         if (this.builder.canBeAffected == null) {
             return super.canBeAffected(effectInstance);
         } else {
@@ -1344,12 +1344,12 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return this.builder.setDeathSound == null ? super.getDeathSound() : (SoundEvent)Objects.requireNonNull((SoundEvent)ForgeRegistries.SOUND_EVENTS.getValue((ResourceLocation)this.builder.setDeathSound));
     }
 
-    @NotNull
-    public LivingEntity.@NotNull Fallsounds getFallSounds() {
+
+    public LivingEntity. Fallsounds getFallSounds() {
         return this.builder.fallSounds != null ? new LivingEntity.Fallsounds((SoundEvent)Objects.requireNonNull((SoundEvent)ForgeRegistries.SOUND_EVENTS.getValue((ResourceLocation)this.builder.smallFallSound)), (SoundEvent)Objects.requireNonNull((SoundEvent)ForgeRegistries.SOUND_EVENTS.getValue((ResourceLocation)this.builder.largeFallSound))) : super.getFallSounds();
     }
 
-    public @NotNull SoundEvent getEatingSound(@NotNull ItemStack itemStack) {
+    public  SoundEvent getEatingSound( ItemStack itemStack) {
         return this.builder.eatingSound != null ? (SoundEvent)Objects.requireNonNull((SoundEvent)ForgeRegistries.SOUND_EVENTS.getValue((ResourceLocation)this.builder.eatingSound)) : super.getEatingSound(itemStack);
     }
 
@@ -1373,7 +1373,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         });
     }
 
-    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource damageSource) {
+    public boolean causeFallDamage(float distance, float damageMultiplier,  DamageSource damageSource) {
         if (this.builder.onLivingFall != null) {
             ContextUtils.EntityFallDamageContext context = new ContextUtils.EntityFallDamageContext(this, damageMultiplier, distance, damageSource);
             EntityJSHelperClass.consumerCallback(this.builder.onLivingFall, context, "[EntityJS]: Error in " + this.entityName() + "builder for field: onLivingFall.");
@@ -1405,7 +1405,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
     }
 
-    public boolean canStandOnFluid(@NotNull FluidState fluidState) {
+    public boolean canStandOnFluid( FluidState fluidState) {
         if (this.builder.canStandOnFluid != null) {
             ContextUtils.EntityFluidStateContext context = new ContextUtils.EntityFluidStateContext(this, fluidState);
             Object obj = this.builder.canStandOnFluid.apply(context);
@@ -1448,7 +1448,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     }
 
-    public void onItemPickup(@NotNull ItemEntity p_21054_) {
+    public void onItemPickup( ItemEntity p_21054_) {
         super.onItemPickup(p_21054_);
         if (this.builder.onItemPickup != null) {
             ContextUtils.EntityItemEntityContext context = new ContextUtils.EntityItemEntityContext(this, p_21054_);
@@ -1457,7 +1457,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     }
 
-    public boolean hasLineOfSight(@NotNull Entity entity) {
+    public boolean hasLineOfSight( Entity entity) {
         if (this.builder.hasLineOfSight != null) {
             ContextUtils.LineOfSightContext context = new ContextUtils.LineOfSightContext(entity, this);
             Object obj = this.builder.hasLineOfSight.apply(context);
@@ -1514,7 +1514,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return super.attackable();
     }
 
-    public boolean canTakeItem(@NotNull ItemStack itemStack) {
+    public boolean canTakeItem( ItemStack itemStack) {
         if (this.builder.canTakeItem != null) {
             ContextUtils.EntityItemLevelContext context = new ContextUtils.EntityItemLevelContext(this, itemStack, this.level());
             Object obj = this.builder.canTakeItem.apply(context);
@@ -1541,7 +1541,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return super.isSleeping();
     }
 
-    public void startSleeping(@NotNull BlockPos blockPos) {
+    public void startSleeping( BlockPos blockPos) {
         if (this.builder.onStartSleeping != null) {
             ContextUtils.EntityBlockPosContext context = new ContextUtils.EntityBlockPosContext(this, blockPos);
             EntityJSHelperClass.consumerCallback(this.builder.onStartSleeping, context, "[EntityJS]: Error in " + this.entityName() + "builder for field: onStartSleeping.");
@@ -1558,7 +1558,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         super.stopSleeping();
     }
 
-    public @NotNull ItemStack eat(@NotNull Level level, @NotNull ItemStack itemStack) {
+    public  ItemStack eat( Level level,  ItemStack itemStack) {
         if (this.builder.eat != null) {
             ContextUtils.EntityItemLevelContext context = new ContextUtils.EntityItemLevelContext(this, itemStack, level);
             EntityJSHelperClass.consumerCallback(this.builder.eat, context, "[EntityJS]: Error in " + this.entityName() + "builder for field: eat.");
@@ -1568,7 +1568,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         }
     }
 
-    public boolean shouldRiderFaceForward(@NotNull Player player) {
+    public boolean shouldRiderFaceForward( Player player) {
         if (this.builder.shouldRiderFaceForward != null) {
             ContextUtils.PlayerEntityContext context = new ContextUtils.PlayerEntityContext(player, this);
             Object obj = this.builder.shouldRiderFaceForward.apply(context);
@@ -1743,7 +1743,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return super.canChangeDimensions();
     }
 
-    public boolean mayInteract(@NotNull Level p_146843_, @NotNull BlockPos p_146844_) {
+    public boolean mayInteract( Level p_146843_,  BlockPos p_146844_) {
         if (this.builder.mayInteract != null) {
             ContextUtils.MayInteractContext context = new ContextUtils.MayInteractContext(p_146843_, p_146844_, this);
             Object obj = this.builder.mayInteract.apply(context);
@@ -1757,7 +1757,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         return super.mayInteract(p_146843_, p_146844_);
     }
 
-    public boolean canTrample(@NotNull BlockState state, @NotNull BlockPos pos, float fallDistance) {
+    public boolean canTrample( BlockState state,  BlockPos pos, float fallDistance) {
         if (this.builder.canTrample != null) {
             ContextUtils.CanTrampleContext context = new ContextUtils.CanTrampleContext(state, pos, fallDistance, this);
             Object obj = this.builder.canTrample.apply(context);

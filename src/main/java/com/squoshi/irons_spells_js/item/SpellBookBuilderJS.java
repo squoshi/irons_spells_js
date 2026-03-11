@@ -12,10 +12,12 @@ import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.item.SpellBook;
 import io.redspace.ironsspellbooks.item.UniqueSpellBook;
 import io.redspace.ironsspellbooks.item.spell_books.SimpleAttributeSpellBook;
+import io.redspace.ironsspellbooks.util.ItemPropertiesHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -84,7 +86,7 @@ public class SpellBookBuilderJS extends BuilderBase<SpellBook> {
         if (!map.isEmpty()) {
             return new SimpleAttributeSpellBook(maxSpellSlots, SpellRarity.LEGENDARY, map);
         }
-        return new SpellBook(maxSpellSlots, SpellRarity.LEGENDARY);
+        return new SpellBook(maxSpellSlots, ItemPropertiesHelper.equipment().stacksTo(1).rarity(Rarity.UNCOMMON));
     }
 
     public record AttributeHolder(ResourceLocation attribute, AttributeModifier modifier) {

@@ -8,9 +8,10 @@ import com.squoshi.irons_spells_js.item.StaffItemBuilderJS;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import com.squoshi.irons_spells_js.spell.AbstractSpellWrapper;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
-import com.squoshi.irons_spells_js.util.AlchemistCauldronKubeJSRecipes;
+import com.squoshi.irons_spells_js.util.AlchemistCauldronRecipeSchemas;
 import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
+import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -19,12 +20,12 @@ import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.*;
 import io.redspace.ironsspellbooks.api.util.AnimationHolder;
-import io.redspace.ironsspellbooks.api.util.UpdateClient;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.TargetEntityCastData;
 import io.redspace.ironsspellbooks.entity.mobs.goals.*;
 import io.redspace.ironsspellbooks.registries.PotionRegistry;
 import io.redspace.ironsspellbooks.util.ParticleHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.alchemy.Potions;
@@ -45,6 +46,12 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
     }
 
     @Override
+    public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
+        event.register(new ResourceLocation("irons_spellbooks", "alchemist_cauldron_brew"), AlchemistCauldronRecipeSchemas.BREW);
+        event.register(new ResourceLocation("irons_spellbooks", "alchemist_cauldron_fill"), AlchemistCauldronRecipeSchemas.FILL);
+        event.register(new ResourceLocation("irons_spellbooks", "alchemist_cauldron_empty"), AlchemistCauldronRecipeSchemas.EMPTY);
+    }
+    @Override
     public void registerBindings(BindingsEvent event) {
         event.add("SpellRarity", SpellRarity.class);
         event.add("SchoolRegistry", SchoolRegistry.class);
@@ -56,12 +63,10 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         event.add("SpellData", SpellData.class);
         event.add("Spell", AbstractSpellWrapper.class);
         event.add("ISSAnimationHolder", AnimationHolder.class);
-        event.add("ISSUpdateClient", UpdateClient.class);
         event.add("ISSUtils", Utils.class);
         event.add("TargetEntityCastData", TargetEntityCastData.class);
         event.add("Potions", Potions.class);
         event.add("ISSPotionRegistry", PotionRegistry.class);
-        event.add("AlchemistCauldronRecipeBuilder", AlchemistCauldronKubeJSRecipes.AlchemistCauldronRecipeBuilder.class);
         event.add("WizardAttackGoal", WizardAttackGoal.class);
         event.add("WarlockAttackGoal", WarlockAttackGoal.class);
         event.add("WizardRecoverGoal", WizardRecoverGoal.class);

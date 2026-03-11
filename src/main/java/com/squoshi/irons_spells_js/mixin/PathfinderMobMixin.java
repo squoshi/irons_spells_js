@@ -36,13 +36,13 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -157,7 +157,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         if (!(self() instanceof AbstractSpellCastingMob)){
-            playerMagicData.getSyncedData().saveNBTData(pCompound);
+            playerMagicData.getSyncedData().saveNBTData(pCompound,level().registryAccess());
             pCompound.putBoolean("usedSpecial", this.hasUsedSingleAttack);
         }
     }
@@ -167,7 +167,7 @@ public class PathfinderMobMixin extends Mob implements IMagicEntity {
         super.readAdditionalSaveData(pCompound);
         if (!(self() instanceof AbstractSpellCastingMob)){
             SyncedSpellData syncedSpellData = new SyncedSpellData(self());
-            syncedSpellData.loadNBTData(pCompound);
+            syncedSpellData.loadNBTData(pCompound,level().registryAccess());
             if (syncedSpellData.isCasting()) {
                 AbstractSpell spell = SpellRegistry.getSpell(syncedSpellData.getCastingSpellId());
                 this.initiateCastSpell(spell, syncedSpellData.getCastingSpellLevel());

@@ -23,10 +23,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class SpellProjectileJS extends AbstractMagicProjectile implements IProjectileEntityJS, AntiMagicSusceptible {
     public static record OnAntiMagicContext(MagicData getMagicData, Entity getEntity){}
@@ -95,9 +96,9 @@ public class SpellProjectileJS extends AbstractMagicProjectile implements IProje
     }
 
     @Override
-    public Optional<SoundEvent> getImpactSound() {
+    public Optional<Supplier<SoundEvent>> getImpactSound() {
         if (builder.setImpactSound != null) {
-            return Optional.ofNullable(ForgeRegistries.SOUND_EVENTS.getValue((ResourceLocation) builder.setImpactSound));
+            return Optional.of(() -> ForgeRegistries.SOUND_EVENTS.getValue((ResourceLocation) builder.setImpactSound));
         }
         return Optional.empty();
     }
@@ -237,6 +238,10 @@ public class SpellProjectileJS extends AbstractMagicProjectile implements IProje
         if (builder != null && builder.rideTick != null) {
             EntityJSHelperClass.consumerCallback(builder.rideTick, this, "[EntityJS]: Error in " + entityName() + "builder for field: rideTick.");
         }
+    }
+
+    @Override
+    protected void defineSynchedData() {
     }
 
     @Override
