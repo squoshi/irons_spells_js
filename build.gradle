@@ -2,9 +2,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.65-beta'
 }
 
 version = "${minecraft_version}-${mod_version}-release"
@@ -17,89 +15,50 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
+legacyForge {
+    version = "1.20.1-47.3.0"
 
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    copyIdeResources = true
     runs {
         client {
-            workingDirectory project.file('run')
+            client()
 
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', mod_id
-
-            property 'production', "true" // please Lat FIX
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            systemProperty 'forge.logging.console.level', 'debug'
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+            systemProperty 'production', "true"
 
             if (project.hasProperty('mc_uuid')) {
-                args '--uuid', project.getProperty('mc_uuid')
+                jvmArgument "--uuid=${project.getProperty('mc_uuid')}"
             }
             if (project.hasProperty('mc_username')) {
-                args '--username', project.getProperty('mc_username')
+                jvmArgument "--username=${project.getProperty('mc_username')}"
             }
             if (project.hasProperty('mc_accessToken')) {
-                args '--accessToken', project.getProperty('mc_accessToken')
-            }
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
+                jvmArgument "--accessToken=${project.getProperty('mc_accessToken')}"
             }
         }
 
         server {
-            workingDirectory project.file('run')
+            server()
 
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', mod_id
-
-            property 'production', "true" // please Lat FIX
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            systemProperty 'forge.logging.console.level', 'debug'
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+            systemProperty 'production', "true"
         }
 
         gameTestServer {
-            workingDirectory project.file('run')
+            server()
 
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', mod_id
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            systemProperty 'forge.logging.console.level', 'debug'
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id
         }
+    }
 
-        data {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
         }
     }
 }
@@ -107,6 +66,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+
     maven {
         url "https://maven.latvian.dev/releases"
         content {
@@ -122,61 +82,52 @@ repositories {
             includeGroup "curse.maven"
         }
     }
-    maven {
-        name = "Iron's Maven"
-        url = "https://code.redspace.io/releases"
-    }
 
     maven { url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/" }
     maven { url = "https://maven.theillusivec4.top" }
     maven { url = "https://maven.blamejared.com" }
     maven { url = "https://maven.kosmx.dev/" }
+    maven {
+        name = "Iron's Maven"
+        url = "https://code.redspace.io/releases"
+    }
+    maven {
+        name = "Iron's Maven - Snapshots"
+        url = "https://code.redspace.io/snapshots"
+    }
 
 }
 
 mixin {
     add sourceSets.main, "${mod_id}.refmap.json"
-
     config "${mod_id}.mixins.json"
-
-    debug.export = true
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
-    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
-    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
-    implementation fg.deobf("io.redspace.ironsspellbooks:irons_spellbooks:${minecraft_version}-${irons_spells_version}")
-    implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+    implementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
+    implementation "dev.latvian.mods:rhino-forge:${rhino_version}"
+    implementation "dev.architectury:architectury-forge:${architectury_version}"
+    implementation "top.theillusivec4.curios:curios-forge:${curios_version}"
+    compileOnly "io.redspace:irons_spellbooks:${irons_spells_version}:api"
+    runtimeOnly "io.redspace:irons_spellbooks:${irons_spells_version}"
+    compileOnly "curse.maven:entityjs-967617:${entityjs_file_id}"
+    compileOnly "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
+    compileOnly "curse.maven:probejs-585406:5227399"
 
-    compileOnly fg.deobf("curse.maven:entityjs-967617:${entityjs_file_id}")
-    compileOnly fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
-    compileOnly fg.deobf("curse.maven:probejs-585406:5227399")
+    runtimeOnly "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
+    runtimeOnly "top.theillusivec4.caelus:caelus-forge:${caelus_version}"
+    runtimeOnly "dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}"
+    runtimeOnly "curse.maven:entityjs-967617:${entityjs_file_id}"
 
-    // Real dependencies for Runtime
-    runtimeOnly fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
-    runtimeOnly fg.deobf("top.theillusivec4.caelus:caelus-forge:${caelus_version}")
-    runtimeOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}")
-    runtimeOnly fg.deobf("curse.maven:entityjs-967617:${entityjs_file_id}")
-    //runtimeOnly fg.deobf("curse.maven:probejs-585406:5227399")
-
-    // Qol
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_mc_version}-forge:${jei_version}")
-    // runtimeOnly fg.deobf("curse.maven:probejs-585406:5227399")
-
-//    implementation files("libs/irons_spellbooks-1.20.1-3.2.1.jar")
+    runtimeOnly "mezz.jei:jei-${jei_mc_version}-forge:${jei_version}"
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")) {
-        jarJar.ranged(it, "[0.4.1,)")
-    }
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1"))
 
-    implementation 'org.reflections:reflections:0.10.2'
-    implementation 'org.javassist:javassist:3.20.0-GA'
+    implementation "org.reflections:reflections:0.10.2"
+    implementation "org.javassist:javassist:3.20.0-GA"
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
