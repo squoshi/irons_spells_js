@@ -2,7 +2,7 @@
   "required": true,
   "package": "com.squoshi.irons_spells_js.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "${mod_id}.refmap.json",
+  "refmap": "irons_spells_js.refmap.json",
   "mixins": [
     "AbstractSpellMixin",
     "ClientInitEventJSMixin",
