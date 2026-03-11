@@ -106,28 +106,28 @@ mixin {
 dependencies {
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    implementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
-    implementation "dev.latvian.mods:rhino-forge:${rhino_version}"
-    implementation "dev.architectury:architectury-forge:${architectury_version}"
-    implementation "top.theillusivec4.curios:curios-forge:${curios_version}"
-    compileOnly "io.redspace:irons_spellbooks:${irons_spells_version}:api"
-    runtimeOnly "io.redspace:irons_spellbooks:${irons_spells_version}"
-    compileOnly "curse.maven:entityjs-967617:${entityjs_file_id}"
-    compileOnly "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
-    compileOnly "curse.maven:probejs-585406:5227399"
+    modImplementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
+    modImplementation "dev.latvian.mods:rhino-forge:${rhino_version}"
+    modImplementation "dev.architectury:architectury-forge:${architectury_version}"
+    modImplementation "top.theillusivec4.curios:curios-forge:${curios_version}"
+    modImplementation "io.redspace:irons_spellbooks:${irons_spells_version}:api"
+    modImplementation "io.redspace:irons_spellbooks:${irons_spells_version}"
+    modCompileOnly "curse.maven:entityjs-967617:${entityjs_file_id}"
+    modCompileOnly "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
+    modCompileOnly "curse.maven:probejs-585406:5227399"
 
-    runtimeOnly "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
-    runtimeOnly "top.theillusivec4.caelus:caelus-forge:${caelus_version}"
-    runtimeOnly "dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}"
-    runtimeOnly "curse.maven:entityjs-967617:${entityjs_file_id}"
+    modRuntimeOnly "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
+    modRuntimeOnly "top.theillusivec4.caelus:caelus-forge:${caelus_version}"
+    modRuntimeOnly "dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}"
+    modRuntimeOnly "curse.maven:entityjs-967617:${entityjs_file_id}"
 
-    runtimeOnly "mezz.jei:jei-${jei_mc_version}-forge:${jei_version}"
+    modRuntimeOnly "mezz.jei:jei-${jei_mc_version}-forge:${jei_version}"
 
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1"))
+    modCompileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+    modImplementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1"))
 
-    implementation "org.reflections:reflections:0.10.2"
-    implementation "org.javassist:javassist:3.20.0-GA"
+    modImplementation "org.reflections:reflections:0.10.2"
+    modImplementation "org.javassist:javassist:3.20.0-GA"
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
