@@ -40,6 +40,7 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         SCHOOL_REGISTRY.addType("basic", SchoolTypeJSBuilder.class, SchoolTypeJSBuilder::new);
         RegistryInfo.ATTRIBUTE.addType("spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
         RegistryInfo.ATTRIBUTE.addType("irons_spells_js:spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
+        RegistryInfo.ITEM.addType("spellbook", SpellBookBuilderJS.class, SpellBookBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:spellbook", SpellBookBuilderJS.class, SpellBookBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:staff", StaffItemBuilderJS.class, StaffItemBuilderJS::new);
         RegistryInfo.ITEM.addType("irons_spells_js:magic_sword", MagicSwordItemBuilderJS.class, MagicSwordItemBuilderJS::new);

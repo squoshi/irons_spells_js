@@ -16,17 +16,14 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 legacyForge {
-    version = "1.20.1-47.4.0"
+    version = "${minecraft_version}-${forge_version}"
 
     runs {
         client {
             client()
-
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             systemProperty 'forge.logging.console.level', 'debug'
             systemProperty 'forge.enabledGameTestNamespaces', mod_id
-            systemProperty 'production', "true"
-
             if (project.hasProperty('mc_uuid')) {
                 jvmArgument "--uuid=${project.getProperty('mc_uuid')}"
             }
@@ -40,16 +37,13 @@ legacyForge {
 
         server {
             server()
-
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             systemProperty 'forge.logging.console.level', 'debug'
             systemProperty 'forge.enabledGameTestNamespaces', mod_id
-            systemProperty 'production', "true"
         }
 
         gameTestServer {
             server()
-
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             systemProperty 'forge.logging.console.level', 'debug'
             systemProperty 'forge.enabledGameTestNamespaces', mod_id
@@ -98,10 +92,7 @@ repositories {
 
 }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
-}
+
 
 dependencies {
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
@@ -112,6 +103,9 @@ dependencies {
     modImplementation "top.theillusivec4.curios:curios-forge:${curios_version}"
     modImplementation "io.redspace:irons_spellbooks:${irons_spells_version}:api"
     modImplementation "io.redspace:irons_spellbooks:${irons_spells_version}"
+    compileOnly "io.redspace:irons_spellbooks:${irons_spells_version}:api"
+    compileOnly "io.redspace:irons_spellbooks:${irons_spells_version}"
+    modRuntimeOnly "io.redspace:irons_spellbooks:${irons_spells_version}"
     modCompileOnly "curse.maven:entityjs-967617:${entityjs_file_id}"
     modCompileOnly "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
     modCompileOnly "curse.maven:probejs-585406:5227399"
@@ -126,30 +120,39 @@ dependencies {
     modCompileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
     modImplementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1"))
 
-    modImplementation "org.reflections:reflections:0.10.2"
-    modImplementation "org.javassist:javassist:3.20.0-GA"
+    implementation "org.reflections:reflections:0.10.2"
+    additionalRuntimeClasspath "org.reflections:reflections:0.10.2"
+    implementation "org.javassist:javassist:3.20.0-GA"
+    additionalRuntimeClasspath "org.javassist:javassist:3.20.0-GA"
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
 def replaceProperties = [
-        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-        forge_version: forge_version, forge_version_range: forge_version_range,
+        minecraft_version: minecraft_version,
+        minecraft_version_range: minecraft_version_range,
+        forge_version: forge_version,
+        forge_version_range: forge_version_range,
         loader_version_range: loader_version_range,
-        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-        mod_authors: mod_authors, mod_description: mod_description,
+        mod_id: mod_id,
+        mod_name: mod_name,
+        mod_license: mod_license,
+        mod_version: mod_version,
+        mod_authors: mod_authors,
+        mod_description: mod_description,
         entityjs_version_range: entityjs_version_range,
         curios_version_range: curios_version_range,
         irons_spellbooks_version_range: irons_spellbooks_version_range,
+        project_name: project.name,
+        project_version: project.version
 ]
+
 processResources {
     inputs.properties replaceProperties
-    replaceProperties.put 'project', project
 
     filesMatching(resourceTargets) {
         expand replaceProperties
     }
 }
-
 jar {
     manifest {
         attributes([
@@ -159,7 +162,8 @@ jar {
                 'Implementation-Title': project.name,
                 'Implementation-Version': mod_version,
                 'Implementation-Vendor': mod_authors,
-                'Implementation-Timestamp': new Date().format('yyyy-MM-dd\'T\'HH:mm:ssZ')
+                'Implementation-Timestamp': new Date().format('yyyy-MM-dd\'T\'HH:mm:ssZ'),
+                "MixinConfigs": "${mod_id}.mixins.json"
         ])
     }
 }
@@ -169,7 +173,6 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-parameters'
 }
 
-jar.finalizedBy('reobfJar')
 
 publishing {
     publications {
@@ -182,4 +185,8 @@ publishing {
             url "file://${project.projectDir}/mcmodsrepo"
         }
     }
+}
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
 }
