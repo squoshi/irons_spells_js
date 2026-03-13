@@ -2,9 +2,9 @@ package com.squoshi.irons_spells_js;
 
 import com.squoshi.irons_spells_js.entity.attribute.SpellAttributeBuilderJS;
 import com.squoshi.irons_spells_js.events.IronsSpellsJSEvents;
-import com.squoshi.irons_spells_js.item.MagicSwordItemBuilderJS;
-import com.squoshi.irons_spells_js.item.SpellBookBuilderJS;
-import com.squoshi.irons_spells_js.item.StaffItemBuilderJS;
+import com.squoshi.irons_spells_js.item.CustomMagicSwordItem;
+import com.squoshi.irons_spells_js.item.CustomSpellBook;
+import com.squoshi.irons_spells_js.item.CustomStaff;
 import com.squoshi.irons_spells_js.spell.CustomSpell;
 import com.squoshi.irons_spells_js.spell.AbstractSpellWrapper;
 import com.squoshi.irons_spells_js.spell.school.SchoolTypeJSBuilder;
@@ -40,17 +40,19 @@ public class IronsSpellsJSPlugin extends KubeJSPlugin {
         SCHOOL_REGISTRY.addType("basic", SchoolTypeJSBuilder.class, SchoolTypeJSBuilder::new);
         RegistryInfo.ATTRIBUTE.addType("spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
         RegistryInfo.ATTRIBUTE.addType("irons_spells_js:spell", SpellAttributeBuilderJS.class, SpellAttributeBuilderJS::new);
-        RegistryInfo.ITEM.addType("spellbook", SpellBookBuilderJS.class, SpellBookBuilderJS::new);
-        RegistryInfo.ITEM.addType("irons_spells_js:spellbook", SpellBookBuilderJS.class, SpellBookBuilderJS::new);
-        RegistryInfo.ITEM.addType("irons_spells_js:staff", StaffItemBuilderJS.class, StaffItemBuilderJS::new);
-        RegistryInfo.ITEM.addType("irons_spells_js:magic_sword", MagicSwordItemBuilderJS.class, MagicSwordItemBuilderJS::new);
+        RegistryInfo.ITEM.addType("spellbook", CustomSpellBook.Builder.class, CustomSpellBook.Builder::new);
+        RegistryInfo.ITEM.addType("irons_spells_js:spellbook", CustomSpellBook.Builder.class, CustomSpellBook.Builder::new);
+        RegistryInfo.ITEM.addType("staff", CustomStaff.Builder.class, CustomStaff.Builder::new);
+        RegistryInfo.ITEM.addType("irons_spells_js:staff", CustomStaff.Builder.class, CustomStaff.Builder::new);
+        RegistryInfo.ITEM.addType("magic_sword", CustomMagicSwordItem.Builder.class, CustomMagicSwordItem.Builder::new);
+        RegistryInfo.ITEM.addType("irons_spells_js:magic_sword", CustomMagicSwordItem.Builder.class, CustomMagicSwordItem.Builder::new);
     }
 
     @Override
     public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
-        event.register(new ResourceLocation("irons_spellbooks", "alchemist_cauldron_brew"), AlchemistCauldronRecipeSchemas.BREW);
-        event.register(new ResourceLocation("irons_spellbooks", "alchemist_cauldron_fill"), AlchemistCauldronRecipeSchemas.FILL);
-        event.register(new ResourceLocation("irons_spellbooks", "alchemist_cauldron_empty"), AlchemistCauldronRecipeSchemas.EMPTY);
+        event.register(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "alchemist_cauldron_brew"), AlchemistCauldronRecipeSchemas.BREW);
+        event.register(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "alchemist_cauldron_fill"), AlchemistCauldronRecipeSchemas.FILL);
+        event.register(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "alchemist_cauldron_empty"), AlchemistCauldronRecipeSchemas.EMPTY);
     }
     @Override
     public void registerBindings(BindingsEvent event) {

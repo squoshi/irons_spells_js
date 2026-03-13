@@ -43,6 +43,14 @@ public interface AbstractSpellWrapper {
         return SpellRegistry.getSpell(spellHolder.getLocation()).isEnabled();
     }
 
+    @Info(value = """
+        Returns a SpellHolder reference for the given spell. Can be passed back into Spell.of().
+        Useful for passing spell references around without resolving the registry immediately.
+    """)
+    static ISSKJSUtils.SpellHolder ofHolder(Object o) {
+        return ISSKJSUtils.SpellHolder.of(o);
+    }
+
     enum SpellStatus {
         REGISTERED,
         UNREGISTERED,

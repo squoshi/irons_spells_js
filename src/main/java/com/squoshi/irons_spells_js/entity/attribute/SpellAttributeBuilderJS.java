@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import io.redspace.ironsspellbooks.api.attribute.MagicRangedAttribute;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 
@@ -22,6 +21,17 @@ public class SpellAttributeBuilderJS extends BuilderBase<Attribute> {
     @Override
     public RegistryInfo<Attribute> getRegistryType() {
         return RegistryInfo.ATTRIBUTE;
+    }
+
+    @Info("""
+            Sets defaultValue, minimumValue, and maximumValue in one call.
+    """)
+    @SuppressWarnings("unused")
+    public SpellAttributeBuilderJS range(double defaultValue, double min, double max) {
+        this.defaultValue = defaultValue;
+        this.minimumValue = min;
+        this.maximumValue = max;
+        return this;
     }
 
     @Info("""

@@ -50,7 +50,7 @@ public interface AlchemistCauldronRecipeSchemas {
 
     RecipeSchema BREW = new RecipeSchema(
             ForgeFluidRecipeJS.class, ForgeFluidRecipeJS::new,
-            BREW_BASE_FLUID, BREW_INPUT, BREW_RESULTS, BREW_BYPRODUCT
+            BREW_RESULTS, BREW_INPUT, BREW_BASE_FLUID, BREW_BYPRODUCT
     );
 
     // ── Fill (item → fluid into cauldron) ───────────────────────────────
@@ -62,7 +62,7 @@ public interface AlchemistCauldronRecipeSchemas {
 
     RecipeSchema FILL = new RecipeSchema(
             ForgeFluidRecipeJS.class, ForgeFluidRecipeJS::new,
-            FILL_INPUT, FILL_RESULT, FILL_FLUID, FILL_MUST_FIT_ALL, FILL_SOUND
+            FILL_FLUID, FILL_INPUT, FILL_RESULT, FILL_MUST_FIT_ALL, FILL_SOUND
     );
 
     // ── Empty (fluid from cauldron → item) ──────────────────────────────
@@ -73,6 +73,6 @@ public interface AlchemistCauldronRecipeSchemas {
 
     RecipeSchema EMPTY = new RecipeSchema(
             ForgeFluidRecipeJS.class, ForgeFluidRecipeJS::new,
-            EMPTY_INPUT, EMPTY_RESULT, EMPTY_FLUID, EMPTY_SOUND
+            EMPTY_RESULT, EMPTY_INPUT, EMPTY_FLUID, EMPTY_SOUND
     );
 }
