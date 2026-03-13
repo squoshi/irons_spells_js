@@ -16,26 +16,29 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
  * <p>
  * These allow users to create alchemist cauldron recipes in {@code ServerEvents.recipes}:
  * <pre>{@code
- * // Brew recipe
  * ServerEvents.recipes(event => {
- *     event.recipes.irons_spellbooks.alchemist_cauldron_brew(
- *         Fluid.of('irons_spellbooks:rare_ink', 1000),  // base fluid
- *         'forge:ingots/gold',                            // reagent input
- *         [Fluid.of('irons_spellbooks:epic_ink', 250)]    // results
- *     )
- *
- *     // Fill recipe (item -> fluid into cauldron)
- *     event.recipes.irons_spellbooks.alchemist_cauldron_fill(
- *         'irons_spellbooks:blood_vial',                  // input item
- *         'minecraft:glass_bottle',                        // returned item
- *         Fluid.of('irons_spellbooks:blood', 250)          // fluid added to cauldron
+ *     // Brew recipe
+ *     let brew = event.recipes.irons_spellbooks.alchemist_cauldron_brew
+ *     brew(
+ *         [Fluid.of("milk", 500)],            // result fluids
+ *         "minecraft:white_terracotta",        // reagent input
+ *         Fluid.of("water", 1000)              // base fluid
  *     )
  *
  *     // Empty recipe (fluid from cauldron -> item)
- *     event.recipes.irons_spellbooks.alchemist_cauldron_empty(
- *         'minecraft:glass_bottle',                        // input item
- *         'irons_spellbooks:blood_vial',                   // result item
- *         Fluid.of('irons_spellbooks:blood', 250)          // fluid consumed from cauldron
+ *     let empty = event.recipes.irons_spellbooks.alchemist_cauldron_empty
+ *     empty(
+ *         "minecraft:white_concrete",          // result item
+ *         "minecraft:dirt",                     // input item
+ *         Fluid.of("milk", 250)                // fluid consumed from cauldron
+ *     )
+ *
+ *     // Fill recipe (item -> fluid into cauldron)
+ *     let fill = event.recipes.irons_spellbooks.alchemist_cauldron_fill
+ *     fill(
+ *         Fluid.of("milk", 1000),              // fluid added to cauldron
+ *         "minecraft:milk_bucket",             // input item
+ *         "minecraft:bucket"                    // result item
  *     )
  * })
  * }</pre>
