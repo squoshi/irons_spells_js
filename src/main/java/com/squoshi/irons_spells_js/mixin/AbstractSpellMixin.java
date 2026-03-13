@@ -138,6 +138,11 @@ public abstract class AbstractSpellMixin implements ISpellModify {
                 pass = false;
             }
         }
+        if (IronsSpellsJSEvents.entitySpellPreCastEntityEvents.hasListeners()) {
+            if (!IronsSpellsJSEvents.entitySpellPreCastEntityEvents.post(event).pass()) {
+                pass = false;
+            }
+        }
         cir.setReturnValue(pass);
     }
 
@@ -150,7 +155,10 @@ public abstract class AbstractSpellMixin implements ISpellModify {
         if (IronsSpellsJSEvents.entitySpellCast.hasListeners()) {
             IronsSpellsJSEvents.entitySpellCast.post(event);
         }
-        if (irons_spells_js$getBuilder().cancelServerCastComplete) {
+        if (IronsSpellsJSEvents.entitySpellCastEntityEvents.hasListeners()) {
+            IronsSpellsJSEvents.entitySpellCastEntityEvents.post(event);
+        }
+        if (irons_spells_js$getBuilder() != null && irons_spells_js$getBuilder().cancelServerCastComplete) {
             ci.cancel();
         }
     }
@@ -160,7 +168,7 @@ public abstract class AbstractSpellMixin implements ISpellModify {
         if (irons_spells_js$getBuilder() != null && irons_spells_js$getBuilder().setClientPreCastCallback != null) {
             ISSKJSUtils.safeCallback(irons_spells_js$getBuilder().setClientPreCastCallback, new SpellModificationBuilder.ModifiedClientPreCastCallback(level, spellLevel, entity, hand, playerMagicData), "[KubeJS Irons Spells]: Error in " + getSpellName() + "builder for field: setClientPreCastCallback.");
         }
-        if (irons_spells_js$getBuilder().cancelClientPreCast) {
+        if (irons_spells_js$getBuilder() != null && irons_spells_js$getBuilder().cancelClientPreCast) {
             ci.cancel();
         }
     }
@@ -168,9 +176,9 @@ public abstract class AbstractSpellMixin implements ISpellModify {
     @Inject(method = "onServerPreCast", at = @At("HEAD"), remap = false, cancellable = true)
     private void irons_spells_js$onServerPreCast(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData, CallbackInfo ci) {
         if (irons_spells_js$getBuilder() != null && irons_spells_js$getBuilder().setServerPreCastCallback != null) {
-            ISSKJSUtils.safeCallback(irons_spells_js$getBuilder().setServerPreCastCallback, new SpellModificationBuilder.ModifiedServerPreCastCallback(level, spellLevel, entity, playerMagicData), "[KubeJS Irons Spells]: Error in " + getSpellName() + "builder for field: setPreSpellCastCallback.");
+            ISSKJSUtils.safeCallback(irons_spells_js$getBuilder().setServerPreCastCallback, new SpellModificationBuilder.ModifiedServerPreCastCallback(level, spellLevel, entity, playerMagicData), "[KubeJS Irons Spells]: Error in " + getSpellName() + "builder for field: setServerPreCastCallback.");
         }
-        if (irons_spells_js$getBuilder().cancelServerPreCast) {
+        if (irons_spells_js$getBuilder() != null && irons_spells_js$getBuilder().cancelServerPreCast) {
             ci.cancel();
         }
     }

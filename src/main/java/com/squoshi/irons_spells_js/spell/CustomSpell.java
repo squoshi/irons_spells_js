@@ -5,6 +5,7 @@ import com.squoshi.irons_spells_js.util.ISSKJSUtils;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
+import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.SchoolRegistry;
@@ -143,7 +144,7 @@ public class CustomSpell extends AbstractSpell {
     }
 
     @Override
-    public boolean needsLearning() {
+    public boolean requiresLearning() {
         return needsLearning;
     }
 
@@ -385,7 +386,8 @@ public class CustomSpell extends AbstractSpell {
             Sets the cast start animation for the spell.
         """)
         public Builder setCastStartAnimation(String path, boolean playOnce, boolean animatesLegs) {
-            this.castStartAnimation = new AnimationHolder(path, playOnce, animatesLegs);
+            var rl = path.contains(":") ? ResourceLocation.tryParse(path) : IronsSpellbooks.id(path);
+            this.castStartAnimation = new AnimationHolder(rl, playOnce, animatesLegs);
             return this;
         }
 
@@ -393,7 +395,8 @@ public class CustomSpell extends AbstractSpell {
             Sets the cast finish animation for the spell.
         """)
         public Builder setCastFinishAnimation(String path, boolean playOnce, boolean animatesLegs) {
-            this.castFinishAnimation = new AnimationHolder(path, playOnce, animatesLegs);
+            var rl = path.contains(":") ? ResourceLocation.tryParse(path) : IronsSpellbooks.id(path);
+            this.castFinishAnimation = new AnimationHolder(rl, playOnce, animatesLegs);
             return this;
         }
 

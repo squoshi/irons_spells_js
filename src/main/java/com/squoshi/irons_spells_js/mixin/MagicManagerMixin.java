@@ -35,6 +35,10 @@ public class MagicManagerMixin {
             if (!IronsSpellsJSEvents.manaRegen.post(event).pass()) return 0;
             inc = event.getAmount();
         }
+        if (IronsSpellsJSEvents.manaRegenPlayerEvents.hasListeners()) {
+            if (!IronsSpellsJSEvents.manaRegenPlayerEvents.post(event).pass()) return 0;
+            inc = event.getAmount();
+        }
         return inc;
     }
 }

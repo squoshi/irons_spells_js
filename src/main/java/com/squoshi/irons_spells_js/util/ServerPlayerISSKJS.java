@@ -4,12 +4,13 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
-import io.redspace.ironsspellbooks.network.ClientboundSyncMana;
-import io.redspace.ironsspellbooks.setup.Messages;
+import io.redspace.ironsspellbooks.network.SyncManaPacket;
+import io.redspace.ironsspellbooks.setup.PacketDistributor;
 import net.minecraft.server.level.ServerPlayer;
 
 @SuppressWarnings("unused")
 public interface ServerPlayerISSKJS {
+
     @HideFromJS
     ServerPlayer irons_spells_js$getServerPlayer();
 
@@ -27,6 +28,6 @@ public interface ServerPlayerISSKJS {
     """)
     @RemapForJS("syncMana")
     default void irons_spells_js$syncMana() {
-        Messages.sendToPlayer(new ClientboundSyncMana(irons_spells_js$getMagicData()), irons_spells_js$getServerPlayer());
+        PacketDistributor.sendToPlayer(irons_spells_js$getServerPlayer(), new SyncManaPacket(irons_spells_js$getMagicData()));
     }
 }
