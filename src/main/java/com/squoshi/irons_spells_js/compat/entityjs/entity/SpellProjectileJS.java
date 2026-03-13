@@ -241,10 +241,6 @@ public class SpellProjectileJS extends AbstractMagicProjectile implements IProje
     }
 
     @Override
-    protected void defineSynchedData() {
-    }
-
-    @Override
     public void onClientRemoval() {
         if (builder != null && builder.onClientRemoval != null) {
             EntityJSHelperClass.consumerCallback(builder.onClientRemoval, this, "[EntityJS]: Error in " + entityName() + "builder for field: onClientRemoval.");
