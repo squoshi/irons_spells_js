@@ -13,7 +13,7 @@ EntityJS compatibility wiki: https://github.com/liopyu/EntityJS/wiki/Addon-Compa
 ## Credits
 - **Uncandango** [aka **pietro-lopes**]
     - Basically the co-owner of the project
-- **squoshi**
+- **sentwayfarer [aka **Wayfarer**, previously **squoshi**]**
     - Project manager and main developer
 - **iron431**
     - Made Iron's Spells and Spellbooks
