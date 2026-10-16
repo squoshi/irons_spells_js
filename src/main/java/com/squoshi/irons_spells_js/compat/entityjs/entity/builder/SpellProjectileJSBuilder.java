@@ -3,7 +3,7 @@ package com.squoshi.irons_spells_js.compat.entityjs.entity.builder;
 import com.squoshi.irons_spells_js.compat.entityjs.entity.SpellProjectileJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.liopyu.entityjs.builders.nonliving.entityjs.ProjectileEntityBuilder;
-import net.liopyu.entityjs.util.EntityJSHelperClass;
+import net.liopyu.entityjs.common.util.EntityJSHelperClass;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 
@@ -61,7 +61,7 @@ public class SpellProjectileJSBuilder extends ProjectileEntityBuilder<SpellProje
             ```
             """)
     public SpellProjectileJSBuilder setImpactSound(Object sound) {
-        if (sound instanceof String) setImpactSound = new ResourceLocation((String) sound);
+        if (sound instanceof String) setImpactSound = ResourceLocation.parse((String) sound);
         else if (sound instanceof ResourceLocation) setImpactSound = (ResourceLocation) sound;
         else {
             EntityJSHelperClass.logErrorMessageOnce("[SpellJS]: Invalid value for setImpactSound. Value: " + sound + ". Must be a ResourceLocation or String. Example: \"minecraft:entity.generic.swim\"");

@@ -18,14 +18,14 @@ import io.redspace.ironsspellbooks.capabilities.magic.SyncedSpellData;
 import io.redspace.ironsspellbooks.spells.ender.TeleportSpell;
 import io.redspace.ironsspellbooks.spells.fire.BurningDashSpell;
 import net.liopyu.entityjs.builders.living.BaseLivingEntityBuilder;
+import net.liopyu.entityjs.common.events.BuildBrainProviderEventJS;
+import net.liopyu.entityjs.common.util.EntityJSHelperClass;
 import net.liopyu.entityjs.entities.living.entityjs.IAnimatableJS;
 import net.liopyu.entityjs.entities.nonliving.entityjs.PartEntityJS;
 import net.liopyu.entityjs.events.AddGoalSelectorsEventJS;
 import net.liopyu.entityjs.events.AddGoalTargetsEventJS;
-import net.liopyu.entityjs.events.BuildBrainEventJS;
-import net.liopyu.entityjs.events.BuildBrainProviderEventJS;
+import net.liopyu.entityjs.common.events.BuildBrainEventJS;
 import net.liopyu.entityjs.util.ContextUtils;
-import net.liopyu.entityjs.util.EntityJSHelperClass;
 import net.liopyu.entityjs.util.EventHandlers;
 import net.liopyu.entityjs.util.ModKeybinds;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -574,7 +574,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canBeLeashed(Player pPlayer) {
         if (this.builder.canBeLeashed != null) {
             ContextUtils.PlayerEntityContext context = new ContextUtils.PlayerEntityContext(pPlayer, this);
-            Object obj = this.builder.canBeLeashed.apply(context);
+            Object obj = this.builder.canBeLeashed.test(context);
             if (obj instanceof Boolean) {
                 Boolean b = (Boolean)obj;
                 return b;
@@ -699,7 +699,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         if (this.builder.shouldStayCloseToLeashHolder == null) {
             return super.shouldStayCloseToLeashHolder();
         } else {
-            Object value = this.builder.shouldStayCloseToLeashHolder.apply(this);
+            Object value = this.builder.shouldStayCloseToLeashHolder.test(this);
             if (value instanceof Boolean) {
                 Boolean b = (Boolean)value;
                 return b;
@@ -713,7 +713,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canFireProjectileWeaponPredicate(ProjectileWeaponItem projectileWeapon) {
         if (this.builder.canFireProjectileWeaponPredicate != null) {
             ContextUtils.EntityProjectileWeaponContext context = new ContextUtils.EntityProjectileWeaponContext(projectileWeapon, this);
-            Object obj = this.builder.canFireProjectileWeaponPredicate.apply(context);
+            Object obj = this.builder.canFireProjectileWeaponPredicate.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -748,7 +748,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canHoldItem(ItemStack stack) {
         if (this.builder.canHoldItem != null) {
             ContextUtils.EntityItemStackContext context = new ContextUtils.EntityItemStackContext(stack, this);
-            Object obj = this.builder.canHoldItem.apply(context);
+            Object obj = this.builder.canHoldItem.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -816,7 +816,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             return super.removeWhenFarAway(pDistanceToClosestPlayer);
         } else {
             ContextUtils.EntityDistanceToPlayerContext context = new ContextUtils.EntityDistanceToPlayerContext(pDistanceToClosestPlayer, this);
-            Object obj = this.builder.removeWhenFarAway.apply(context);
+            Object obj = this.builder.removeWhenFarAway.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             } else {
@@ -829,7 +829,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean isAlliedTo(Entity pEntity) {
         if (this.builder.isAlliedTo != null) {
             ContextUtils.LineOfSightContext context = new ContextUtils.LineOfSightContext(pEntity, this);
-            Object obj = this.builder.isAlliedTo.apply(context);
+            Object obj = this.builder.isAlliedTo.test(context);
             if (obj instanceof Boolean) {
                 Boolean b = (Boolean)obj;
                 return b;
@@ -1032,7 +1032,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canCollideWith(Entity pEntity) {
         if (this.builder.canCollideWith != null) {
             ContextUtils.CollidingEntityContext context = new ContextUtils.CollidingEntityContext(this, pEntity);
-            Object obj = this.builder.canCollideWith.apply(context);
+            Object obj = this.builder.canCollideWith.test(context);
             if (obj instanceof Boolean) {
                 Boolean b = (Boolean)obj;
                 return b;
@@ -1113,7 +1113,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             return super.canAddPassenger(entity);
         } else {
             ContextUtils.PassengerEntityContext context = new ContextUtils.PassengerEntityContext(entity, this);
-            Object obj = this.builder.canAddPassenger.apply(context);
+            Object obj = this.builder.canAddPassenger.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             } else {
@@ -1125,7 +1125,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     protected boolean shouldDropLoot() {
         if (this.builder.shouldDropLoot != null) {
-            Object obj = this.builder.shouldDropLoot.apply(this);
+            Object obj = this.builder.shouldDropLoot.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1138,7 +1138,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     protected boolean isAffectedByFluids() {
         if (this.builder.isAffectedByFluids != null) {
-            Object obj = this.builder.isAffectedByFluids.apply(this);
+            Object obj = this.builder.isAffectedByFluids.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1155,7 +1155,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     protected boolean isImmobile() {
         if (this.builder.isImmobile != null) {
-            Object obj = this.builder.isImmobile.apply(this);
+            Object obj = this.builder.isImmobile.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1168,7 +1168,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     protected boolean isFlapping() {
         if (this.builder.isFlapping != null) {
-            Object obj = this.builder.isFlapping.apply(this);
+            Object obj = this.builder.isFlapping.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1242,7 +1242,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canAttackType( EntityType<?> entityType) {
         if (this.builder.canAttackType != null) {
             ContextUtils.EntityTypeEntityContext context = new ContextUtils.EntityTypeEntityContext(this, entityType);
-            Object obj = this.builder.canAttackType.apply(context);
+            Object obj = this.builder.canAttackType.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1270,7 +1270,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean shouldDropExperience() {
         if (this.builder.shouldDropExperience != null) {
-            Object obj = this.builder.shouldDropExperience.apply(this);
+            Object obj = this.builder.shouldDropExperience.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1300,7 +1300,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canAttack( LivingEntity entity) {
         if (this.builder.canAttack != null) {
             ContextUtils.LivingEntityContext context = new ContextUtils.LivingEntityContext(this, entity);
-            Object obj = this.builder.canAttack.apply(context);
+            Object obj = this.builder.canAttack.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj && super.canAttack(entity);
             }
@@ -1316,7 +1316,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
             return super.canBeAffected(effectInstance);
         } else {
             ContextUtils.OnEffectContext context = new ContextUtils.OnEffectContext(effectInstance, this);
-            Object result = this.builder.canBeAffected.apply(context);
+            Object result = this.builder.canBeAffected.test(context);
             if (result instanceof Boolean) {
                 return (Boolean)result;
             } else {
@@ -1330,7 +1330,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         if (this.builder.invertedHealAndHarm == null) {
             return super.isInvertedHealAndHarm();
         } else {
-            Object obj = this.builder.invertedHealAndHarm.apply(this);
+            Object obj = this.builder.invertedHealAndHarm.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             } else {
@@ -1357,7 +1357,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
         if (this.builder.onClimbable == null) {
             return super.onClimbable();
         } else {
-            Object obj = this.builder.onClimbable.apply(this);
+            Object obj = this.builder.onClimbable.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             } else {
@@ -1408,7 +1408,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canStandOnFluid( FluidState fluidState) {
         if (this.builder.canStandOnFluid != null) {
             ContextUtils.EntityFluidStateContext context = new ContextUtils.EntityFluidStateContext(this, fluidState);
-            Object obj = this.builder.canStandOnFluid.apply(context);
+            Object obj = this.builder.canStandOnFluid.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1421,7 +1421,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean isSensitiveToWater() {
         if (this.builder.isSensitiveToWater != null) {
-            Object obj = this.builder.isSensitiveToWater.apply(this);
+            Object obj = this.builder.isSensitiveToWater.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1460,7 +1460,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean hasLineOfSight( Entity entity) {
         if (this.builder.hasLineOfSight != null) {
             ContextUtils.LineOfSightContext context = new ContextUtils.LineOfSightContext(entity, this);
-            Object obj = this.builder.hasLineOfSight.apply(context);
+            Object obj = this.builder.hasLineOfSight.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1490,7 +1490,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean isAffectedByPotions() {
         if (this.builder.isAffectedByPotions != null) {
-            Object obj = this.builder.isAffectedByPotions.apply(this);
+            Object obj = this.builder.isAffectedByPotions.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1517,7 +1517,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canTakeItem( ItemStack itemStack) {
         if (this.builder.canTakeItem != null) {
             ContextUtils.EntityItemLevelContext context = new ContextUtils.EntityItemLevelContext(this, itemStack, this.level());
-            Object obj = this.builder.canTakeItem.apply(context);
+            Object obj = this.builder.canTakeItem.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1530,7 +1530,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean isSleeping() {
         if (this.builder.isSleeping != null) {
-            Object obj = this.builder.isSleeping.apply(this);
+            Object obj = this.builder.isSleeping.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1571,7 +1571,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean shouldRiderFaceForward( Player player) {
         if (this.builder.shouldRiderFaceForward != null) {
             ContextUtils.PlayerEntityContext context = new ContextUtils.PlayerEntityContext(player, this);
-            Object obj = this.builder.shouldRiderFaceForward.apply(context);
+            Object obj = this.builder.shouldRiderFaceForward.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1584,7 +1584,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean canFreeze() {
         if (this.builder.canFreeze != null) {
-            Object obj = this.builder.canFreeze.apply(this);
+            Object obj = this.builder.canFreeze.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1597,7 +1597,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean isFreezing() {
         if (this.builder.isFreezing != null) {
-            Object obj = this.builder.isFreezing.apply(this);
+            Object obj = this.builder.isFreezing.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1610,7 +1610,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean isCurrentlyGlowing() {
         if (this.builder.isCurrentlyGlowing != null && !this.level().isClientSide()) {
-            Object obj = this.builder.isCurrentlyGlowing.apply(this);
+            Object obj = this.builder.isCurrentlyGlowing.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1623,7 +1623,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean canDisableShield() {
         if (this.builder.canDisableShield != null) {
-            Object obj = this.builder.canDisableShield.apply(this);
+            Object obj = this.builder.canDisableShield.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1675,7 +1675,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean dampensVibrations() {
         if (this.builder.dampensVibrations != null) {
-            Object obj = this.builder.dampensVibrations.apply(this);
+            Object obj = this.builder.dampensVibrations.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1696,7 +1696,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean showVehicleHealth() {
         if (this.builder.showVehicleHealth != null) {
-            Object obj = this.builder.showVehicleHealth.apply(this);
+            Object obj = this.builder.showVehicleHealth.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1719,7 +1719,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean isInvulnerableTo(DamageSource p_20122_) {
         if (this.builder.isInvulnerableTo != null) {
             ContextUtils.DamageContext context = new ContextUtils.DamageContext(this, p_20122_);
-            Object obj = this.builder.isInvulnerableTo.apply(context);
+            Object obj = this.builder.isInvulnerableTo.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1732,7 +1732,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
 
     public boolean canChangeDimensions() {
         if (this.builder.canChangeDimensions != null) {
-            Object obj = this.builder.canChangeDimensions.apply(this);
+            Object obj = this.builder.canChangeDimensions.test(this);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1746,7 +1746,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean mayInteract( Level p_146843_,  BlockPos p_146844_) {
         if (this.builder.mayInteract != null) {
             ContextUtils.MayInteractContext context = new ContextUtils.MayInteractContext(p_146843_, p_146844_, this);
-            Object obj = this.builder.mayInteract.apply(context);
+            Object obj = this.builder.mayInteract.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
@@ -1760,7 +1760,7 @@ public class SpellCastingMobJS extends PathfinderMob implements IAnimatableJS, I
     public boolean canTrample( BlockState state,  BlockPos pos, float fallDistance) {
         if (this.builder.canTrample != null) {
             ContextUtils.CanTrampleContext context = new ContextUtils.CanTrampleContext(state, pos, fallDistance, this);
-            Object obj = this.builder.canTrample.apply(context);
+            Object obj = this.builder.canTrample.test(context);
             if (obj instanceof Boolean) {
                 return (Boolean)obj;
             }
