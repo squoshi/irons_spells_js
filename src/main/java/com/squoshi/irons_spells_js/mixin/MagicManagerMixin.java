@@ -39,6 +39,6 @@ public class MagicManagerMixin {
             if (!IronsSpellsJSEvents.manaRegenPlayerEvents.post(event).pass()) return 0;
             inc = event.getAmount();
         }
-        return inc;
+        return playerMana + inc;
     }
 }
