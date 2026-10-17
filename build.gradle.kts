@@ -25,6 +25,8 @@ val rhino_version: String by project
 val ironsSpellbooksVersion: String by project
 val ironsSpellbooksFileId: String by project
 val kubejsVersion: String by project
+val entityjs_artifact_id: String by project
+val irons_lib_artfact_id: String by project
 
 repositories {
     mavenLocal()
@@ -103,11 +105,12 @@ dependencies {
     implementation(accessTransformers(interfaceInjectionData("dev.latvian.mods:kubejs-neoforge:$kubejsVersion")!!)!!)
 
     implementation("io.redspace:irons_spellbooks:$ironsSpellbooksVersion")
+    runtimeOnly("curse.maven:irons-lib-1492763:$irons_lib_artfact_id")
     runtimeOnly("dev.kosmx.player-anim:player-animation-lib-forge:2.0.1+1.21.1")
     implementation("curse.maven:curios-309927:6401872") // curios-neoforge-9.4.2+1.21.1.jar
     runtimeOnly("curse.maven:caelus-308989:5442975") // caelus-neoforge-7.0.0+1.21.jar
     implementation("curse.maven:geckolib-388172:7023453") // geckolib-neoforge-1.21.1-4.7.5.1.jar
-    implementation("curse.maven:entityjs-967617:7127692")
+    implementation("curse.maven:entityjs-967617:$entityjs_artifact_id")
     implementation("dev.latvian.mods:rhino:$rhino_version")
     runtimeOnly("curse.maven:jei-238222:7229074")
 
